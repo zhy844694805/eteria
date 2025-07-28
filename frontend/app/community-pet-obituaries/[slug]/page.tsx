@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import Image from "next/image"
 import { Heart, Flame, Download, Copy, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,16 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 
-interface PageProps {
-  params: {
-    slug: string
-  }
-}
-
 // This would normally come from a database or API based on the slug
-export default function PetMemorialPage({ params }: PageProps) {
+export default function PetMemorialPage() {
+  const params = useParams()
   const [message, setMessage] = useState("")
   const [candlesLit, setCandlesLit] = useState(5)
+  const [petData, setPetData] = useState<any>(null)
 
   // Mock data - in a real app, this would be fetched based on params.slug
   const getPetData = (slug: string) => {
@@ -86,7 +83,16 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
     }
   }
 
-  const petData = getPetData(params.slug)
+  useEffect(() => {
+    if (params.slug) {
+      const data = getPetData(params.slug as string)
+      setPetData(data)
+    }
+  }, [params.slug])
+
+  if (!petData) {
+    return <div>Loading...</div>
+  }
 
   const handleLightCandle = () => {
     setCandlesLit(candlesLit + 1)

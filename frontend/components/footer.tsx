@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -8,12 +9,12 @@ export function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-teal-400 rounded-lg flex items-center justify-center">
                 <Heart className="w-4 h-4 text-white" />
               </div>
               <span className="text-xl font-semibold text-gray-800">永念</span>
-            </div>
+            </Link>
             <p className="text-gray-600 text-sm">
               为心爱的宠物创建持久的纪念，庆祝它们独特的精神和分享的无条件的爱。
             </p>
