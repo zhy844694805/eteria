@@ -1,0 +1,136 @@
+"use client"
+
+import { useState } from "react"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
+import { PetInformationStep } from "@/components/create-obituary/pet-information-step"
+import { TellTheirStoryStep } from "@/components/create-obituary/tell-their-story-step"
+import { YourInformationStep } from "@/components/create-obituary/your-information-step"
+
+export default function CreateObituaryPage() {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [formData, setFormData] = useState({
+    // Pet Information
+    petName: "",
+    petType: "",
+    breed: "",
+    color: "",
+    gender: "",
+    birthDate: "",
+    passingDate: "",
+    mainPhoto: null as File | null,
+    additionalPhotos: [] as File[],
+
+    // Tell Their Story
+    writingMethod: "", // "ai" or "self"
+    personalityTraits: [] as string[],
+    activities: [] as string[],
+    specialMemory: "",
+    aiGeneratedObituary: "",
+
+    // Your Information (would be added in step 3)
+    ownerName: "",
+    ownerEmail: "",
+  })
+
+  const updateFormData = (updates: Partial<typeof formData>) => {
+    setFormData((prev) => ({ ...prev, ...updates }))
+  }
+
+  const nextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const steps = [
+    { number: 1, title: "宠物信息", active: currentStep === 1, completed: currentStep > 1 },
+    { number: 2, title: "讲述它们的故事", active: currentStep === 2, completed: currentStep > 2 },
+    { number: 3, title: "您的信息", active: currentStep === 3, completed: false },
+  ]
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
+      <Navigation currentPage="create" />
+
+      {/* Progress Steps */}
+      <section className="px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center mb-8">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center">
+                <div className="flex items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      step.completed
+                        ? "bg-teal-400 text-white"
+                        : step.active
+                          ? "bg-teal-400 text-white"
+                          : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {step.number}
+                  </div>
+                  <span className={`ml-3 text-sm font-medium ${step.active ? "text-gray-800" : "text-gray-500"}`}>
+                    {step.title}
+                  </span>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`w-16 h-0.5 mx-4 ${step.completed ? "bg-teal-400" : "bg-gray-200"}`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Form Content */}
+      <section className="px-4 pb-16">
+        <div className="max-w-4xl mx-auto">
+          {currentStep === 1 && (
+            <PetInformationStep formData={formData} updateFormData={updateFormData} onNext={nextStep} />
+          )}
+          {currentStep === 2 && (
+            <TellTheirStoryStep
+              formData={formData}
+              updateFormData={updateFormData}
+              onNext={nextStep}
+              onBack={prevStep}
+            />
+          )}
+          {currentStep === 3 && (
+            <YourInformationStep formData={formData} updateFormData={updateFormData} onBack={prevStep} />
+          )}
+        </div>
+      </section>
+
+      {/* Support Mission */}
+      <section className="px-4 py-12 bg-teal-50">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+              <span className="text-white text-xl">⭐</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
+              <p className="text-gray-600 text-sm">
+                每只宠物都值得拥有美丽的纪念。您的支持帮助我们为全世界正在悲伤的宠物主人免费提供永念服务。
+              </p>
+            </div>
+          </div>
+          <button className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full flex items-center gap-2">
+            ❤️ 进行捐赠
+          </button>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  )
+}
