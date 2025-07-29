@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { Heart } from "lucide-react"
+import { Heart, User, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 
 interface NavigationProps {
   currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate"
@@ -11,6 +12,7 @@ interface NavigationProps {
 
 export function Navigation({ currentPage }: NavigationProps) {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
   
   // 检查是否在宠物纪念系统中
   const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
@@ -81,13 +83,23 @@ export function Navigation({ currentPage }: NavigationProps) {
               </Button>
             </Link>
             
-            {/* 返回总首页的链接 */}
-            <Link
-              href="/"
-              className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
-            >
-              ← 返回总首页
-            </Link>
+            {/* 用户设置或返回总首页链接 */}
+            {user ? (
+              <Link
+                href="/settings"
+                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4 flex items-center gap-1"
+              >
+                <Settings className="w-3 h-3" />
+                用户设置
+              </Link>
+            ) : (
+              <Link
+                href="/"
+                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
+              >
+                ← 返回总首页
+              </Link>
+            )}
           </div>
         )}
         
@@ -129,17 +141,61 @@ export function Navigation({ currentPage }: NavigationProps) {
               </Button>
             </Link>
             
-            {/* 返回总首页的链接 */}
-            <Link
-              href="/"
-              className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
-            >
-              ← 返回总首页
-            </Link>
+            {/* 用户设置或返回总首页链接 */}
+            {user ? (
+              <Link
+                href="/settings"
+                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4 flex items-center gap-1"
+              >
+                <Settings className="w-3 h-3" />
+                用户设置
+              </Link>
+            ) : (
+              <Link
+                href="/"
+                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
+              >
+                ← 返回总首页
+              </Link>
+            )}
           </div>
         )}
         
-        {/* 总首页不显示任何导航菜单，只显示logo */}
+        {/* 总首页或认证页面显示用户状态 */}
+        {(isMainHomepage || pathname.startsWith('/login') || pathname.startsWith('/register')) && (
+          <div className="flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <User className="w-4 h-4" />
+                  <span>欢迎，{user.name}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  退出
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    登录
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm" className="bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600 text-white">
+                    注册
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
     </header>
   )

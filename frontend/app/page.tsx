@@ -1,8 +1,10 @@
-import Image from "next/image"
-import { Heart, Users, Star, ArrowRight } from "lucide-react"
+"use client"
+
+import { Star, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { MemorialSelection } from "@/components/memorial-selection"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -44,96 +46,7 @@ export default function HomePage() {
       </section>
 
       {/* Memorial Type Selection */}
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">选择纪念类型</h2>
-            <p className="text-gray-600 text-lg">请选择您想要纪念的对象</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Pet Memorial */}
-            <Link href="/pet-memorial">
-              <div className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-teal-200">
-                <div className="text-center space-y-6">
-                  <div className="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                    <Heart className="w-12 h-12 text-white" />
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold text-gray-800">纪念宠物</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      为您心爱的宠物伙伴创建专属的纪念页面。上传照片，分享美好回忆，让它们的爱永远陪伴在您身边。
-                    </p>
-                  </div>
-
-                  <div className="pt-4">
-                    <div className="inline-flex items-center gap-2 text-teal-600 font-medium group-hover:text-teal-700">
-                      <span>开始创建宠物纪念页</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-4 text-sm text-gray-500 pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-1">
-                      <span>🐕</span>
-                      <span>狗狗</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>🐱</span>
-                      <span>猫咪</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>🐦</span>
-                      <span>其他宠物</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Human Memorial */}
-            <Link href="/human-memorial">
-              <div className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-purple-200">
-                <div className="text-center space-y-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <Users className="w-12 h-12 text-white" />
-                </div>
-                
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-800">纪念亲人</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    为逝去的亲人朋友创建温馨的纪念页面。记录他们的生平故事，分享珍贵时光，让思念化作永恒的纪念。
-                  </p>
-                </div>
-
-                <div className="pt-4">
-                  <div className="inline-flex items-center gap-2 text-purple-600 font-medium group-hover:text-purple-700">
-                    <span>开始创建纪念页面</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-500 pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-1">
-                    <span>👨‍👩‍👧‍👦</span>
-                    <span>家人</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>👥</span>
-                    <span>朋友</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>🤝</span>
-                    <span>同事</span>
-                  </div>
-                </div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MemorialSelection />
 
       {/* How It Works Section */}
       <section className="px-4 py-16 bg-white/50">

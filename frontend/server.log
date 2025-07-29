@@ -30,3 +30,180 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  ✓ Compiled /pricing in 113ms (996 modules)
  GET /pricing 200 in 148ms
  GET / 200 in 16ms
+ GET / 200 in 70ms
+ GET / 200 in 24ms
+ GET /human-memorial 200 in 20ms
+ GET /community-person-obituaries 200 in 21ms
+ GET /community-person-obituaries 200 in 17ms
+ GET /create-person-obituary 200 in 8ms
+ GET /create-person-obituary 200 in 5ms
+ GET /community-person-obituaries 200 in 18ms
+ ✓ Compiled /_not-found in 204ms (984 modules)
+ GET /community-person-obituaries/%E6%9D%8E%E6%98%8E-parent-2023-h2 404 in 247ms
+ GET /community-person-obituaries/%E6%9D%8E%E6%98%8E-parent-2023-h2 404 in 22ms
+ GET /community-person-obituaries/%E7%8E%8B%E5%8D%8E-parent-2023-h2 404 in 5ms
+ GET /community-person-obituaries/%E7%8E%8B%E5%8D%8E-parent-2023-h2 404 in 14ms
+ GET /community-person-obituaries/%E5%BC%A0%E4%BC%9F-spouse-2023-h2 404 in 4ms
+ GET /community-person-obituaries/%E5%BC%A0%E4%BC%9F-spouse-2023-h2 404 in 13ms
+ ✓ Compiled /pet-memorial in 180ms (986 modules)
+ GET /pet-memorial 200 in 240ms
+ ✓ Compiled /community-pet-obituaries in 145ms (992 modules)
+ GET /community-pet-obituaries 200 in 192ms
+ ✓ Compiled /community-pet-obituaries/[slug] in 207ms (1013 modules)
+ GET /community-pet-obituaries/nemo-cat-2023-nemoh2 200 in 466ms
+ ✓ Compiled in 196ms (445 modules)
+ GET / 200 in 27ms
+ ✓ Compiled in 104ms (445 modules)
+ GET / 200 in 13ms
+ ✓ Compiled in 55ms (445 modules)
+ GET / 200 in 13ms
+ ✓ Compiled in 56ms (445 modules)
+ GET / 200 in 22ms
+ ✓ Compiled in 60ms (445 modules)
+ GET / 200 in 14ms
+ GET / 200 in 32ms
+ ✓ Compiled in 139ms (1005 modules)
+ GET / 200 in 59ms
+ ✓ Compiled in 75ms (445 modules)
+ GET / 200 in 17ms
+ ✓ Compiled in 73ms (1005 modules)
+ GET / 200 in 49ms
+ ✓ Compiled in 54ms (445 modules)
+ GET / 200 in 11ms
+ ✓ Compiled in 210ms (1023 modules)
+ GET / 200 in 28ms
+ ✓ Compiled in 246ms (1035 modules)
+ ⨯ ReferenceError: Heart is not defined
+    at HomePage (app/page.tsx:121:15)
+  119 |           <Link href="/donate">
+  120 |             <Button className="bg-pink-500 hover:bg-pink-600 text-white">
+> 121 |               <Heart className="w-4 h-4 mr-2" />
+      |               ^
+  122 |               进行捐赠
+  123 |             </Button>
+  124 |           </Link> {
+  digest: '3437265095'
+}
+ GET / 500 in 87ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 139ms (1035 modules)
+ ⨯ Error: useAuth must be used within an AuthProvider
+    at useAuth (contexts/auth-context.tsx:85:10)
+    at MemorialSelection (components/memorial-selection.tsx:10:49)
+  83 |   const context = useContext(AuthContext)
+  84 |   if (context === undefined) {
+> 85 |     throw new Error('useAuth must be used within an AuthProvider')
+     |          ^
+  86 |   }
+  87 |   return context
+  88 | } {
+  digest: '2153499387'
+}
+ GET / 500 in 87ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 273ms (1036 modules)
+ GET / 200 in 76ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 249ms (1036 modules)
+ GET / 200 in 28ms
+ ✓ Compiled in 150ms (1042 modules)
+ GET / 200 in 41ms
+ GET / 200 in 73ms
+ ✓ Compiled /login in 160ms (1041 modules)
+ GET /login 200 in 237ms
+ ✓ Compiled /register in 128ms (1050 modules)
+ GET /register 200 in 209ms
+ ✓ Compiled in 81ms (465 modules)
+ GET / 200 in 10ms
+ ✓ Compiled in 60ms (465 modules)
+ GET / 200 in 7ms
+ GET / 200 in 30ms
+ ✓ Compiled in 129ms (1050 modules)
+ GET / 200 in 23ms
+ GET /community-pet-obituaries/nemo-cat-2023-nemoh2 200 in 71ms
+ ✓ Compiled /pet-memorial in 167ms (587 modules)
+ GET / 200 in 60ms
+ GET /pet-memorial 200 in 234ms
+ GET /pet-memorial 200 in 15ms
+ GET /pet-memorial 200 in 12ms
+ GET /pet-memorial 200 in 14ms
+ GET /pet-memorial 200 in 60ms
+ GET /pet-memorial 200 in 33ms
+ GET / 200 in 34ms
+ ✓ Compiled /login in 60ms (593 modules)
+ GET /login 200 in 143ms
+ ✓ Compiled /register in 63ms (599 modules)
+ GET /register 200 in 139ms
+ GET / 200 in 7ms
+ ✓ Compiled /human-memorial in 53ms (513 modules)
+ GET /human-memorial 200 in 99ms
+ GET /human-memorial 200 in 19ms
+ GET /human-memorial 200 in 58ms
+ GET / 200 in 35ms
+ GET / 200 in 31ms
+ GET /login 200 in 26ms
+ GET /human-memorial 200 in 14ms
+ GET /human-memorial 200 in 18ms
+ ✓ Compiled /create-person-obituary in 94ms (581 modules)
+ GET /create-person-obituary 200 in 163ms
+ GET /human-memorial 200 in 30ms
+ GET /human-memorial 200 in 14ms
+ GET /human-memorial 200 in 15ms
+ GET /human-memorial 200 in 14ms
+ GET / 200 in 6ms
+ GET /human-memorial 200 in 14ms
+ GET /human-memorial 200 in 12ms
+ GET / 200 in 4ms
+ GET /human-memorial 200 in 13ms
+ GET /human-memorial 200 in 13ms
+ GET / 200 in 5ms
+ GET /human-memorial 200 in 13ms
+ GET /human-memorial 200 in 14ms
+ GET / 200 in 4ms
+ GET /human-memorial 200 in 15ms
+ GET /human-memorial 200 in 15ms
+ GET / 200 in 4ms
+ GET /human-memorial 200 in 14ms
+ GET /human-memorial 200 in 14ms
+ ✓ Compiled in 111ms (465 modules)
+ GET / 200 in 11ms
+ ✓ Compiled in 128ms (1030 modules)
+ GET / 200 in 41ms
+ ✓ Compiled in 293ms (1044 modules)
+ GET / 200 in 27ms
+ ✓ Compiled in 171ms (1046 modules)
+ GET / 200 in 26ms
+ ✓ Compiled in 125ms (1046 modules)
+ GET / 200 in 31ms
+ ✓ Compiled /settings in 273ms (1055 modules)
+ GET /settings 200 in 376ms
+ ✓ Compiled in 144ms (1069 modules)
+ GET / 200 in 34ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / 200 in 83ms
+ ✓ Compiled in 61ms (476 modules)
+ GET / 200 in 7ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 162ms (1069 modules)
+ GET / 200 in 157ms
+ GET / 200 in 215ms
+ ✓ Compiled in 186ms (1069 modules)
+ GET / 200 in 31ms
+ ✓ Compiled in 138ms (1069 modules)
+ GET / 200 in 26ms
+ GET /settings 200 in 40ms
+ GET /human-memorial 200 in 58ms
+ GET /settings 200 in 5ms
+ ✓ Compiled /pet-memorial in 187ms (589 modules)
+ GET /pet-memorial 200 in 244ms
+ GET /settings 200 in 10ms
+ GET /settings 200 in 5ms
+ GET / 200 in 6ms
+ GET /login 200 in 7ms
+ GET / 200 in 4ms
+ GET /pet-memorial 200 in 13ms
+ GET /human-memorial 200 in 21ms
+ GET /human-memorial 200 in 14ms
+ GET /pet-memorial 200 in 14ms
+ GET /human-memorial 200 in 12ms
+ GET /pet-memorial 200 in 20ms
