@@ -1,0 +1,264 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  passwordHash      String
+  avatar            String?
+  preferredSystem   PreferredSystem?
+  emailVerified     Boolean  @default(false)
+  emailVerifyToken  String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastLoginAt       DateTime @default(now())
+
+  // 关联关系
+  memorials         Memorial[]
+  messages          Message[]
+  candles           Candle[]
+  likes             Like[]
+
+  @@map("users")
+}
+
+// 纪念页表
+model Memorial {
+  id              String       @id @default(cuid())
+  title           String
+  slug            String       @unique
+  type            MemorialType
+  status          MemorialStatus @default(DRAFT)
+  
+  // 基本信息
+  subjectName     String       // 被纪念者姓名
+  subjectType     String?      // 宠物类型或关系
+  birthDate       DateTime?
+  deathDate       DateTime?
+  age             String?
+  breed           String?      // 宠物品种
+  color           String?      // 宠物颜色
+  gender          String?
+  relationship    String?      // 与逝者关系（人类纪念用）
+  occupation      String?      // 职业（人类纪念用）
+  location        String?      // 地点（人类纪念用）
+  
+  // 内容
+  story           String?      // 生平故事
+  memories        String?      // 美好回忆
+  personalityTraits String?    // 性格特点
+  favoriteThings  String?      // 喜好
+  
+  // 创建者信息
+  creatorName     String
+  creatorEmail    String?
+  creatorPhone    String?
+  creatorRelation String?
+  
+  // 统计信息
+  viewCount       Int          @default(0)
+  candleCount     Int          @default(0)
+  messageCount    Int          @default(0)
+  likeCount       Int          @default(0)
+  
+  // 设置
+  allowMessages   Boolean      @default(true)
+  allowCandles    Boolean      @default(true)
+  isPublic        Boolean      @default(true)
+  featured        Boolean      @default(false)
+  
+  // 时间戳
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  publishedAt     DateTime?
+  
+  // 外键
+  authorId        String
+  author          User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // 关联关系
+  images          MemorialImage[]
+  messages        Message[]
+  candles         Candle[]
+  likes           Like[]
+  tags            MemorialTag[]
+
+  @@map("memorials")
+}
+
+// 纪念页图片表
+model MemorialImage {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  url         String
+  thumbnailUrl String?
+  size        Int
+  mimeType    String
+  width       Int?
+  height      Int?
+  isMain      Boolean  @default(false)
+  order       Int      @default(0)
+  caption     String?
+  createdAt   DateTime @default(now())
+  
+  // 外键
+  memorialId  String
+  memorial    Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+
+  @@map("memorial_images")
+}
+
+// 留言表
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  authorName String
+  authorEmail String?
+  isPublic   Boolean  @default(true)
+  isApproved Boolean  @default(true)
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // 外键
+  memorialId String
+  memorial   Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("messages")
+}
+
+// 点烛表
+model Candle {
+  id          String   @id @default(cuid())
+  lightedBy   String   // 点烛人姓名
+  email       String?
+  message     String?  // 点烛时的留言
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+  
+  // 外键
+  memorialId  String
+  memorial    Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("candles")
+}
+
+// 点赞表
+model Like {
+  id         String   @id @default(cuid())
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  
+  // 外键
+  memorialId String
+  memorial   Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 防重复点赞
+  @@unique([userId, memorialId])
+  @@map("likes")
+}
+
+// 标签表
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+  
+  memorials MemorialTag[]
+
+  @@map("tags")
+}
+
+// 纪念页标签关联表（多对多）
+model MemorialTag {
+  memorial   Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+  memorialId String
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId      String
+  
+  @@id([memorialId, tagId])
+  @@map("memorial_tags")
+}
+
+// 邮件模板表
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  htmlContent String
+  textContent String?
+  variables   String?  // JSON格式的变量定义
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+// 系统设置表
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      SettingType @default(STRING)
+  category  String   @default("general")
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// 枚举类型
+enum PreferredSystem {
+  PET
+  HUMAN
+}
+
+enum MemorialType {
+  PET
+  HUMAN
+}
+
+enum MemorialStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  DELETED
+}
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+}

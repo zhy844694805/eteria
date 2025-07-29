@@ -83,14 +83,14 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
     return (
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Your Free Pet Obituary</h1>
-          <p className="text-gray-600">Honor your beloved pet with a beautiful tribute that lives forever</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费宠物纪念页</h1>
+          <p className="text-gray-600">用永不遗忘的美丽贡品向您的爱宠致敬</p>
         </div>
 
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">AI-Generated Obituary</h2>
-            <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium">AI Generated</span>
+            <h2 className="text-xl font-semibold text-gray-800">AI 生成纪念文</h2>
+            <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium">AI 生成</span>
           </div>
 
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
@@ -106,25 +106,25 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
           <div className="flex gap-3 mb-6">
             <Button variant="outline" className="text-teal-600 border-teal-300 hover:bg-teal-50 bg-transparent">
               <Edit className="w-4 h-4 mr-2" />
-              Edit
+              编辑
             </Button>
-            <Button variant="outline">Regenerate</Button>
+            <Button variant="outline">重新生成</Button>
           </div>
 
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
             <p className="text-green-800 text-sm flex items-center gap-2">
               <span>✓</span>
-              This obituary has been saved. You can edit it above or click Next to continue.
+此纪念文已保存。您可以在上方编辑或点击下一步继续。
             </p>
           </div>
         </div>
 
         <div className="flex justify-between">
           <Button variant="outline" onClick={onBack}>
-            Back
+            返回
           </Button>
           <Button onClick={onNext} className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full">
-            Next
+            下一步
           </Button>
         </div>
       </div>
@@ -134,8 +134,8 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Your Free Pet Obituary</h1>
-        <p className="text-gray-600">Honor your beloved pet with a beautiful tribute that lives forever</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费宠物纪念页</h1>
+        <p className="text-gray-600">用永不遗忘的美丽贡品向您的爱宠致敬</p>
       </div>
 
       <div className="space-y-8">
@@ -143,7 +143,7 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
         {!formData.writingMethod && (
           <div>
             <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">
-              How would you like to create the obituary?
+              您希望如何创建纪念文？
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
               <button
@@ -153,8 +153,8 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MessageSquare className="w-8 h-8 text-teal-600" />
                 </div>
-                <h4 className="font-semibold text-gray-800 mb-2">Write it for me</h4>
-                <p className="text-gray-600 text-sm">Answer a few questions and we'll create a beautiful tribute</p>
+                <h4 className="font-semibold text-gray-800 mb-2">为我创建</h4>
+                <p className="text-gray-600 text-sm">回答几个问题，我们将为您创建美丽的纪念文</p>
               </button>
               <button
                 onClick={() => handleWritingMethodSelect("self")}
@@ -163,8 +163,8 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Edit className="w-8 h-8 text-gray-600" />
                 </div>
-                <h4 className="font-semibold text-gray-800 mb-2">I'll write it myself</h4>
-                <p className="text-gray-600 text-sm">Write your own personal tribute at your own pace</p>
+                <h4 className="font-semibold text-gray-800 mb-2">我自己写</h4>
+                <p className="text-gray-600 text-sm">按照自己的节奏写下个人的纪念文</p>
               </button>
             </div>
           </div>
@@ -176,7 +176,7 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
             {/* Personality Traits */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                What was their personality like? <span className="text-gray-500 text-sm">(Select all that apply)</span>
+                它的性格是什么样的？ <span className="text-gray-500 text-sm">(可多选)</span>
               </h3>
               <div className="grid grid-cols-5 gap-3">
                 {personalityTraits.map((trait) => (
@@ -194,13 +194,13 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-gray-500 mt-2">Please select at least one personality trait</p>
+              <p className="text-sm text-gray-500 mt-2">请至少选择一个性格特征</p>
             </div>
 
             {/* Activities */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                What did they love to do? <span className="text-gray-500 text-sm">(Select all that apply)</span>
+                它最喜欢做什么？ <span className="text-gray-500 text-sm">(可多选)</span>
               </h3>
               <div className="grid grid-cols-5 gap-3">
                 {activities.map((activity) => (
@@ -218,16 +218,16 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-gray-500 mt-2">Please select at least one activity</p>
+              <p className="text-sm text-gray-500 mt-2">请至少选择一个活动</p>
             </div>
 
             {/* Special Memory */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Special Memory or Story <span className="text-gray-500 text-sm font-normal">(Optional)</span>
+                特别的回忆或故事 <span className="text-gray-500 text-sm font-normal">(可选)</span>
               </h3>
               <Textarea
-                placeholder="Share a special memory, unique quirk, or anything else that made them special..."
+                placeholder="分享一个特别的回忆、独特的习惯或任何使它独特的事情..."
                 value={formData.specialMemory}
                 onChange={(e) => updateFormData({ specialMemory: e.target.value })}
                 rows={4}
@@ -239,14 +239,14 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
         {/* Self Writing */}
         {formData.writingMethod === "self" && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Write Your Pet's Obituary</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">撰写您宠物的纪念文</h3>
             <Textarea
-              placeholder="Share your beloved pet's story, their personality, favorite activities, and the special memories you'll cherish forever..."
+              placeholder="分享您爱宠的故事、性格、喜爱的活动，以及您将永远珍藏的特别回忆..."
               rows={12}
               className="mb-4"
             />
             <p className="text-sm text-gray-500">
-              Take your time to craft a beautiful tribute that captures their unique spirit.
+              慢慢来，精心撰写一个能够捉捉它独特精神的美丽纪念文。
             </p>
           </div>
         )}
@@ -254,7 +254,7 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
         {/* Navigation */}
         <div className="flex justify-between pt-6">
           <Button variant="outline" onClick={onBack}>
-            Back
+            返回
           </Button>
           {formData.writingMethod === "ai" && !showAIGenerated && (
             <Button
@@ -262,12 +262,12 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
               disabled={!formData.personalityTraits?.length || !formData.activities?.length}
               className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full"
             >
-              Generate Story
+              生成故事
             </Button>
           )}
           {formData.writingMethod === "self" && (
             <Button onClick={onNext} className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full">
-              Next
+              下一步
             </Button>
           )}
         </div>

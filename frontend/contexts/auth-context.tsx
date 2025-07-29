@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { User, AuthContextType } from '@/lib/types/auth'
-import { authService } from '@/lib/auth'
+import { databaseAuthService } from '@/lib/auth-db'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -14,7 +14,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 初始化时检查用户登录状态
   useEffect(() => {
-    const currentUser = authService.getCurrentUser()
+    const currentUser = databaseAuthService.getCurrentUser()
     setUser(currentUser)
     setIsLoading(false)
   }, [])
@@ -22,11 +22,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      const user = await authService.login(email, password)
+      const user = await databaseAuthService.login(email, password)
       setUser(user)
       
       // 根据用户偏好重定向
-      const redirectPath = authService.getPreferredRedirect(user)
+      const redirectPath = databaseAuthService.getPreferredRedirect(user)
       router.push(redirectPath)
     } catch (error) {
       throw error
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true)
     try {
-      const user = await authService.register(name, email, password)
+      const user = await databaseAuthService.register(name, email, password)
       setUser(user)
       
       // 新用户重定向到选择页面
@@ -51,27 +51,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
-    authService.logout()
+    databaseAuthService.logout()
     setUser(null)
     router.push('/')
   }
 
-  const updatePreferredSystem = (system: 'pet' | 'human') => {
-    if (user) {
-      authService.updatePreferredSystem(user.id, system)
-      setUser({ ...user, preferredSystem: system })
+  const updatePreferredSystem = async (system: 'pet' | 'human') => {
+    if (!user) return
+    try {
+      await databaseAuthService.updatePreferredSystem(user.id, system)
+      const updatedUser = databaseAuthService.getCurrentUser()
+      if (updatedUser) {
+        setUser(updatedUser)
+      }
+    } catch (error) {
+      console.error('Update preferred system error:', error)
     }
   }
 
-  const updateUserInfo = (updates: Partial<Pick<User, 'name'>>): boolean => {
-    if (user) {
-      const updatedUser = authService.updateUserInfo(user.id, updates)
-      if (updatedUser) {
-        setUser(updatedUser)
-        return true
-      }
+  const updateUserInfo = async (updates: Partial<Pick<User, 'name'>>): Promise<boolean> => {
+    if (!user) return false
+    try {
+      const updatedUser = await databaseAuthService.updateUserInfo(user.id, updates)
+      setUser(updatedUser)
+      return true
+    } catch (error) {
+      console.error('Update user info error:', error)
+      return false
     }
-    return false
   }
 
   const value: AuthContextType = {

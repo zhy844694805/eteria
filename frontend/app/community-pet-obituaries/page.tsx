@@ -1,12 +1,80 @@
+"use client"
+
+import { useState, useEffect } from 'react'
 import Image from "next/image"
-import { Heart, Flame, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Heart, Flame, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 
+interface Memorial {
+  id: string
+  slug: string
+  subjectName: string
+  type: string
+  birthDate: string | null
+  deathDate: string | null
+  subjectType?: string
+  breed?: string
+  color?: string
+  images: Array<{
+    id: string
+    url: string
+    isMain: boolean
+  }>
+  _count: {
+    messages: number
+    candles: number
+    likes: number
+  }
+}
+
 export default function CommunityPetObituariesPage() {
+  const [memorials, setMemorials] = useState<Memorial[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // 获取宠物纪念页数据
+  useEffect(() => {
+    const fetchMemorials = async () => {
+      try {
+        const response = await fetch('/api/memorials?type=PET&limit=20')
+        const data = await response.json()
+        
+        if (response.ok) {
+          setMemorials(data.memorials)
+        } else {
+          setError(data.error || '获取纪念页失败')
+        }
+      } catch (error) {
+        console.error('Fetch memorials error:', error)
+        setError('网络错误')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchMemorials()
+  }, [])
+
+  // 格式化日期范围
+  const formatDateRange = (birth: string | null, death: string | null) => {
+    const birthYear = birth ? new Date(birth).getFullYear() : '?'
+    const deathYear = death ? new Date(death).getFullYear() : '?'
+    return `${birthYear} - ${deathYear}`
+  }
+
+  // 计算年龄
+  const calculateAge = (birth: string | null, death: string | null) => {
+    if (!birth || !death) return '未知年龄'
+    const birthDate = new Date(birth)
+    const deathDate = new Date(death)
+    const years = deathDate.getFullYear() - birthDate.getFullYear()
+    return `${years} 岁`
+  }
+
   const pets = [
     {
       name: "Nemo",
@@ -192,44 +260,65 @@ export default function CommunityPetObituariesPage() {
       {/* Pet Obituaries Grid */}
       <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
-            {pets.map((pet, index) => (
-              <Link
-                key={index}
-                href={`/community-pet-obituaries/${pet.name.toLowerCase()}-${pet.type.toLowerCase()}-2023-${generateSlug(pet.name)}`}
-                className="block"
-              >
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="aspect-square bg-gray-200">
-                    <Image
-                      src={pet.image || "/placeholder.svg"}
-                      alt={pet.name}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{pet.name}</h3>
-                    <div className="text-gray-600 text-sm mb-1">
-                      {pet.years} • {pet.age}
-                    </div>
-                    <div className="text-purple-500 text-sm mb-4 font-medium">{pet.breed}</div>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Flame className="w-4 h-4 text-orange-400" />
-                        <span>{pet.candles} 蜡烛</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Heart className="w-4 h-4 text-pink-400" />
-                        <span>{pet.messages} 消息</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+              <span className="ml-2 text-gray-600">加载中...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>重试</Button>
+            </div>
+          ) : memorials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 mb-4">暂无宠物纪念页</p>
+              <Link href="/create-obituary">
+                <Button className="bg-purple-500 hover:bg-purple-600">创建第一个纪念页</Button>
               </Link>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {memorials.map((memorial) => (
+                <Link
+                  key={memorial.id}
+                  href={`/community-pet-obituaries/${memorial.slug}`}
+                  className="block"
+                >
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="aspect-square bg-gray-200">
+                      <Image
+                        src={memorial.images[0]?.url || "/placeholder.svg"}
+                        alt={memorial.name}
+                        width={300}
+                        height={300}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">{memorial.subjectName}</h3>
+                      <div className="text-gray-600 text-sm mb-1">
+                        {formatDateRange(memorial.birthDate, memorial.deathDate)} • {calculateAge(memorial.birthDate, memorial.deathDate)}
+                      </div>
+                      <div className="text-purple-500 text-sm mb-4 font-medium">
+                        {memorial.breed ? `${memorial.subjectType} • ${memorial.breed}` : memorial.subjectType}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Flame className="w-4 h-4 text-orange-400" />
+                          <span>{memorial._count.candles} 蜡烛</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-4 h-4 text-pink-400" />
+                          <span>{memorial._count.messages} 消息</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

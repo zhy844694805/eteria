@@ -155,19 +155,19 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Age</span>
+                  <span className="text-gray-500">年龄</span>
                   <span className="text-gray-800">{petData.age}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Type</span>
+                  <span className="text-gray-500">类型</span>
                   <span className="text-gray-800">{petData.type}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Color</span>
+                  <span className="text-gray-500">颜色</span>
                   <span className="text-gray-800">{petData.color}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Gender</span>
+                  <span className="text-gray-500">性别</span>
                   <span className="text-gray-800">{petData.gender}</span>
                 </div>
               </div>
@@ -179,12 +179,12 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
                 <Flame className="w-6 h-6 text-yellow-600" />
               </div>
               <div className="text-2xl font-bold text-gray-800 mb-1">{candlesLit}</div>
-              <div className="text-gray-600 text-sm mb-4">candles lit in memory of {petData.name}</div>
+              <div className="text-gray-600 text-sm mb-4">为 {petData.name} 祈祷的蜡烛</div>
               <Button
                 onClick={handleLightCandle}
                 className="w-full bg-teal-400 hover:bg-teal-500 text-white rounded-full"
               >
-                Light a Candle
+                点燃蜡烛
               </Button>
             </div>
 
@@ -194,16 +194,16 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
               className="w-full mb-6 border-teal-400 text-teal-600 hover:bg-teal-50 rounded-full bg-transparent"
             >
               <Download className="w-4 h-4 mr-2" />
-              Download Obituary
+              下载纪念文档
             </Button>
 
             {/* Partnership */}
             <div className="bg-gray-50 rounded-2xl p-6 text-center">
-              <div className="text-sm text-gray-600 mb-2">In partnership with</div>
-              <div className="font-semibold text-gray-800 mb-1">Crystal Soucy, Pet Loss Grief</div>
-              <div className="font-semibold text-gray-800 mb-2">Coach/Certified Grief Educator</div>
+              <div className="text-sm text-gray-600 mb-2">合作伙伴</div>
+              <div className="font-semibold text-gray-800 mb-1">Crystal Soucy, 宠物失落悲伤</div>
+              <div className="font-semibold text-gray-800 mb-2">指导师/认证悲伤教育者</div>
               <div className="text-xs text-gray-500">
-                Website:{" "}
+                网站:{" "}
                 <a href="#" className="text-teal-600 hover:underline">
                   www.crystalsoucy.com
                 </a>
@@ -214,7 +214,7 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
           {/* Right Column - Obituary and Content */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl p-8 shadow-sm">
-              <h1 className="text-3xl font-bold text-gray-800 mb-6">Remembering {petData.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-800 mb-6">纪念 {petData.name}</h1>
 
               <div className="prose prose-gray max-w-none mb-8">
                 {petData.obituary.split("\n\n").map((paragraph, index) => (
@@ -229,16 +229,16 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
                   <span className="text-purple-600 font-semibold text-sm">YH</span>
                 </div>
                 <div>
-                  <div className="font-medium text-gray-800">Written by {petData.author}</div>
+                  <div className="font-medium text-gray-800">作者 {petData.author}</div>
                   <div className="text-sm text-gray-500">{petData.publishDate}</div>
                 </div>
               </div>
 
               <div className="border-t pt-6">
-                <div className="text-sm text-gray-600 mb-4">Share {"Nemo's"} Obituary</div>
+                <div className="text-sm text-gray-600 mb-4">分享 {petData.name} 的纪念页</div>
                 <div className="flex gap-2">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleShareFacebook}>
-                    Share
+                    分享
                   </Button>
                   <Button
                     size="sm"
@@ -246,18 +246,18 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
                     className="border-gray-800 text-gray-800 bg-transparent"
                     onClick={handleShareTwitter}
                   >
-                    X Post
+                    发推
                   </Button>
                   <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSharePinterest}>
-                    Pin
+                    收藏
                   </Button>
                   <Button size="sm" variant="outline" onClick={handleShareEmail}>
                     <Mail className="w-4 h-4 mr-1" />
-                    Email
+                    邮件
                   </Button>
                   <Button size="sm" className="bg-teal-400 hover:bg-teal-500 text-white" onClick={handleCopyLink}>
                     <Copy className="w-4 h-4 mr-1" />
-                    Copy
+                    复制
                   </Button>
                 </div>
               </div>
@@ -269,7 +269,7 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
       {/* Photo Memories */}
       <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Photo Memories</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">珍贵回忆</h2>
           <div className="grid grid-cols-3 gap-4">
             {petData.photos.map((photo, index) => (
               <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
@@ -289,20 +289,20 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
       {/* Messages of Love */}
       <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Messages of Love</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">爱的留言</h2>
 
           {/* Leave a Message */}
           <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Leave a Message of Love</h3>
+            <h3 className="font-semibold text-gray-800 mb-4">留下爱的寄语</h3>
             <Textarea
-              placeholder="Share a memory or leave a message of love..."
+              placeholder="分享一段回忆或留下爱的寄语..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="mb-4"
               rows={4}
             />
             <div className="flex justify-end">
-              <Button className="bg-gray-400 hover:bg-gray-500 text-white rounded-full px-6">Continue</Button>
+              <Button className="bg-gray-400 hover:bg-gray-500 text-white rounded-full px-6">发送</Button>
             </div>
           </div>
 
@@ -329,16 +329,15 @@ Though our hearts are heavy with the loss of our beloved companion, Nemo's memor
               <Heart className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-800">Support Our Mission</h3>
+              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
               <p className="text-gray-600 text-sm">
-                Every pet deserves a beautiful memorial. Your support helps us keep Tuckerly free for grieving pet
-                parents everywhere.
+                每只宠物都应该拥有美好的纪念。您的支持帮助我们为世界各地失去宠物的主人免费提供永念服务。
               </p>
             </div>
           </div>
           <Button className="bg-pink-500 hover:bg-pink-600 text-white">
             <Heart className="w-4 h-4 mr-2" />
-            Make a Donation
+            捐赠支持
           </Button>
         </div>
       </section>

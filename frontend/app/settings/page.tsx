@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
+import { migrationService } from '@/lib/migration-service'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
   User, 
   Mail, 
@@ -20,7 +22,9 @@ import {
   ArrowRight,
   CheckCircle,
   AlertCircle,
-  Save
+  Save,
+  Database,
+  Upload
 } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -32,6 +36,8 @@ export default function SettingsPage() {
     email: user?.email || ''
   })
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [hasDataToMigrate, setHasDataToMigrate] = useState(false)
+  const [migrationStats, setMigrationStats] = useState({ petCount: 0, humanCount: 0, totalCount: 0 })
 
   // 如果用户未登录，重定向到登录页
   useEffect(() => {
@@ -39,6 +45,15 @@ export default function SettingsPage() {
       router.push('/login')
     }
   }, [user, router])
+
+  // 检查是否有数据需要迁移
+  useEffect(() => {
+    const hasData = migrationService.hasDataToMigrate()
+    const stats = migrationService.getMigrationStats()
+    
+    setHasDataToMigrate(hasData)
+    setMigrationStats(stats)
+  }, [])
 
   if (!user) {
     return <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
@@ -49,17 +64,21 @@ export default function SettingsPage() {
     </div>
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim()) {
       setMessage({ type: 'error', text: '姓名不能为空' })
       return
     }
 
-    const success = updateUserInfo({ name: formData.name.trim() })
-    if (success) {
-      setMessage({ type: 'success', text: '用户信息已保存' })
-      setEditMode(false)
-    } else {
+    try {
+      const success = await updateUserInfo({ name: formData.name.trim() })
+      if (success) {
+        setMessage({ type: 'success', text: '用户信息已保存' })
+        setEditMode(false)
+      } else {
+        setMessage({ type: 'error', text: '保存失败，请重试' })
+      }
+    } catch (error) {
       setMessage({ type: 'error', text: '保存失败，请重试' })
     }
     
@@ -67,18 +86,25 @@ export default function SettingsPage() {
     setTimeout(() => setMessage(null), 3000)
   }
 
-  const handleSystemChange = (system: 'pet' | 'human') => {
-    updatePreferredSystem(system)
-    setMessage({ 
-      type: 'success', 
-      text: `已切换到${system === 'pet' ? '宠物' : '人类'}纪念系统` 
-    })
-    
-    // 延迟跳转到对应系统
-    setTimeout(() => {
-      const redirectPath = system === 'pet' ? '/pet-memorial' : '/human-memorial'
-      router.push(redirectPath)
-    }, 1500)
+  const handleSystemChange = async (system: 'pet' | 'human') => {
+    try {
+      await updatePreferredSystem(system)
+      setMessage({ 
+        type: 'success', 
+        text: `已切换到${system === 'pet' ? '宠物' : '人类'}纪念系统` 
+      })
+      
+      // 延迟跳转到对应系统
+      setTimeout(() => {
+        const redirectPath = system === 'pet' ? '/pet-memorial' : '/human-memorial'
+        router.push(redirectPath)
+      }, 1500)
+    } catch (error) {
+      setMessage({ 
+        type: 'error', 
+        text: '切换系统失败，请重试' 
+      })
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -121,6 +147,30 @@ export default function SettingsPage() {
               }
               <span className="text-sm">{message.text}</span>
             </div>
+          )}
+
+          {/* Data Migration Alert */}
+          {hasDataToMigrate && (
+            <Alert className="mb-6 border-blue-200 bg-blue-50">
+              <Database className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-blue-800 mb-1">发现本地数据</p>
+                  <p className="text-blue-700 text-sm">
+                    找到 {migrationStats.totalCount} 个本地纪念页（
+                    {migrationStats.petCount} 个宠物，{migrationStats.humanCount} 个人物）
+                    ，建议迁移到云端数据库以便多设备同步。
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => router.push('/migrate')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white ml-4"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  立即迁移
+                </Button>
+              </AlertDescription>
+            </Alert>
           )}
 
           <div className="grid lg:grid-cols-2 gap-8">

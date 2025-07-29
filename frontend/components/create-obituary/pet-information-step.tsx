@@ -80,11 +80,136 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
         <div className="grid md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">品种</label>
-            <Input
-              placeholder="请先选择宠物类型"
-              value={formData.breed}
-              onChange={(e) => updateFormData({ breed: e.target.value })}
-            />
+            <Select value={formData.breed} onValueChange={(value) => updateFormData({ breed: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder={formData.petType ? "选择品种" : "请先选择宠物类型"} />
+              </SelectTrigger>
+              <SelectContent>
+                {formData.petType === 'dog' && (
+                  <>
+                    <SelectItem value="labrador">拉布拉多</SelectItem>
+                    <SelectItem value="golden-retriever">金毛寻回犬</SelectItem>
+                    <SelectItem value="german-shepherd">德国牧羊犬</SelectItem>
+                    <SelectItem value="bulldog">斗牛犬</SelectItem>
+                    <SelectItem value="poodle">贵宾犬</SelectItem>
+                    <SelectItem value="husky">哈士奇</SelectItem>
+                    <SelectItem value="chihuahua">吉娃娃</SelectItem>
+                    <SelectItem value="shiba-inu">柴犬</SelectItem>
+                    <SelectItem value="corgi">柯基</SelectItem>
+                    <SelectItem value="beagle">比格犬</SelectItem>
+                    <SelectItem value="border-collie">边境牧羊犬</SelectItem>
+                    <SelectItem value="rottweiler">罗威纳</SelectItem>
+                    <SelectItem value="yorkshire-terrier">约克夏梗</SelectItem>
+                    <SelectItem value="dachshund">腊肠犬</SelectItem>
+                    <SelectItem value="boxer">拳师犬</SelectItem>
+                    <SelectItem value="australian-shepherd">澳洲牧羊犬</SelectItem>
+                    <SelectItem value="siberian-husky">西伯利亚雪橇犬</SelectItem>
+                    <SelectItem value="great-dane">大丹犬</SelectItem>
+                    <SelectItem value="pomeranian">博美</SelectItem>
+                    <SelectItem value="shih-tzu">西施犬</SelectItem>
+                    <SelectItem value="boston-terrier">波士顿梗</SelectItem>
+                    <SelectItem value="bernese-mountain-dog">伯恩山犬</SelectItem>
+                    <SelectItem value="french-bulldog">法国斗牛犬</SelectItem>
+                    <SelectItem value="cocker-spaniel">可卡犬</SelectItem>
+                    <SelectItem value="maltese">马尔济斯</SelectItem>
+                    <SelectItem value="mixed-breed-dog">混种犬</SelectItem>
+                    <SelectItem value="other-dog">其他犬种</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'cat' && (
+                  <>
+                    <SelectItem value="persian">波斯猫</SelectItem>
+                    <SelectItem value="maine-coon">缅因猫</SelectItem>
+                    <SelectItem value="siamese">暹罗猫</SelectItem>
+                    <SelectItem value="ragdoll">布偶猫</SelectItem>
+                    <SelectItem value="british-shorthair">英国短毛猫</SelectItem>
+                    <SelectItem value="american-shorthair">美国短毛猫</SelectItem>
+                    <SelectItem value="scottish-fold">苏格兰折耳猫</SelectItem>
+                    <SelectItem value="russian-blue">俄罗斯蓝猫</SelectItem>
+                    <SelectItem value="bengal">孟加拉猫</SelectItem>
+                    <SelectItem value="abyssinian">阿比西尼亚猫</SelectItem>
+                    <SelectItem value="birman">伯曼猫</SelectItem>
+                    <SelectItem value="exotic-shorthair">异国短毛猫</SelectItem>
+                    <SelectItem value="norwegian-forest">挪威森林猫</SelectItem>
+                    <SelectItem value="sphynx">斯芬克斯猫</SelectItem>
+                    <SelectItem value="oriental-shorthair">东方短毛猫</SelectItem>
+                    <SelectItem value="devon-rex">德文卷毛猫</SelectItem>
+                    <SelectItem value="turkish-angora">土耳其安哥拉猫</SelectItem>
+                    <SelectItem value="munchkin">曼基康猫</SelectItem>
+                    <SelectItem value="domestic-shorthair">家养短毛猫</SelectItem>
+                    <SelectItem value="domestic-longhair">家养长毛猫</SelectItem>
+                    <SelectItem value="mixed-breed-cat">混种猫</SelectItem>
+                    <SelectItem value="other-cat">其他猫种</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'bird' && (
+                  <>
+                    <SelectItem value="canary">金丝雀</SelectItem>
+                    <SelectItem value="budgerigar">虎皮鹦鹉</SelectItem>
+                    <SelectItem value="cockatiel">玄凤鹦鹉</SelectItem>
+                    <SelectItem value="lovebird">爱情鸟</SelectItem>
+                    <SelectItem value="macaw">金刚鹦鹉</SelectItem>
+                    <SelectItem value="african-grey">非洲灰鹦鹉</SelectItem>
+                    <SelectItem value="cockatoo">凤头鹦鹉</SelectItem>
+                    <SelectItem value="conure">锥尾鹦鹉</SelectItem>
+                    <SelectItem value="finch">雀</SelectItem>
+                    <SelectItem value="parakeet">长尾小鹦鹉</SelectItem>
+                    <SelectItem value="other-bird">其他鸟类</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'rabbit' && (
+                  <>
+                    <SelectItem value="holland-lop">荷兰垂耳兔</SelectItem>
+                    <SelectItem value="netherland-dwarf">荷兰侏儒兔</SelectItem>
+                    <SelectItem value="mini-rex">迷你雷克斯兔</SelectItem>
+                    <SelectItem value="lionhead">狮子头兔</SelectItem>
+                    <SelectItem value="angora">安哥拉兔</SelectItem>
+                    <SelectItem value="flemish-giant">弗兰德巨兔</SelectItem>
+                    <SelectItem value="english-lop">英国垂耳兔</SelectItem>
+                    <SelectItem value="rex">雷克斯兔</SelectItem>
+                    <SelectItem value="himalayan">喜马拉雅兔</SelectItem>
+                    <SelectItem value="other-rabbit">其他兔种</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'hamster' && (
+                  <>
+                    <SelectItem value="syrian-hamster">叙利亚仓鼠</SelectItem>
+                    <SelectItem value="dwarf-hamster">侏儒仓鼠</SelectItem>
+                    <SelectItem value="chinese-hamster">中国仓鼠</SelectItem>
+                    <SelectItem value="roborovski-hamster">罗伯罗夫斯基仓鼠</SelectItem>
+                    <SelectItem value="winter-white-hamster">冬白仓鼠</SelectItem>
+                    <SelectItem value="other-hamster">其他仓鼠</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'guinea-pig' && (
+                  <>
+                    <SelectItem value="american-guinea-pig">美国豚鼠</SelectItem>
+                    <SelectItem value="peruvian-guinea-pig">秘鲁豚鼠</SelectItem>
+                    <SelectItem value="abyssinian-guinea-pig">阿比西尼亚豚鼠</SelectItem>
+                    <SelectItem value="silkie-guinea-pig">丝毛豚鼠</SelectItem>
+                    <SelectItem value="texel-guinea-pig">特塞尔豚鼠</SelectItem>
+                    <SelectItem value="skinny-pig">无毛豚鼠</SelectItem>
+                    <SelectItem value="other-guinea-pig">其他豚鼠</SelectItem>
+                  </>
+                )}
+                {formData.petType === 'other' && (
+                  <>
+                    <SelectItem value="turtle">龟</SelectItem>
+                    <SelectItem value="snake">蛇</SelectItem>
+                    <SelectItem value="lizard">蜥蜴</SelectItem>
+                    <SelectItem value="fish">鱼</SelectItem>
+                    <SelectItem value="ferret">雪貂</SelectItem>
+                    <SelectItem value="hedgehog">刺猬</SelectItem>
+                    <SelectItem value="chinchilla">龙猫</SelectItem>
+                    <SelectItem value="sugar-glider">蜜袋鼯</SelectItem>
+                    <SelectItem value="other-pet">其他宠物</SelectItem>
+                  </>
+                )}
+                {!formData.petType && (
+                  <SelectItem value="no-type" disabled>请先选择宠物类型</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

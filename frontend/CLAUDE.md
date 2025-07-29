@@ -129,40 +129,104 @@ Custom Tailwind configuration with:
 5. **Component Imports**: Use absolute imports with `@/` prefix for components and utilities
 6. **Type Safety**: All form data should be properly typed, especially the different field structures between pet and human memorials
 
+### Database Integration
+
+**Database Stack:**
+- **Prisma ORM** with SQLite for development
+- Full database schema supporting users, memorials, images, messages, candles, likes
+- Type-safe database operations with generated Prisma client
+
+**Key Database Commands:**
+```bash
+# Generate Prisma client after schema changes
+npx prisma generate
+
+# Push schema changes to database  
+npx prisma db push
+
+# View database in Prisma Studio
+npx prisma studio
+
+# Reset database (development only)
+npx prisma db push --force-reset
+```
+
 ### Authentication System
 
-The application includes a complete user authentication system with:
+**Hybrid Authentication Architecture:**
+The application uses a transitional authentication system supporting both localStorage (legacy) and database-backed authentication:
 
-**User Management:**
-- Registration and login with email/password
-- LocalStorage-based user persistence (no backend required)
-- User preference tracking for memorial system choice
-- Automatic redirection based on user preferences
+- **Database Authentication** (`/lib/auth-db.ts`): Primary system using Prisma + SQLite
+- **localStorage Authentication** (`/lib/auth.ts`): Legacy system for backward compatibility  
+- **Migration Service** (`/lib/migration-service.ts`): Handles data migration from localStorage to database
 
 **Key Features:**
-- **Unified User System**: Pet and human memorial users share the same accounts
-- **Preference Memory**: Users who choose a memorial type will be automatically redirected to that system on return visits
-- **Context-Aware Navigation**: Login/register buttons appear on main pages, user info shown when logged in
+- User registration/login with email/password + bcrypt hashing
+- CUID-based user IDs for database consistency
+- Memorial creation with proper user association
+- Real-time memorial listing and community features
 
 **Authentication Flow:**
-1. New users register with name, email, password
-2. Users choose memorial type (pet or human) 
-3. System saves preference to user profile
-4. On return visits, users are automatically redirected to their preferred system
-5. Users can switch systems anytime, preference will be updated
+1. Users register/login through database-backed API endpoints (`/api/auth/*`)
+2. User sessions managed via `useAuth()` hook with database state
+3. Memorial creation requires authenticated users with valid database records
+4. Migration alerts prompt users to move localStorage data to database
 
-**Important Implementation Details:**
-- `AuthProvider` wraps the entire app in `layout.tsx`
-- User state managed via `useAuth()` hook
-- Authentication logic in `/lib/auth.ts` using localStorage
-- User types defined in `/lib/types/auth.ts`
-- Navigation component shows different UI based on auth state
+### API Architecture
 
-### Current Limitations
+**RESTful API Structure:**
+- `/api/auth/*` - User authentication endpoints
+- `/api/memorials/*` - Memorial CRUD operations
+- `/api/images/*` - Image upload and management
+- `/api/messages/*` - Memorial messages/comments
+- `/api/candles/*` - Virtual candle lighting
 
-- No backend integration (uses localStorage for auth)
-- No database persistence
-- Image uploads not implemented  
-- Email notifications not configured
-- Payment processing not integrated
-- Password reset functionality not implemented
+**Important API Patterns:**
+- All APIs use Zod for request/response validation
+- Prisma relationships automatically include related data
+- Error handling with standardized response formats
+- User authorization checks for memorial ownership
+
+### Data Persistence Strategy
+
+**Memorial Creation Flow:**
+1. User fills multi-step form (pet info → story → creator info)
+2. Form submission sends complete payload to `/api/memorials`
+3. Database creates memorial with all relationships (images, tags, etc.)
+4. Memorial appears in community listings with real-time data
+
+**Database Schema Highlights:**
+- Users have `preferredSystem` (PET/HUMAN) for automatic routing
+- Memorials support both pet and human types with flexible fields
+- Rich relationship modeling (messages, candles, likes, images, tags)
+- Soft deletion and status management (DRAFT/PUBLISHED/ARCHIVED)
+
+### Form Architecture Specifics
+
+**Pet Information Step Enhancements:**
+- Dynamic breed selection based on pet type (25+ dog breeds, 22+ cat breeds, etc.)
+- Comprehensive breed database covering dogs, cats, birds, rabbits, hamsters, guinea pigs, and exotic pets
+- Form validation prevents empty string values in Select components
+- Pet type selection drives available breed options dynamically
+
+### Development Debugging
+
+**Common Issues:**
+- Select components require non-empty string values (use placeholder values like "no-type" for disabled options)
+- Database field mapping must match Prisma schema exactly (e.g., `authorId` not `creator`)
+- Authentication context switches between localStorage and database systems during transition
+- TypeScript errors in API routes often indicate Prisma schema mismatches
+
+### Current System Status
+
+**Implemented Features:**
+- Full user authentication with database persistence
+- Memorial creation with database integration
+- Community memorial listings with real-time data
+- Multi-step form with comprehensive pet breed selection
+- Chinese localization throughout application
+
+**Migration Path:**
+- Users with localStorage data see migration prompts
+- Database system is primary, localStorage maintained for backward compatibility
+- Memorial creation requires database authentication

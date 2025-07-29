@@ -14,8 +14,8 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
-  updatePreferredSystem: (system: 'pet' | 'human') => void
-  updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => boolean
+  updatePreferredSystem: (system: 'pet' | 'human') => Promise<void>
+  updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => Promise<boolean>
 }
 
 export interface LoginFormData {
