@@ -21,80 +21,221 @@ npm run start
 
 # Linting (disabled during builds in next.config.mjs)
 npm run lint
+
+# Database commands
+npx prisma generate          # Generate Prisma client after schema changes
+npx prisma db push          # Push schema changes to database  
+npx prisma studio          # View database in Prisma Studio
+npx prisma db push --force-reset  # Reset database (development only)
 ```
+
+## Project Overview
+
+**永念 | EternalMemory** is a bilingual (Chinese) memorial website built with Next.js 15 that supports creating memorial pages for both pets and humans. The application implements a dual memorial system architecture with completely separate user flows and branding.
 
 ## Architecture Overview
 
-This is a Chinese-localized pet obituary website built with Next.js 15 App Router architecture. The application is fully translated to Chinese (永念 | EternalMemory) and uses modern React patterns.
+### Dual Memorial System
 
-### Key Technical Stack
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript with build error ignoring enabled
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **UI Library**: Radix UI primitives with custom styling
-- **Icons**: Lucide React
-- **Forms**: React Hook Form with Zod validation
-- **Font**: Inter from Google Fonts
+The application has two parallel memorial systems with intelligent routing:
 
-### Application Structure
+- **Pet Memorial System**: Routes starting with `/pet-memorial`, `/create-obituary`, `/community-pet-obituaries`
+- **Human Memorial System**: Routes starting with `/human-memorial`, `/create-person-obituary`, `/community-person-obituaries`
+- **Main Homepage**: `/` acts as a landing page to choose between systems
 
-**Pages (App Router)**:
-- `/` - Homepage with hero section, how-it-works, statistics, recent obituaries
-- `/create-obituary` - Multi-step form for pet obituary creation
-- `/community-pet-obituaries` - Gallery of all pet obituaries with filtering
-- `/community-pet-obituaries/[slug]` - Individual obituary pages
-- `/pricing` - Pricing information
-- `/donate` - Donation page
+The navigation component (`/components/navigation.tsx`) detects which system the user is in via pathname analysis and shows context-appropriate menus with different color schemes:
+- **Teal/Turquoise**: Pet memorial system
+- **Purple**: Human memorial system
 
-**Components Architecture**:
-- `components/navigation.tsx` - Main site navigation with current page highlighting
-- `components/footer.tsx` - Site footer with newsletter signup
-- `components/ui/` - shadcn/ui component library (40+ components)
-- `components/create-obituary/` - Multi-step form components:
-  - `pet-information-step.tsx` - Pet details and photo upload
-  - `tell-their-story-step.tsx` - Story writing (AI or manual)
-  - `your-information-step.tsx` - Owner contact information
+### Multi-Step Form Pattern
 
-### State Management Patterns
+Both memorial creation flows use a consistent multi-step form architecture:
 
-**Multi-step Form State**: The create obituary flow uses useState with a unified form data object containing:
-- Pet information (name, type, breed, dates, photos)
-- Story data (writing method, traits, memories)
-- Owner information (name, email)
+1. **Information Step**: Basic details (name, dates, photos)
+2. **Story Step**: Life story and memories
+3. **Creator Information Step**: Details about who is creating the memorial
 
-**Navigation State**: Navigation component accepts `currentPage` prop for active state styling.
+Form state is managed at the page level with:
+- Centralized `formData` object
+- `updateFormData` helper function
+- Step validation with `canProceed` flags
+- Navigation between steps with `currentStep` state
+
+### Technology Stack
+
+- **Next.js 15.2.4** with App Router and React 19
+- **TypeScript** with strict configuration
+- **Tailwind CSS 3.4.17** with custom design system
+- **shadcn/ui** component library (40+ Radix UI components)
+- **React Hook Form + Zod** for form validation
+- **Lucide React** for icons
+
+### Database Architecture
+
+**Database Stack:**
+- **Prisma ORM** with SQLite for development
+- Full database schema supporting users, memorials, images, messages, candles, likes
+- Type-safe database operations with generated Prisma client
+
+**Key Database Commands:**
+```bash
+# Generate Prisma client after schema changes
+npx prisma generate
+
+# Push schema changes to database  
+npx prisma db push
+
+# View database in Prisma Studio
+npx prisma studio
+
+# Reset database (development only)
+npx prisma db push --force-reset
+```
+
+### Authentication System
+
+**Hybrid Authentication Architecture:**
+The application uses a transitional authentication system supporting both localStorage (legacy) and database-backed authentication:
+
+- **Database Authentication** (`/lib/auth-db.ts`): Primary system using Prisma + SQLite
+- **localStorage Authentication** (`/lib/auth.ts`): Legacy system for backward compatibility  
+- **Migration Service** (`/lib/migration-service.ts`): Handles data migration from localStorage to database
+
+**Key Features:**
+- User registration/login with email/password + bcrypt hashing
+- CUID-based user IDs for database consistency
+- Memorial creation with proper user association
+- Real-time memorial listing and community features
+
+**Authentication Flow:**
+1. Users register/login through database-backed API endpoints (`/api/auth/*`)
+2. User sessions managed via `useAuth()` hook with database state
+3. Memorial creation requires authenticated users with valid database records
+4. Migration alerts prompt users to move localStorage data to database
+
+### API Architecture
+
+**RESTful API Structure:**
+- `/api/auth/*` - User authentication endpoints
+- `/api/memorials/*` - Memorial CRUD operations
+- `/api/images/*` - Image upload and management
+- `/api/messages/*` - Memorial messages/comments
+- `/api/candles/*` - Virtual candle lighting
+
+**Important API Patterns:**
+- All APIs use Zod for request/response validation
+- Prisma relationships automatically include related data
+- Error handling with standardized response formats
+- User authorization checks for memorial ownership
+
+### Component Architecture
+
+**Navigation System:**
+```typescript
+// Navigation intelligently detects current system
+const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
+                            pathname.startsWith('/create-obituary') || 
+                            pathname.startsWith('/community-pet-obituaries')
+
+const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
+                              pathname.startsWith('/create-person-obituary') || 
+                              pathname.startsWith('/community-person-obituaries')
+```
+
+**Form Components:**
+- Pet forms: `/components/create-obituary/*`
+- Human forms: `/components/create-person-obituary/*`
+- Shared UI: `/components/ui/*` (shadcn/ui components)
+
+### Key Differences Between Systems
+
+**Pet Memorial Fields:**
+- `petName`, `petType`, `breed`, `color`, `gender`
+- Pet-specific language and icons
+
+**Human Memorial Fields:**  
+- `personName`, `relationship`, `age`, `occupation`, `location`
+- Relationship options: parent, spouse, child, sibling, relative, friend, colleague, other
+
+### Data Persistence Strategy
+
+**Memorial Creation Flow:**
+1. User fills multi-step form (pet info → story → creator info)
+2. Form submission sends complete payload to `/api/memorials`
+3. Database creates memorial with all relationships (images, tags, etc.)
+4. Memorial appears in community listings with real-time data
+
+**Database Schema Highlights:**
+- Users have `preferredSystem` (PET/HUMAN) for automatic routing
+- Memorials support both pet and human types with flexible fields
+- Rich relationship modeling (messages, candles, likes, images, tags)
+- Soft deletion and status management (DRAFT/PUBLISHED/ARCHIVED)
+
+### Form Architecture Specifics
+
+**Pet Information Step Enhancements:**
+- Dynamic breed selection based on pet type (25+ dog breeds, 22+ cat breeds, etc.)
+- Comprehensive breed database covering dogs, cats, birds, rabbits, hamsters, guinea pigs, and exotic pets
+- Form validation prevents empty string values in Select components
+- Pet type selection drives available breed options dynamically
+
+### Development Configuration
+
+The `next.config.mjs` has build optimizations disabled for development:
+- ESLint checks disabled during builds
+- TypeScript errors ignored during builds  
+- Image optimization disabled
+
+### Chinese Localization
+
+The application is primarily in Chinese with:
+- Page metadata set to `lang="zh-CN"`
+- Chinese titles and descriptions
+- Mixed Chinese/English in code (Chinese for user-facing content, English for technical terms)
+
+### Dynamic Routes
+
+Community pages use dynamic routing:
+- `/community-pet-obituaries/[slug]` for individual pet memorials
+- `/community-person-obituaries/[slug]` for individual human memorials
+
+Slug generation pattern: `name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 6) + "h2"`
 
 ### Styling System
 
-**Tailwind Configuration**: Extended theme with CSS variables for dynamic theming, custom color palette including sidebar components, and shadcn/ui integration.
+Custom Tailwind configuration with:
+- CSS variables for theming
+- Component variants using `class-variance-authority`
+- Consistent spacing and typography scales
+- Dark mode support (via `next-themes`)
 
-**Component Styling Patterns**:
-- Gradient backgrounds: `bg-gradient-to-b from-pink-50 to-purple-50`
-- Rounded design language: `rounded-2xl`, `rounded-full` buttons
-- Color scheme: Teal primary (`teal-400`), purple (`purple-400`), pink (`pink-400`) accents
-- Responsive design with `md:` breakpoints
+### Important Development Notes
 
-### Internationalization Notes
+1. **Form State Management**: Always use the centralized `formData` pattern with `updateFormData` helper
+2. **Navigation Context**: Use pathname detection to determine which memorial system the user is in
+3. **Color Schemes**: Maintain teal for pet system, purple for human system
+4. **Chinese Content**: User-facing content should be in Chinese, code should use English variable names
+5. **Component Imports**: Use absolute imports with `@/` prefix for components and utilities
+6. **Type Safety**: All form data should be properly typed, especially the different field structures between pet and human memorials
 
-The entire application is Chinese-localized:
-- HTML lang attribute: `zh-CN`
-- All UI text translated to Chinese
-- Pet breed names localized
-- Form placeholders and validation messages in Chinese
-- Maintain Chinese text when adding new features
+### Development Debugging
 
-### Development Patterns
+**Common Issues:**
+- Select components require non-empty string values (use placeholder values like "no-type" for disabled options)
+- Database field mapping must match Prisma schema exactly (e.g., `authorId` not `creator`)
+- Authentication context switches between localStorage and database systems during transition
+- TypeScript errors in API routes often indicate Prisma schema mismatches
 
-**File Upload Handling**: Uses FileReader API for image previews with File objects stored in state.
+### Current System Status
 
-**Dynamic Routing**: Slug generation for pet obituaries uses name + type + year + hash pattern.
+**Implemented Features:**
+- Full user authentication with database persistence
+- Memorial creation with database integration
+- Community memorial listings with real-time data
+- Multi-step form with comprehensive pet breed selection
+- Chinese localization throughout application
 
-**Component Composition**: Heavy use of compound components (Select with SelectTrigger, SelectContent, SelectItem pattern).
-
-**Form Validation**: Multi-step validation with conditional proceed logic based on required fields.
-
-### Build Configuration Notes
-
-- TypeScript and ESLint errors ignored during builds (development-focused setup)
-- Image optimization disabled (`unoptimized: true`)
-- Uses `--legacy-peer-deps` for npm install due to React 19 compatibility issues with some dependencies
+**Migration Path:**
+- Users with localStorage data see migration prompts
+- Database system is primary, localStorage maintained for backward compatibility
+- Memorial creation requires database authentication

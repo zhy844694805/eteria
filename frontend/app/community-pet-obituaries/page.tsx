@@ -33,18 +33,22 @@ interface Memorial {
 
 export default function CommunityPetObituariesPage() {
   const [memorials, setMemorials] = useState<Memorial[]>([])
+  const [filteredMemorials, setFilteredMemorials] = useState<Memorial[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeFilter, setActiveFilter] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   // 获取宠物纪念页数据
   useEffect(() => {
     const fetchMemorials = async () => {
       try {
-        const response = await fetch('/api/memorials?type=PET&limit=20')
+        const response = await fetch('/api/memorials?type=PET&limit=50')
         const data = await response.json()
         
         if (response.ok) {
           setMemorials(data.memorials)
+          setFilteredMemorials(data.memorials)
         } else {
           setError(data.error || '获取纪念页失败')
         }
@@ -58,6 +62,43 @@ export default function CommunityPetObituariesPage() {
 
     fetchMemorials()
   }, [])
+
+  // 过滤纪念页
+  useEffect(() => {
+    let filtered = memorials
+
+    // 按宠物类型过滤
+    if (activeFilter !== 'all') {
+      filtered = filtered.filter(memorial => {
+        const petType = memorial.subjectType?.toLowerCase()
+        switch (activeFilter) {
+          case 'dog':
+            return petType === 'dog' || petType === '狗'
+          case 'cat':
+            return petType === 'cat' || petType === '猫'
+          case 'bird':
+            return petType === 'bird' || petType === '鸟'
+          case 'rabbit':
+            return petType === 'rabbit' || petType === '兔子'
+          case 'hamster':
+            return petType === 'hamster' || petType === '仓鼠'
+          case 'other':
+            return petType === 'guinea-pig' || petType === '豚鼠' || petType === 'other' || petType === '其他'
+          default:
+            return true
+        }
+      })
+    }
+
+    // 按名字搜索
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(memorial =>
+        memorial.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+      )
+    }
+
+    setFilteredMemorials(filtered)
+  }, [memorials, activeFilter, searchQuery])
 
   // 格式化日期范围
   const formatDateRange = (birth: string | null, death: string | null) => {
@@ -208,14 +249,24 @@ export default function CommunityPetObituariesPage() {
   }
 
   const filterCategories = [
-    { name: "所有宠物", active: true },
-    { name: "🐕 狗", active: false },
-    { name: "🐱 猫", active: false },
-    { name: "🐦 鸟", active: false },
-    { name: "🐰 兔子", active: false },
-    { name: "🐹 仓鼠", active: false },
-    { name: "🐾 其他", active: false },
+    { name: "所有宠物", value: "all" },
+    { name: "🐕 狗", value: "dog" },
+    { name: "🐱 猫", value: "cat" },
+    { name: "🐦 鸟", value: "bird" },
+    { name: "🐰 兔子", value: "rabbit" },
+    { name: "🐹 仓鼠", value: "hamster" },
+    { name: "🐾 其他", value: "other" },
   ]
+
+  // 处理筛选器点击
+  const handleFilterClick = (filterValue: string) => {
+    setActiveFilter(filterValue)
+  }
+
+  // 处理搜索
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
@@ -238,9 +289,10 @@ export default function CommunityPetObituariesPage() {
               {filterCategories.map((category, index) => (
                 <Button
                   key={index}
-                  variant={category.active ? "default" : "outline"}
+                  variant={activeFilter === category.value ? "default" : "outline"}
+                  onClick={() => handleFilterClick(category.value)}
                   className={`rounded-full ${
-                    category.active
+                    activeFilter === category.value
                       ? "bg-purple-500 hover:bg-purple-600 text-white"
                       : "border-gray-300 text-gray-600 hover:bg-gray-50"
                   }`}
@@ -251,7 +303,12 @@ export default function CommunityPetObituariesPage() {
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input placeholder="按名字搜索..." className="pl-10 w-64 rounded-full border-gray-300" />
+              <Input 
+                placeholder="按名字搜索..." 
+                className="pl-10 w-64 rounded-full border-gray-300"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
             </div>
           </div>
         </div>
@@ -270,16 +327,16 @@ export default function CommunityPetObituariesPage() {
               <p className="text-red-600 mb-4">{error}</p>
               <Button onClick={() => window.location.reload()}>重试</Button>
             </div>
-          ) : memorials.length === 0 ? (
+          ) : filteredMemorials.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">暂无宠物纪念页</p>
+              <p className="text-gray-600 mb-4">{memorials.length === 0 ? '暂无宠物纪念页' : '没有找到匹配的纪念页'}</p>
               <Link href="/create-obituary">
                 <Button className="bg-purple-500 hover:bg-purple-600">创建第一个纪念页</Button>
               </Link>
             </div>
           ) : (
             <div className="grid md:grid-cols-3 gap-6">
-              {memorials.map((memorial) => (
+              {filteredMemorials.map((memorial) => (
                 <Link
                   key={memorial.id}
                   href={`/community-pet-obituaries/${memorial.slug}`}
@@ -288,8 +345,8 @@ export default function CommunityPetObituariesPage() {
                   <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="aspect-square bg-gray-200">
                       <Image
-                        src={memorial.images[0]?.url || "/placeholder.svg"}
-                        alt={memorial.name}
+                        src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
+                        alt={memorial.subjectName}
                         width={300}
                         height={300}
                         className="w-full h-full object-cover"
@@ -301,7 +358,7 @@ export default function CommunityPetObituariesPage() {
                         {formatDateRange(memorial.birthDate, memorial.deathDate)} • {calculateAge(memorial.birthDate, memorial.deathDate)}
                       </div>
                       <div className="text-purple-500 text-sm mb-4 font-medium">
-                        {memorial.breed ? `${memorial.subjectType} • ${memorial.breed}` : memorial.subjectType}
+                        {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">

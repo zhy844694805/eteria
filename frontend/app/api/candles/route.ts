@@ -4,10 +4,10 @@ import { z } from 'zod'
 
 const createCandleSchema = z.object({
   memorialId: z.string().min(1, '纪念页ID不能为空'),
-  lighterId: z.string().min(1, '点燃者ID不能为空'),
-  lighterName: z.string().min(1, '点燃者姓名不能为空').max(50, '点燃者姓名过长'),
+  lightedBy: z.string().min(1, '点燃者姓名不能为空').max(50, '点燃者姓名过长'),
+  email: z.string().email('邮箱格式不正确').optional(),
   message: z.string().max(200, '留言过长').optional(),
-  isAnonymous: z.boolean().optional().default(false),
+  userId: z.string().optional(),
 })
 
 const querySchema = z.object({
@@ -37,42 +37,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 验证点燃者是否存在
-    const lighter = await prisma.user.findUnique({
-      where: { id: validatedData.lighterId }
-    })
-
-    if (!lighter) {
+    // 检查是否允许点燃蜡烛
+    if (!memorial.allowCandles) {
       return NextResponse.json(
-        { error: '用户不存在' },
-        { status: 400 }
-      )
-    }
-
-    // 检查是否已经点燃过（防止重复点燃）
-    const existingCandle = await prisma.candle.findFirst({
-      where: {
-        memorialId: validatedData.memorialId,
-        lighterId: validatedData.lighterId,
-        // 检查最近24小时内是否已点燃
-        createdAt: {
-          gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-        }
-      }
-    })
-
-    if (existingCandle) {
-      return NextResponse.json(
-        { error: '您今天已经点燃过蜡烛了，请明天再来' },
-        { status: 400 }
+        { error: '此纪念页不允许点燃蜡烛' },
+        { status: 403 }
       )
     }
 
     // 创建蜡烛记录
     const candle = await prisma.candle.create({
-      data: validatedData,
+      data: {
+        memorialId: validatedData.memorialId,
+        lightedBy: validatedData.lightedBy,
+        email: validatedData.email,
+        message: validatedData.message,
+        userId: validatedData.userId,
+        ipAddress: request.headers.get('x-forwarded-for') || 
+                   request.headers.get('x-real-ip') || 
+                   'unknown'
+      },
       include: {
-        lighter: {
+        user: {
           select: {
             id: true,
             name: true,
@@ -81,9 +67,19 @@ export async function POST(request: NextRequest) {
         memorial: {
           select: {
             id: true,
-            name: true,
+            subjectName: true,
             type: true,
           }
+        }
+      }
+    })
+
+    // 更新纪念页蜡烛数量
+    await prisma.memorial.update({
+      where: { id: validatedData.memorialId },
+      data: {
+        candleCount: {
+          increment: 1
         }
       }
     })

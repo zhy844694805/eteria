@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from 'react'
 import Image from "next/image"
 import { Heart, Users, Flame, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -5,7 +8,46 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 
+interface Memorial {
+  id: string
+  slug: string
+  subjectName: string
+  subjectType?: string
+  breed?: string
+  images: Array<{
+    id: string
+    url: string
+    isMain: boolean
+  }>
+  _count: {
+    messages: number
+    candles: number
+  }
+}
+
 export default function HomePage() {
+  const [recentMemorials, setRecentMemorials] = useState<Memorial[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // 获取最近的宠物纪念页
+  useEffect(() => {
+    const fetchRecentMemorials = async () => {
+      try {
+        const response = await fetch('/api/memorials?type=PET&limit=6&sort=recent')
+        const data = await response.json()
+        
+        if (response.ok) {
+          setRecentMemorials(data.memorials)
+        }
+      } catch (error) {
+        console.error('获取最近纪念页失败:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRecentMemorials()
+  }, [])
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
       {/* Header */}
@@ -134,53 +176,71 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {[
-              { name: "Nemo", subtitle: "永远在我们心中", breed: "金毛寻回犬", candles: 5, messages: 2 },
-              { name: "Jaxon", subtitle: "永远在我们心中", breed: "比格犬", candles: 5, messages: 1 },
-              { name: "Nico", subtitle: "永远在我们心中", breed: "金毛寻回犬", candles: 3, messages: 1 },
-              {
-                name: "Palmer",
-                subtitle: "永远在我们心中",
-                breed: "美国短毛猫",
-                candles: 3,
-                messages: 2,
-              },
-              { name: "Goccia", subtitle: "永远在我们心中", breed: "虎斑猫", candles: 2, messages: 1 },
-              {
-                name: "Koschei",
-                subtitle: "永远在我们心中",
-                breed: "美国短毛猫",
-                candles: 1,
-                messages: 1,
-              },
-            ].map((pet, index) => (
-              <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                <div className="aspect-square bg-gray-200">
-                  <Image
-                    src={`/placeholder.svg?height=200&width=200&query=${pet.name} ${pet.breed} pet`}
-                    alt={pet.name}
-                    width={200}
-                    height={200}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-800 mb-1">{pet.name}</h3>
-                  <p className="text-gray-500 text-sm mb-2">{pet.subtitle}</p>
-                  <p className="text-gray-600 text-sm mb-3">{pet.breed}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Flame className="w-4 h-4" />
-                      <span>{pet.candles} 蜡烛</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Heart className="w-4 h-4" />
-                      <span>{pet.messages} 消息</span>
+            {isLoading ? (
+              // 加载状态
+              [...Array(6)].map((_, index) => (
+                <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                  <div className="aspect-square bg-gray-200"></div>
+                  <div className="p-4">
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded mb-2 w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded mb-3 w-1/2"></div>
+                    <div className="flex gap-4">
+                      <div className="h-3 bg-gray-200 rounded w-12"></div>
+                      <div className="h-3 bg-gray-200 rounded w-12"></div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : recentMemorials.length > 0 ? (
+              // 真实数据
+              recentMemorials.map((memorial) => (
+                <Link
+                  key={memorial.id}
+                  href={`/community-pet-obituaries/${memorial.slug}`}
+                  className="block"
+                >
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="aspect-square bg-gray-200">
+                      <Image
+                        src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
+                        alt={memorial.subjectName}
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-800 mb-1">{memorial.subjectName}</h3>
+                      <p className="text-gray-500 text-sm mb-2">永远在我们心中</p>
+                      <p className="text-gray-600 text-sm mb-3">
+                        {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Flame className="w-4 h-4" />
+                          <span>{memorial._count.candles} 蜡烛</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          <span>{memorial._count.messages} 消息</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              // 无数据状态
+              <div className="col-span-3 text-center py-12 text-gray-500">
+                <p className="mb-4">暂无宠物纪念页</p>
+                <Link href="/create-obituary">
+                  <Button className="bg-teal-400 hover:bg-teal-500 text-white">
+                    创建第一个纪念页
+                  </Button>
+                </Link>
               </div>
-            ))}
+            )}
           </div>
 
           <div className="text-center">

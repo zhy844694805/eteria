@@ -3,25 +3,29 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const updateMemorialSchema = z.object({
-  name: z.string().min(1, '姓名不能为空').max(100, '姓名过长').optional(),
-  dateOfBirth: z.string().optional(),
-  dateOfDeath: z.string().optional(),
-  lifeStory: z.string().optional(),
+  subjectName: z.string().min(1, '姓名不能为空').max(100, '姓名过长').optional(),
+  subjectType: z.string().optional(),
+  birthDate: z.string().optional(),
+  deathDate: z.string().optional(),
+  age: z.string().optional(),
+  story: z.string().optional(),
+  memories: z.string().optional(),
+  personalityTraits: z.string().optional(),
+  favoriteThings: z.string().optional(),
   isPublic: z.boolean().optional(),
   // Pet-specific fields
-  petType: z.string().optional(),
   breed: z.string().optional(),
   color: z.string().optional(),
-  gender: z.enum(['MALE', 'FEMALE', 'UNKNOWN']).optional(),
+  gender: z.string().optional(),
   // Human-specific fields
-  relationship: z.enum(['PARENT', 'SPOUSE', 'CHILD', 'SIBLING', 'RELATIVE', 'FRIEND', 'COLLEAGUE', 'OTHER']).optional(),
-  age: z.number().min(0).max(150).optional(),
+  relationship: z.string().optional(),
   occupation: z.string().optional(),
   location: z.string().optional(),
   // Creator information
   creatorName: z.string().min(1, '创建者姓名不能为空').max(50, '创建者姓名过长').optional(),
   creatorEmail: z.string().email('邮箱格式不正确').optional(),
   creatorPhone: z.string().optional(),
+  creatorRelation: z.string().optional(),
 })
 
 // 获取单个纪念页详情
@@ -35,7 +39,7 @@ export async function GET(
     const memorial = await prisma.memorial.findUnique({
       where: { id },
       include: {
-        creator: {
+        author: {
           select: {
             id: true,
             name: true,
@@ -44,13 +48,13 @@ export async function GET(
         },
         images: {
           orderBy: [
-            { isPrimary: 'desc' },
+            { isMain: 'desc' },
             { createdAt: 'asc' }
           ]
         },
         messages: {
           include: {
-            author: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -63,7 +67,7 @@ export async function GET(
         },
         candles: {
           include: {
-            lighter: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -84,7 +88,11 @@ export async function GET(
             }
           }
         },
-        tags: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        },
         _count: {
           select: {
             messages: true,
@@ -106,7 +114,7 @@ export async function GET(
     await prisma.memorial.update({
       where: { id },
       data: {
-        views: {
+        viewCount: {
           increment: 1
         }
       }
@@ -152,11 +160,11 @@ export async function PATCH(
 
     // 处理日期字段
     const updateData: any = { ...validatedData }
-    if (validatedData.dateOfBirth !== undefined) {
-      updateData.dateOfBirth = validatedData.dateOfBirth ? new Date(validatedData.dateOfBirth) : null
+    if (validatedData.birthDate !== undefined) {
+      updateData.birthDate = validatedData.birthDate ? new Date(validatedData.birthDate) : null
     }
-    if (validatedData.dateOfDeath !== undefined) {
-      updateData.dateOfDeath = validatedData.dateOfDeath ? new Date(validatedData.dateOfDeath) : null
+    if (validatedData.deathDate !== undefined) {
+      updateData.deathDate = validatedData.deathDate ? new Date(validatedData.deathDate) : null
     }
 
     // 更新纪念页
@@ -164,7 +172,7 @@ export async function PATCH(
       where: { id },
       data: updateData,
       include: {
-        creator: {
+        author: {
           select: {
             id: true,
             name: true,
@@ -173,13 +181,13 @@ export async function PATCH(
         },
         images: {
           orderBy: [
-            { isPrimary: 'desc' },
+            { isMain: 'desc' },
             { createdAt: 'asc' }
           ]
         },
         messages: {
           include: {
-            author: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -192,7 +200,7 @@ export async function PATCH(
         },
         candles: {
           include: {
-            lighter: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -203,8 +211,21 @@ export async function PATCH(
             createdAt: 'desc'
           }
         },
-        likes: true,
-        tags: true,
+        likes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        },
+        tags: {
+          include: {
+            tag: true
+          }
+        },
         _count: {
           select: {
             messages: true,

@@ -2,9 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
 
@@ -16,6 +17,45 @@ interface PetInformationStepProps {
 
 export function PetInformationStep({ formData, updateFormData, onNext }: PetInformationStepProps) {
   const [mainPhotoPreview, setMainPhotoPreview] = useState<string | null>(null)
+
+  // 自动计算年龄
+  const calculateAge = (birthDate: string, deathDate: string) => {
+    if (!birthDate || !deathDate) return ''
+    
+    const birth = new Date(birthDate)
+    const death = new Date(deathDate)
+    
+    if (death < birth) return '日期无效'
+    
+    const diffTime = death.getTime() - birth.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays < 30) {
+      return `${diffDays}天`
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30)
+      const remainingDays = diffDays % 30
+      return remainingDays > 0 ? `${months}个月${remainingDays}天` : `${months}个月`
+    } else {
+      const years = Math.floor(diffDays / 365)
+      const remainingDays = diffDays % 365
+      const months = Math.floor(remainingDays / 30)
+      
+      if (months > 0) {
+        return `${years}岁${months}个月`
+      } else {
+        return `${years}岁`
+      }
+    }
+  }
+
+  // 当出生日期或去世日期改变时自动计算年龄
+  useEffect(() => {
+    if (formData.birthDate && formData.passingDate) {
+      const age = calculateAge(formData.birthDate, formData.passingDate)
+      updateFormData({ calculatedAge: age })
+    }
+  }, [formData.birthDate, formData.passingDate])
 
   const handleMainPhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -333,6 +373,7 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
             </p>
           </div>
         </div>
+
 
         {/* Next Button */}
         <div className="flex justify-end pt-6">

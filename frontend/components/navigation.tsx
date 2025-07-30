@@ -83,7 +83,7 @@ export function Navigation({ currentPage }: NavigationProps) {
               </Button>
             </Link>
             
-            {/* 用户设置或返回总首页链接 */}
+            {/* 用户设置或登录注册按钮 */}
             {user ? (
               <Link
                 href="/settings"
@@ -93,17 +93,29 @@ export function Navigation({ currentPage }: NavigationProps) {
                 用户设置
               </Link>
             ) : (
-              <Link
-                href="/"
-                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
-              >
-                ← 返回总首页
-              </Link>
+              <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
+                <Link
+                  href="/"
+                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
+                >
+                  主页
+                </Link>
+                <Link href="/login">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    登录
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm" className="bg-teal-500 hover:bg-teal-600 text-white text-xs">
+                    注册
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         )}
         
-        {/* 逗者纪念系统导航 */}
+        {/* 逝者纪念系统导航 */}
         {isHumanMemorialSystem && (
           <div className="hidden md:flex items-center gap-6">
             <Link
@@ -141,7 +153,7 @@ export function Navigation({ currentPage }: NavigationProps) {
               </Button>
             </Link>
             
-            {/* 用户设置或返回总首页链接 */}
+            {/* 用户设置或登录注册按钮 */}
             {user ? (
               <Link
                 href="/settings"
@@ -151,12 +163,24 @@ export function Navigation({ currentPage }: NavigationProps) {
                 用户设置
               </Link>
             ) : (
-              <Link
-                href="/"
-                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4"
-              >
-                ← 返回总首页
-              </Link>
+              <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
+                <Link
+                  href="/"
+                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
+                >
+                  主页
+                </Link>
+                <Link href="/login">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    登录
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white text-xs">
+                    注册
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         )}
@@ -170,6 +194,16 @@ export function Navigation({ currentPage }: NavigationProps) {
                   <User className="w-4 h-4" />
                   <span>欢迎，{user.name}</span>
                 </div>
+                <Link href="/settings">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-600 hover:text-gray-800"
+                  >
+                    <Settings className="w-4 h-4 mr-1" />
+                    用户设置
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"

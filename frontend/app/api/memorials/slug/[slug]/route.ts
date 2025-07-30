@@ -10,9 +10,13 @@ export async function GET(
     const { slug } = params
 
     const memorial = await prisma.memorial.findUnique({
-      where: { slug },
+      where: { 
+        slug: slug,
+        status: 'PUBLISHED',
+        isPublic: true
+      },
       include: {
-        creator: {
+        author: {
           select: {
             id: true,
             name: true,
@@ -21,13 +25,16 @@ export async function GET(
         },
         images: {
           orderBy: [
-            { isPrimary: 'desc' },
+            { isMain: 'desc' },
             { createdAt: 'asc' }
           ]
         },
         messages: {
+          where: {
+            isApproved: true
+          },
           include: {
-            author: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -40,7 +47,7 @@ export async function GET(
         },
         candles: {
           include: {
-            lighter: {
+            user: {
               select: {
                 id: true,
                 name: true,
@@ -61,7 +68,11 @@ export async function GET(
             }
           }
         },
-        tags: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        },
         _count: {
           select: {
             messages: true,
@@ -81,9 +92,9 @@ export async function GET(
 
     // 增加浏览次数
     await prisma.memorial.update({
-      where: { slug },
+      where: { id: memorial.id },
       data: {
-        views: {
+        viewCount: {
           increment: 1
         }
       }

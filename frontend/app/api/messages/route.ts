@@ -4,10 +4,10 @@ import { z } from 'zod'
 
 const createMessageSchema = z.object({
   memorialId: z.string().min(1, '纪念页ID不能为空'),
-  authorId: z.string().min(1, '作者ID不能为空'),
   authorName: z.string().min(1, '作者姓名不能为空').max(50, '作者姓名过长'),
+  authorEmail: z.string().email('邮箱格式不正确').optional(),
   content: z.string().min(1, '留言内容不能为空').max(1000, '留言过长'),
-  isAnonymous: z.boolean().optional().default(false),
+  userId: z.string().optional(),
 })
 
 const querySchema = z.object({
@@ -37,23 +37,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 验证作者是否存在
-    const author = await prisma.user.findUnique({
-      where: { id: validatedData.authorId }
-    })
-
-    if (!author) {
+    // 检查是否允许留言
+    if (!memorial.allowMessages) {
       return NextResponse.json(
-        { error: '用户不存在' },
-        { status: 400 }
+        { error: '此纪念页不允许留言' },
+        { status: 403 }
       )
     }
 
     // 创建留言
     const message = await prisma.message.create({
-      data: validatedData,
+      data: {
+        memorialId: validatedData.memorialId,
+        content: validatedData.content,
+        authorName: validatedData.authorName,
+        authorEmail: validatedData.authorEmail,
+        userId: validatedData.userId,
+        ipAddress: request.headers.get('x-forwarded-for') || 
+                   request.headers.get('x-real-ip') || 
+                   'unknown',
+        userAgent: request.headers.get('user-agent') || 'unknown'
+      },
       include: {
-        author: {
+        user: {
           select: {
             id: true,
             name: true,
@@ -62,9 +68,19 @@ export async function POST(request: NextRequest) {
         memorial: {
           select: {
             id: true,
-            name: true,
+            subjectName: true,
             type: true,
           }
+        }
+      }
+    })
+
+    // 更新纪念页留言数量
+    await prisma.memorial.update({
+      where: { id: validatedData.memorialId },
+      data: {
+        messageCount: {
+          increment: 1
         }
       }
     })
