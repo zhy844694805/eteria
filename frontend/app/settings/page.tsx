@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { migrationService } from '@/lib/migration-service'
@@ -52,7 +52,7 @@ interface Memorial {
   }>
 }
 
-export default function SettingsPage() {
+function SettingsForm() {
   const { user, logout, updatePreferredSystem, updateUserInfo } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -653,5 +653,17 @@ export default function SettingsPage() {
       {/* Footer */}
       <Footer />
     </div>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+      </div>
+    }>
+      <SettingsForm />
+    </Suspense>
   )
 }

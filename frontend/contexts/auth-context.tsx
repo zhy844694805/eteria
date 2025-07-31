@@ -14,9 +14,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 初始化时检查用户登录状态
   useEffect(() => {
-    const currentUser = databaseAuthService.getCurrentUser()
-    setUser(currentUser)
-    setIsLoading(false)
+    const checkUser = async () => {
+      const currentUser = await databaseAuthService.getCurrentUser()
+      setUser(currentUser)
+      setIsLoading(false)
+    }
+    checkUser()
   }, [])
 
   const login = async (email: string, password: string) => {
@@ -72,8 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const logout = () => {
-    databaseAuthService.logout()
+  const logout = async () => {
+    await databaseAuthService.logout()
     setUser(null)
     router.push('/')
   }
@@ -82,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return
     try {
       await databaseAuthService.updatePreferredSystem(user.id, system)
-      const updatedUser = databaseAuthService.getCurrentUser()
+      const updatedUser = await databaseAuthService.getCurrentUser()
       if (updatedUser) {
         setUser(updatedUser)
       }

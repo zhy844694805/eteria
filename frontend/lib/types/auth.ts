@@ -3,6 +3,7 @@ export interface User {
   email: string
   name: string
   avatar?: string
+  role?: 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER_ADMIN' // 用户角色
   preferredSystem?: 'pet' | 'human' // 用户偏好的纪念系统
   createdAt: string
   lastLoginAt: string

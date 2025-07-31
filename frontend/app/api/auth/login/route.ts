@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -46,16 +47,36 @@ export async function POST(request: NextRequest) {
         id: true,
         name: true,
         email: true,
+        role: true,
         preferredSystem: true,
         createdAt: true,
         lastLoginAt: true,
       }
     })
 
-    return NextResponse.json({
+    // 创建JWT token
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    )
+
+    // 创建响应并设置cookie
+    const response = NextResponse.json({
       success: true,
       user: updatedUser
     })
+
+    // 设置HTTP-only cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7天
+      path: '/',
+    })
+
+    return response
 
   } catch (error) {
     console.error('Login error:', error)

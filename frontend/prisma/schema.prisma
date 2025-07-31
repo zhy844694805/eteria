@@ -25,6 +25,11 @@ model User {
   emailVerifyToken  String?
   resetPasswordToken String?
   resetPasswordExpires DateTime?
+  role              UserRole @default(USER)
+  isActive          Boolean  @default(true)
+  isBanned          Boolean  @default(false)
+  banReason         String?
+  banExpiresAt      DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   lastLoginAt       DateTime @default(now())
@@ -34,6 +39,8 @@ model User {
   messages          Message[]
   candles           Candle[]
   likes             Like[]
+  adminLogs         AdminLog[] @relation("AdminLogs")
+  contentReviews    ContentReview[] @relation("ContentReviews")
 
   @@map("users")
 }
@@ -238,6 +245,37 @@ model Setting {
   @@map("settings")
 }
 
+// 管理操作日志表
+model AdminLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation("AdminLogs", fields: [adminId], references: [id], onDelete: Cascade)
+  action    String   // 操作类型: CREATE, UPDATE, DELETE, BAN_USER, etc.
+  target    String?  // 操作目标: user_id, memorial_id, etc.
+  details   String?  // 操作详情 JSON
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@map("admin_logs")
+}
+
+// 内容审核表
+model ContentReview {
+  id         String          @id @default(cuid())
+  type       ReviewType      // MEMORIAL, MESSAGE, IMAGE
+  targetId   String          // 目标ID
+  status     ReviewStatus    @default(PENDING)
+  reason     String?         // 审核原因
+  reviewerId String?
+  reviewer   User?           @relation("ContentReviews", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewedAt DateTime?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@map("content_reviews")
+}
+
 // 枚举类型
 enum PreferredSystem {
   PET
@@ -261,4 +299,23 @@ enum SettingType {
   NUMBER
   BOOLEAN
   JSON
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ReviewType {
+  MEMORIAL
+  MESSAGE
+  IMAGE
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
