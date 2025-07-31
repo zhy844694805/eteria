@@ -17,11 +17,11 @@ export default function HomePage() {
           <div className="space-y-6">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-                为逗去的亲人创建纪念页
+                为逝去的亲人创建纪念页
               </h1>
               <p className="text-xl text-purple-500 font-medium">永远怀念</p>
               <p className="text-gray-600 text-lg leading-relaxed">
-                为逗去的亲人朋友创建温馨、持久的纪念页面。记录他们的生平故事，分享珍贵的回忆。
+                为逝去的亲人朋友创建温馨、持久的纪念页面。记录他们的生平故事，分享珍贵的回忆。
                 让他们的精神与爱永远传续下去。
               </p>
             </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800">与他人连接</h3>
-              <p className="text-gray-600">接收来自朋友、家人和同好宠物爱好者的支持与安慰</p>
+              <p className="text-gray-600">接收来自朋友、家人和亲友们的支持与安慰</p>
             </div>
 
             <div className="space-y-4">
@@ -125,7 +125,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Recent Pet Obituaries */}
+      {/* Recent Person Obituaries */}
       <section className="px-4 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -135,47 +135,78 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             {[
-              { name: "Nemo", subtitle: "永远在我们心中", breed: "金毛寻回犬", candles: 5, messages: 2 },
-              { name: "Jaxon", subtitle: "永远在我们心中", breed: "比格犬", candles: 5, messages: 1 },
-              { name: "Nico", subtitle: "永远在我们心中", breed: "金毛寻回犬", candles: 3, messages: 1 },
-              {
-                name: "Palmer",
-                subtitle: "永远在我们心中",
-                breed: "美国短毛猫",
-                candles: 3,
-                messages: 2,
+              { 
+                name: "王德华", 
+                subtitle: "桃李满天下的好老师", 
+                description: "1945-2024，享年79岁 · 退休教师", 
+                candles: 156, 
+                messages: 89,
+                story: "热爱教育事业40年，培养学生无数，深受师生爱戴"
               },
-              { name: "Goccia", subtitle: "永远在我们心中", breed: "虎斑猫", candles: 2, messages: 1 },
-              {
-                name: "Koschei",
-                subtitle: "永远在我们心中",
-                breed: "美国短毛猫",
-                candles: 1,
-                messages: 1,
+              { 
+                name: "李秀英", 
+                subtitle: "白衣天使般的母亲", 
+                description: "1950-2024，享年74岁 · 退休护士", 
+                candles: 203, 
+                messages: 127,
+                story: "慈祥温柔的母亲，救死扶伤30载，是家人心中的守护神"
               },
-            ].map((pet, index) => (
+              { 
+                name: "张建军", 
+                subtitle: "深爱家庭的好丈夫", 
+                description: "1968-2024，享年56岁 · 高级工程师", 
+                candles: 324, 
+                messages: 198,
+                story: "勤劳敬业的技术专家，用智慧和双手为家庭撑起一片天"
+              },
+              {
+                name: "陈小雨",
+                subtitle: "阳光开朗的设计师",
+                description: "1995-2024，享年29岁 · 平面设计师",
+                candles: 267,
+                messages: 145,
+                story: "用创意点亮生活，为世界带来美好设计的年轻才女"
+              },
+              { 
+                name: "刘志明", 
+                subtitle: "技术带头人", 
+                description: "1960-2024，享年64岁 · 高级工程师", 
+                candles: 112, 
+                messages: 67,
+                story: "兢兢业业35年，深受同事敬重，是公司的技术骨干"
+              },
+              {
+                name: "赵雅丽",
+                subtitle: "深受师生爱戴的校长",
+                description: "1972-2024，享年52岁 · 小学校长",
+                candles: 189,
+                messages: 103,
+                story: "温柔贤惠的姐姐，致力于教育事业，培养了一代又一代孩子"
+              },
+            ].map((person, index) => (
               <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm">
                 <div className="aspect-square bg-gray-200">
                   <Image
-                    src={`/placeholder.svg?height=200&width=200&query=${pet.name} ${pet.breed} pet`}
-                    alt={pet.name}
+                    src={`/placeholder.svg?height=200&width=200&query=person memorial photo`}
+                    alt={person.name}
                     width={200}
                     height={200}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-gray-800 mb-1">{pet.name}</h3>
-                  <p className="text-gray-500 text-sm mb-2">{pet.subtitle}</p>
-                  <p className="text-gray-600 text-sm mb-3">{pet.breed}</p>
+                  <h3 className="font-semibold text-gray-800 mb-1">{person.name}</h3>
+                  <p className="text-purple-500 text-sm mb-1 font-medium">{person.subtitle}</p>
+                  <p className="text-gray-600 text-sm mb-2">{person.description}</p>
+                  <p className="text-gray-500 text-xs mb-3 leading-relaxed">{person.story}</p>
                   <div className="flex items-center gap-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
-                      <Flame className="w-4 h-4" />
-                      <span>{pet.candles} 蜡烛</span>
+                      <Flame className="w-4 h-4 text-orange-400" />
+                      <span>{person.candles} 蜡烛</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Heart className="w-4 h-4" />
-                      <span>{pet.messages} 消息</span>
+                      <Heart className="w-4 h-4 text-pink-400" />
+                      <span>{person.messages} 消息</span>
                     </div>
                   </div>
                 </div>
@@ -184,12 +215,12 @@ export default function HomePage() {
           </div>
 
           <div className="text-center">
-            <Link href="/community-pet-obituaries">
+            <Link href="/community-person-obituaries">
               <Button
                 variant="outline"
-                className="border-teal-400 text-teal-600 hover:bg-teal-50 px-8 py-3 rounded-full bg-transparent"
+                className="border-purple-400 text-purple-600 hover:bg-purple-50 px-8 py-3 rounded-full bg-transparent"
               >
-                查看所有悼念页
+                查看所有纪念页
               </Button>
             </Link>
           </div>
@@ -200,7 +231,7 @@ export default function HomePage() {
       <section className="px-4 py-16 bg-white/50">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <p className="text-gray-600 text-lg">
-            在几分钟内创建美丽的纪念页面，给逗去的亲人应有的敬意。
+            在几分钟内创建美丽的纪念页面，给逝去的亲人应有的敬意。
           </p>
           <Link href="/create-person-obituary">
             <Button className="bg-purple-400 hover:bg-purple-500 text-white px-8 py-3 text-lg rounded-full">

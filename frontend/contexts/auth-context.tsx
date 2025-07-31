@@ -25,9 +25,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const user = await databaseAuthService.login(email, password)
       setUser(user)
       
-      // 根据用户偏好重定向
-      const redirectPath = databaseAuthService.getPreferredRedirect(user)
-      router.push(redirectPath)
+      // 检查是否有保存的表单数据需要恢复
+      const savedData = sessionStorage.getItem('memorialFormData')
+      const savedStep = sessionStorage.getItem('memorialFormStep')
+      const savedType = sessionStorage.getItem('memorialFormType')
+      
+      if (savedData && savedStep && savedType) {
+        // 有保存的表单数据，跳转回对应的创建页面
+        const redirectPath = savedType === 'pet' ? '/create-obituary' : '/create-person-obituary'
+        router.push(redirectPath)
+      } else {
+        // 没有保存的表单数据，根据用户偏好重定向
+        const redirectPath = databaseAuthService.getPreferredRedirect(user)
+        router.push(redirectPath)
+      }
     } catch (error) {
       throw error
     } finally {
@@ -41,8 +52,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const user = await databaseAuthService.register(name, email, password)
       setUser(user)
       
-      // 新用户重定向到选择页面
-      router.push('/')
+      // 检查是否有保存的表单数据需要恢复
+      const savedData = sessionStorage.getItem('memorialFormData')
+      const savedStep = sessionStorage.getItem('memorialFormStep')
+      const savedType = sessionStorage.getItem('memorialFormType')
+      
+      if (savedData && savedStep && savedType) {
+        // 有保存的表单数据，跳转回对应的创建页面
+        const redirectPath = savedType === 'pet' ? '/create-obituary' : '/create-person-obituary'
+        router.push(redirectPath)
+      } else {
+        // 没有保存的表单数据，新用户重定向到选择页面
+        router.push('/')
+      }
     } catch (error) {
       throw error
     } finally {

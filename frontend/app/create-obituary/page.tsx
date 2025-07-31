@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { PetInformationStep } from "@/components/create-obituary/pet-information-step"
@@ -32,6 +32,31 @@ export default function CreateObituaryPage() {
     ownerName: "",
     ownerEmail: "",
   })
+
+  // 恢复保存的表单数据
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('memorialFormData')
+    const savedStep = sessionStorage.getItem('memorialFormStep')
+    const savedType = sessionStorage.getItem('memorialFormType')
+    
+    if (savedData && savedType === 'pet') {
+      try {
+        const parsedData = JSON.parse(savedData)
+        setFormData(prev => ({ ...prev, ...parsedData }))
+        
+        if (savedStep) {
+          setCurrentStep(parseInt(savedStep))
+        }
+        
+        // 清除保存的数据
+        sessionStorage.removeItem('memorialFormData')
+        sessionStorage.removeItem('memorialFormStep')
+        sessionStorage.removeItem('memorialFormType')
+      } catch (error) {
+        console.error('恢复表单数据失败:', error)
+      }
+    }
+  }, [])
 
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))

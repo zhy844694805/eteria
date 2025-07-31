@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { PersonInformationStep } from "@/components/create-person-obituary/person-information-step"
-import { TellTheirStoryStep } from "@/components/create-obituary/tell-their-story-step"
+import { TellTheirStoryStep } from "@/components/create-person-obituary/tell-their-story-step"
 import { YourInformationStep } from "@/components/create-obituary/your-information-step"
 
 export default function CreateObituaryPage() {
@@ -34,6 +34,31 @@ export default function CreateObituaryPage() {
     creatorEmail: "",
     creatorRelationship: "", // 与逗者的关系
   })
+
+  // 恢复保存的表单数据
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('memorialFormData')
+    const savedStep = sessionStorage.getItem('memorialFormStep')
+    const savedType = sessionStorage.getItem('memorialFormType')
+    
+    if (savedData && savedType === 'person') {
+      try {
+        const parsedData = JSON.parse(savedData)
+        setFormData(prev => ({ ...prev, ...parsedData }))
+        
+        if (savedStep) {
+          setCurrentStep(parseInt(savedStep))
+        }
+        
+        // 清除保存的数据
+        sessionStorage.removeItem('memorialFormData')
+        sessionStorage.removeItem('memorialFormStep')
+        sessionStorage.removeItem('memorialFormType')
+      } catch (error) {
+        console.error('恢复表单数据失败:', error)
+      }
+    }
+  }, [])
 
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))
@@ -71,9 +96,9 @@ export default function CreateObituaryPage() {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
                       step.completed
-                        ? "bg-teal-400 text-white"
+                        ? "bg-purple-400 text-white"
                         : step.active
-                          ? "bg-teal-400 text-white"
+                          ? "bg-purple-400 text-white"
                           : "bg-gray-200 text-gray-500"
                     }`}
                   >
@@ -84,7 +109,7 @@ export default function CreateObituaryPage() {
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-16 h-0.5 mx-4 ${step.completed ? "bg-teal-400" : "bg-gray-200"}`} />
+                  <div className={`w-16 h-0.5 mx-4 ${step.completed ? "bg-purple-400" : "bg-gray-200"}`} />
                 )}
               </div>
             ))}
@@ -113,7 +138,7 @@ export default function CreateObituaryPage() {
       </section>
 
       {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
+      <section className="px-4 py-12 bg-purple-50">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
@@ -122,7 +147,7 @@ export default function CreateObituaryPage() {
             <div>
               <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
               <p className="text-gray-600 text-sm">
-                每只宠物都值得拥有美丽的纪念。您的支持帮助我们为全世界正在悲伤的宠物主人免费提供永念服务。
+                每个生命都值得被永远纪念。您的支持帮助我们为全世界的家庭免费提供纪念服务。
               </p>
             </div>
           </div>

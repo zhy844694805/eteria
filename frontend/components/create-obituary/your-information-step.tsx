@@ -20,33 +20,12 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
-  // 当用户已登录时，自动填充用户信息
-  useEffect(() => {
-    if (user && (!formData.ownerName || !formData.ownerEmail)) {
-      updateFormData({
-        ownerName: user.name || '',
-        ownerEmail: user.email || ''
-      })
-    }
-  }, [user, formData.ownerName, formData.ownerEmail, updateFormData])
 
   const handleSubmit = async () => {
-    // 检查用户是否已登录
-    if (!user) {
-      setMessage({ type: 'error', text: '请先登录后再创建纪念页' })
-      setTimeout(() => router.push('/login'), 2000)
-      return
-    }
-
-    // 验证必填字段
-    if (!formData.petName.trim()) {
-      setMessage({ type: 'error', text: '请输入宠物姓名' })
-      return
-    }
-
-    // 对于未登录用户，验证姓名和邮箱
-    if (!user && (!formData.ownerName.trim() || !formData.ownerEmail.trim())) {
-      setMessage({ type: 'error', text: '请输入您的姓名和邮箱地址' })
+    // 此时用户已经登录，直接验证必填字段
+    const subjectName = formData.petName || formData.personName
+    if (!subjectName?.trim()) {
+      setMessage({ type: 'error', text: '请输入纪念对象的姓名' })
       return
     }
 
@@ -54,21 +33,31 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
     setMessage(null)
 
     try {
+      // 判断是宠物纪念还是人员纪念
+      const isPet = formData.petName
+      
       // 准备API数据
       const memorialData = {
-        type: 'PET',
-        subjectName: formData.petName,
+        type: isPet ? 'PET' : 'HUMAN',
+        subjectName: isPet ? formData.petName : formData.personName,
         birthDate: formData.birthDate,
         deathDate: formData.passingDate,
         story: formData.aiGeneratedObituary || formData.specialMemory,
         authorId: user.id,
-        creatorName: user.name || formData.ownerName,
-        creatorEmail: user.email || formData.ownerEmail,
+        creatorName: user.name,
+        creatorEmail: user.email,
         // 宠物特有字段
-        subjectType: formData.petType,
-        breed: formData.breed,
-        color: formData.color,
-        gender: formData.gender,
+        ...(isPet && {
+          subjectType: formData.petType,
+          breed: formData.breed,
+          color: formData.color,
+          gender: formData.gender,
+        }),
+        // 人员特有字段
+        ...(!isPet && {
+          relationship: formData.relationship,
+          age: formData.age,
+        }),
       }
 
       // 调用创建纪念页API
@@ -85,9 +74,10 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
       if (response.ok) {
         setMessage({ type: 'success', text: '纪念页创建成功！正在跳转...' })
         
-        // 跳转到纪念页详情或社区页面
+        // 根据纪念类型跳转到对应的社区页面
         setTimeout(() => {
-          router.push('/community-pet-obituaries')
+          const communityPath = isPet ? '/community-pet-obituaries' : '/community-person-obituaries'
+          router.push(communityPath)
         }, 2000)
       } else {
         setMessage({ type: 'error', text: result.error || '创建纪念页失败，请重试' })
@@ -103,8 +93,8 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费宠物纪念页</h1>
-        <p className="text-gray-600">用永久存在的美丽纪念向您心爱的宠物致敬</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建纪念页面</h1>
+        <p className="text-gray-600">用永久存在的美丽纪念致敬珍贵的回忆</p>
       </div>
 
       {/* Success/Error Message */}
@@ -130,50 +120,64 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
             <p className="text-sm text-gray-500 mt-2">纪念页将与您的账户关联</p>
           </div>
         ) : (
-          // 未登录用户显示输入框
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">您的姓名 *</label>
-              <Input
-                placeholder="请输入您的姓名"
-                value={formData.ownerName}
-                onChange={(e) => updateFormData({ ownerName: e.target.value })}
-                disabled={isLoading}
-              />
+          // 未登录用户显示登录提示
+          <div className="bg-orange-50 rounded-lg p-6 text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-orange-600" />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">邮箱地址 *</label>
-              <Input
-                type="email"
-                placeholder="请输入您的邮箱"
-                value={formData.ownerEmail}
-                onChange={(e) => updateFormData({ ownerEmail: e.target.value })}
-                disabled={isLoading}
-              />
-              <p className="text-sm text-gray-500 mt-1">我们将发送纪念页链接到您的邮箱</p>
+            <h3 className="text-lg font-medium text-gray-800 mb-2">需要登录才能发布纪念页</h3>
+            <p className="text-gray-600 mb-6">为了更好地管理您的纪念页面，请先登录或注册账户</p>
+            <div className="flex gap-4 justify-center">
+              <Button 
+                onClick={() => {
+                  // 保存当前表单数据到 sessionStorage
+                  sessionStorage.setItem('memorialFormData', JSON.stringify(formData))
+                  sessionStorage.setItem('memorialFormStep', '3')
+                  sessionStorage.setItem('memorialFormType', formData.petName ? 'pet' : 'person')
+                  router.push('/login')
+                }}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full"
+              >
+                立即登录
+              </Button>
+              <Button 
+                onClick={() => {
+                  // 保存当前表单数据到 sessionStorage
+                  sessionStorage.setItem('memorialFormData', JSON.stringify(formData))
+                  sessionStorage.setItem('memorialFormStep', '3')
+                  sessionStorage.setItem('memorialFormType', formData.petName ? 'pet' : 'person')
+                  router.push('/register')
+                }}
+                variant="outline"
+                className="border-purple-300 text-purple-600 hover:bg-purple-50 px-6 py-2 rounded-full"
+              >
+                注册账户
+              </Button>
             </div>
-          </>
+            <p className="text-sm text-gray-500 mt-4">登录后您的纪念页面将被永久保存，且可随时编辑</p>
+          </div>
         )}
 
         <div className="flex justify-between pt-6">
           <Button variant="outline" onClick={onBack} disabled={isLoading}>
             返回
           </Button>
-          <Button 
-            className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full"
-            onClick={handleSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                创建中...
-              </>
-            ) : (
-              '创建纪念页'
-            )}
-          </Button>
+          {user && (
+            <Button 
+              className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full"
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  创建中...
+                </>
+              ) : (
+                '创建纪念页'
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,6 +17,26 @@ interface PersonInformationStepProps {
 export function PersonInformationStep({ formData, updateFormData, onNext }: PersonInformationStepProps) {
   const [mainPhotoPreview, setMainPhotoPreview] = useState<string | null>(null)
 
+  // Calculate age automatically when birth date and passing date change
+  useEffect(() => {
+    if (formData.birthDate && formData.passingDate) {
+      const birthDate = new Date(formData.birthDate)
+      const passingDate = new Date(formData.passingDate)
+      
+      let age = passingDate.getFullYear() - birthDate.getFullYear()
+      const monthDiff = passingDate.getMonth() - birthDate.getMonth()
+      
+      if (monthDiff < 0 || (monthDiff === 0 && passingDate.getDate() < birthDate.getDate())) {
+        age--
+      }
+      
+      // Only update if age has actually changed to prevent infinite loops
+      if (formData.age !== age.toString()) {
+        updateFormData({ age: age.toString() })
+      }
+    }
+  }, [formData.birthDate, formData.passingDate])
+
   const handleMainPhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -30,7 +50,6 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
   const canProceed =
     formData.personName &&
     formData.relationship &&
-    formData.age &&
     formData.birthDate &&
     formData.passingDate
 
@@ -38,7 +57,7 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
     <div className="bg-white rounded-2xl p-8 shadow-sm">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">创建纪念页面</h1>
-        <p className="text-gray-600">用永久存在的美丽纪念向逗去的亲人致敬</p>
+        <p className="text-gray-600">用永久存在的美丽纪念向逝去的亲人致敬</p>
       </div>
 
       <div className="space-y-6">
@@ -49,7 +68,7 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
               姓名 <span className="text-red-500">*</span>
             </label>
             <Input
-              placeholder="输入逗者的姓名"
+              placeholder="输入逝者的姓名"
               value={formData.personName}
               onChange={(e) => updateFormData({ personName: e.target.value })}
             />
@@ -76,37 +95,6 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
           </div>
         </div>
 
-        {/* Age, Occupation, Location */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">年龄 <span className="text-red-500">*</span></label>
-            <Input
-              placeholder="输入年龄"
-              value={formData.age}
-              onChange={(e) => updateFormData({ age: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              职业
-            </label>
-            <Input
-              placeholder="输入职业或留空"
-              value={formData.occupation}
-              onChange={(e) => updateFormData({ occupation: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              地点
-            </label>
-            <Input
-              placeholder="输入地点或留空"
-              value={formData.location}
-              onChange={(e) => updateFormData({ location: e.target.value })}
-            />
-          </div>
-        </div>
 
         {/* Birth and Passing Dates */}
         <div className="grid md:grid-cols-2 gap-6">
