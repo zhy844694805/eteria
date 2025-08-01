@@ -5,6 +5,7 @@ export interface User {
   avatar?: string
   role?: 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER_ADMIN' // 用户角色
   preferredSystem?: 'pet' | 'human' // 用户偏好的纪念系统
+  provider?: string // 登录提供者: google, email, etc.
   createdAt: string
   lastLoginAt: string
 }
@@ -17,6 +18,8 @@ export interface AuthContextType {
   logout: () => void
   updatePreferredSystem: (system: 'pet' | 'human') => Promise<void>
   updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => Promise<boolean>
+  loginWithGoogle: () => Promise<void>
+  handleGoogleCallback: (token: string) => Promise<void>
 }
 
 export interface LoginFormData {

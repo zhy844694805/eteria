@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { databaseAuthService } from '@/lib/auth-db'
+import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -46,11 +46,11 @@ interface Memorial {
 }
 
 interface EditMemorialPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default function EditMemorialPage({ params }: EditMemorialPageProps) {
-  const [user, setUser] = useState(databaseAuthService.getCurrentUser())
+  const { user } = useAuth()
   const [memorial, setMemorial] = useState<Memorial | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -63,12 +63,18 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
       router.push('/login')
       return
     }
-    fetchMemorial()
-  }, [user, router, params.id])
+    
+    const loadMemorial = async () => {
+      const resolvedParams = await params
+      fetchMemorial(resolvedParams.id)
+    }
+    
+    loadMemorial()
+  }, [user, router, params])
 
-  const fetchMemorial = async () => {
+  const fetchMemorial = async (id: string) => {
     try {
-      const response = await fetch(`/api/memorials/${params.id}`)
+      const response = await fetch(`/api/memorials/${id}`)
       if (!response.ok) {
         throw new Error('获取纪念页失败')
       }
@@ -121,7 +127,8 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
 
     setSaving(true)
     try {
-      const response = await fetch(`/api/memorials/${params.id}`, {
+      const resolvedParams = await params
+      const response = await fetch(`/api/memorials/${resolvedParams.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

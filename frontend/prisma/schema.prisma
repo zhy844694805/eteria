@@ -18,7 +18,7 @@ model User {
   id                String   @id @default(cuid())
   email             String   @unique
   name              String
-  passwordHash      String
+  passwordHash      String?  // OAuth用户可能没有密码
   avatar            String?
   preferredSystem   PreferredSystem?
   emailVerified     Boolean  @default(false)
@@ -30,6 +30,11 @@ model User {
   isBanned          Boolean  @default(false)
   banReason         String?
   banExpiresAt      DateTime?
+  
+  // OAuth相关字段
+  provider          String?  // 登录提供者: google, email, etc.
+  providerId        String?  // 提供者的用户ID
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   lastLoginAt       DateTime @default(now())
@@ -42,6 +47,7 @@ model User {
   adminLogs         AdminLog[] @relation("AdminLogs")
   contentReviews    ContentReview[] @relation("ContentReviews")
 
+  @@unique([provider, providerId]) // 确保同一提供者的用户ID唯一
   @@map("users")
 }
 

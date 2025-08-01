@@ -72,6 +72,48 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
       const result = await response.json()
 
       if (response.ok) {
+        const memorial = result.memorial
+        
+        // 如果有主照片，上传并保存到数据库
+        if (formData.mainPhoto) {
+          try {
+            // 上传主照片
+            const uploadFormData = new FormData()
+            uploadFormData.append('file', formData.mainPhoto)
+            
+            const uploadResponse = await fetch('/api/upload/image', {
+              method: 'POST',
+              body: uploadFormData
+            })
+            
+            const uploadResult = await uploadResponse.json()
+            
+            if (uploadResponse.ok) {
+              // 保存图片信息到数据库
+              const imageData = {
+                memorialId: memorial.id,
+                url: uploadResult.file.url,
+                filename: uploadResult.file.filename,
+                originalName: uploadResult.file.originalName,
+                mimeType: uploadResult.file.mimeType,
+                size: uploadResult.file.size,
+                isMain: true
+              }
+              
+              await fetch('/api/images', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(imageData)
+              })
+            }
+          } catch (error) {
+            console.error('Upload main photo error:', error)
+            // 图片上传失败不影响纪念页创建成功
+          }
+        }
+        
         setMessage({ type: 'success', text: '纪念页创建成功！正在跳转...' })
         
         // 根据纪念类型跳转到对应的社区页面

@@ -4,18 +4,19 @@ import { z } from 'zod'
 
 const createImageSchema = z.object({
   memorialId: z.string().min(1, '纪念页ID不能为空'),
-  url: z.string().url('图片URL格式不正确'),
+  url: z.string().min(1, '图片URL不能为空'),
   filename: z.string().min(1, '文件名不能为空'),
+  originalName: z.string().min(1, '原始文件名不能为空'),
   mimeType: z.string().min(1, '文件类型不能为空'),
   size: z.number().min(1, '文件大小必须大于0'),
   alt: z.string().max(200, 'Alt文本过长').optional(),
   caption: z.string().max(500, '图片描述过长').optional(),
-  isPrimary: z.boolean().optional().default(false),
+  isMain: z.boolean().optional().default(false),
 })
 
 const querySchema = z.object({
   memorialId: z.string().optional(),
-  isPrimary: z.string().optional(),
+  isMain: z.string().optional(),
   page: z.string().optional(),
   limit: z.string().optional(),
 })
@@ -41,14 +42,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 如果设置为主图片，需要先将其他图片取消主图片状态
-    if (validatedData.isPrimary) {
+    if (validatedData.isMain) {
       await prisma.memorialImage.updateMany({
         where: {
           memorialId: validatedData.memorialId,
-          isPrimary: true
+          isMain: true
         },
         data: {
-          isPrimary: false
+          isMain: false
         }
       })
     }
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         memorial: {
           select: {
             id: true,
-            name: true,
+            title: true,
             type: true,
           }
         }
@@ -111,8 +112,8 @@ export async function GET(request: NextRequest) {
       where.memorialId = queryData.memorialId
     }
     
-    if (queryData.isPrimary) {
-      where.isPrimary = queryData.isPrimary === 'true'
+    if (queryData.isMain) {
+      where.isMain = queryData.isMain === 'true'
     }
 
     // 获取图片列表
@@ -122,14 +123,14 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         orderBy: [
-          { isPrimary: 'desc' },
+          { isMain: 'desc' },
           { createdAt: 'asc' }
         ],
         include: {
           memorial: {
             select: {
               id: true,
-              name: true,
+              title: true,
               type: true,
             }
           }
