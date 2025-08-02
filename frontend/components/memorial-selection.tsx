@@ -10,13 +10,7 @@ export function MemorialSelection() {
   const { user, updatePreferredSystem } = useAuth()
   const router = useRouter()
 
-  // 如果用户已登录且有偏好系统，自动重定向
-  useEffect(() => {
-    if (user?.preferredSystem) {
-      const redirectPath = user.preferredSystem === 'pet' ? '/pet-memorial' : '/human-memorial'
-      router.push(redirectPath)
-    }
-  }, [user, router])
+  // 移除自动重定向逻辑，让用户可以停留在主页选择系统
 
   const handleSystemChoice = (system: 'pet' | 'human') => {
     // 如果用户已登录，保存偏好并重定向
@@ -31,143 +25,110 @@ export function MemorialSelection() {
     }
   }
 
-  // 如果用户已登录且有偏好，不显示选择界面（正在重定向）
-  if (user?.preferredSystem) {
-    return (
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="animate-pulse">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">正在跳转到您的纪念系统...</h2>
-            <p className="text-gray-600">请稍候</p>
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // 移除重定向状态显示，始终显示选择界面
 
   return (
-    <section className="px-4 py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">选择纪念类型</h2>
-          <p className="text-gray-600 text-lg">请选择您想要纪念的对象</p>
-          {user && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-700">
-                欢迎回来，{user.name}！选择纪念类型后，我们会记住您的偏好，下次访问时直接进入对应系统。
-              </p>
+    <section className="max-w-4xl mx-auto px-6 pb-20">
+      <h2 className="text-2xl font-light text-gray-900 text-center mb-12">选择纪念类型</h2>
+
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* 宠物纪念系统 */}
+        <div 
+          className="bg-white rounded-2xl p-8 border border-gray-200 cursor-pointer transition-all hover:shadow-md hover:border-gray-300 group"
+          onClick={() => handleSystemChoice('pet')}
+        >
+          {/* 卡片头部 */}
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-6 h-6 text-white" />
             </div>
-          )}
-        </div>
+            <h3 className="text-2xl font-light text-gray-900 mb-2">爱宠纪念</h3>
+            <p className="text-gray-600 text-sm">PET MEMORIAL</p>
+          </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Pet Memorial */}
-          <button
-            onClick={() => handleSystemChoice('pet')}
-            className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-teal-200 text-left w-full"
-          >
-            <div className="text-center space-y-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                <Heart className="w-12 h-12 text-white" />
-              </div>
-              
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800">纪念宠物</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  为您心爱的宠物伙伴创建专属的纪念页面。上传照片，分享美好回忆，让它们的爱永远陪伴在您身边。
-                </p>
-              </div>
+          {/* 简化描述 */}
+          <p className="text-gray-600 text-sm leading-relaxed text-center mb-6">
+            为您心爱的宠物朋友创建温馨的纪念页面，记录它们带给您的欢乐时光与美好回忆
+          </p>
 
-              <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-teal-600 font-medium group-hover:text-teal-700">
-                  <span>开始创建宠物纪念页</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 text-sm text-gray-500 pt-4 border-t border-gray-100">
-                <div className="flex items-center gap-1">
-                  <span>🐕</span>
-                  <span>狗狗</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>🐱</span>
-                  <span>猫咪</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>🐦</span>
-                  <span>其他宠物</span>
-                </div>
-              </div>
+          {/* 功能亮点 - 极简版 */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">个性化档案</div>
+              <div className="text-xs text-gray-500 mt-1">品种、性格、习惯</div>
             </div>
-          </button>
-
-          {/* Human Memorial */}
-          <button
-            onClick={() => handleSystemChoice('human')}
-            className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-purple-200 text-left w-full"
-          >
-            <div className="text-center space-y-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-12 h-12 text-white" />
-              </div>
-              
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800">纪念亲人</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  为逝去的亲人朋友创建温馨的纪念页面。记录他们的生平故事，分享珍贵时光，让思念化作永恒的纪念。
-                </p>
-              </div>
-
-              <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-purple-600 font-medium group-hover:text-purple-700">
-                  <span>开始创建纪念页面</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 text-sm text-gray-500 pt-4 border-t border-gray-100">
-                <div className="flex items-center gap-1">
-                  <span>👨‍👩‍👧‍👦</span>
-                  <span>家人</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>👥</span>
-                  <span>朋友</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>🤝</span>
-                  <span>同事</span>
-                </div>
-              </div>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">成长时光</div>
+              <div className="text-xs text-gray-500 mt-1">照片、视频、故事</div>
             </div>
-          </button>
-        </div>
-
-        {/* Login prompt for guests */}
-        {!user && (
-          <div className="text-center mt-12 p-6 bg-gradient-to-r from-teal-50 to-purple-50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">想要更好的体验吗？</h3>
-            <p className="text-gray-600 mb-4">
-              登录后我们会记住您的偏好，下次访问时直接进入您选择的纪念系统
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <Link
-                href="/login"
-                className="px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-full transition-colors"
-              >
-                登录
-              </Link>
-              <Link
-                href="/register"
-                className="px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition-colors"
-              >
-                注册
-              </Link>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">社区分享</div>
+              <div className="text-xs text-gray-500 mt-1">宠物主人交流</div>
+            </div>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">永久保存</div>
+              <div className="text-xs text-gray-500 mt-1">云端存储备份</div>
             </div>
           </div>
-        )}
+
+          {/* 行动按钮 */}
+          <div className="text-center">
+            <div className="inline-flex items-center text-gray-600 group-hover:text-gray-900 transition-colors">
+              <span className="text-sm">为爱宠创建纪念</span>
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
+
+        {/* 人员纪念系统 */}
+        <div 
+          className="bg-white rounded-2xl p-8 border border-gray-200 cursor-pointer transition-all hover:shadow-md hover:border-gray-300 group"
+          onClick={() => handleSystemChoice('human')}
+        >
+          {/* 卡片头部 */}
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-light text-gray-900 mb-2">逝者纪念</h3>
+            <p className="text-gray-600 text-sm">HUMAN MEMORIAL</p>
+          </div>
+
+          {/* 简化描述 */}
+          <p className="text-gray-600 text-sm leading-relaxed text-center mb-6">
+            为逝去的亲人朋友创建永恒的纪念空间，分享他们的生平故事与珍贵记忆
+          </p>
+
+          {/* 功能亮点 - 极简版 */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">生平档案</div>
+              <div className="text-xs text-gray-500 mt-1">职业、成就、关系</div>
+            </div>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">珍贵回忆</div>
+              <div className="text-xs text-gray-500 mt-1">照片、信件、录音</div>
+            </div>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">追思留言</div>
+              <div className="text-xs text-gray-500 mt-1">亲友共同缅怀</div>
+            </div>
+            <div className="text-center py-3">
+              <div className="text-sm text-gray-700">传承精神</div>
+              <div className="text-xs text-gray-500 mt-1">家族历史记录</div>
+            </div>
+          </div>
+
+          {/* 行动按钮 */}
+          <div className="text-center">
+            <div className="inline-flex items-center text-gray-600 group-hover:text-gray-900 transition-colors">
+              <span className="text-sm">为逝者创建纪念</span>
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
       </div>
+
     </section>
   )
 }

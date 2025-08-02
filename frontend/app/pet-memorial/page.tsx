@@ -49,181 +49,143 @@ export default function HomePage() {
     fetchRecentMemorials()
   }, [])
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
+      {/* Header - 极简浮动导航 */}
       <Navigation currentPage="pet-memorial" />
 
-      {/* Hero Section */}
-      <section className="px-4 py-12">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-                为您的爱宠创建免费悼念页
-              </h1>
-              <p className="text-xl text-teal-500 font-medium">永恒存在</p>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                为您心爱的宠物创建美丽、持久的纪念。我们可以为您撰写，或者您也可以自己撰写。
-                分享回忆，与他人连接，让它们的精神永远活着。
-              </p>
-            </div>
-
-            <Link href="/create-obituary">
-              <Button className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-3 text-lg rounded-full">
-                <Heart className="w-5 h-5 mr-2" />
-                创建免费宠物悼念页
-              </Button>
-            </Link>
-
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span>永久免费</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>•</span>
-                <span>无需信用卡</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>•</span>
-                <span>与亲人分享</span>
-              </div>
+      {/* Hero Section - 极简大气 */}
+      <main className="pt-32">
+        <section className="max-w-5xl mx-auto text-center px-6 pb-20">
+          <div className="space-y-8">
+            <h1 className="text-5xl font-light text-slate-900 leading-tight">
+              爱宠纪念
+              <span className="block text-2xl font-normal text-slate-500 mt-2">为心爱的宠物创建永恒纪念</span>
+            </h1>
+            
+            <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light">
+              为您心爱的宠物创建美丽、持久的纪念页面<br />
+              分享珍贵回忆，与他人连接，让它们的精神永远陪伴
+            </p>
+            
+            {/* 行动按钮 */}
+            <div className="flex items-center justify-center space-x-4 pt-8">
+              <Link href="/create-obituary">
+                <button className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-base hover:bg-slate-800 transition-colors flex items-center space-x-2">
+                  <Heart className="w-5 h-5" />
+                  <span>开始创建</span>
+                </button>
+              </Link>
+              <Link href="/community-pet-obituaries">
+                <button className="border border-slate-300 text-slate-700 px-10 py-4 rounded-2xl text-base hover:border-slate-400 transition-colors flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>浏览社区</span>
+                </button>
+              </Link>
             </div>
           </div>
+        </section>
 
-          <div className="relative">
-            <div className="relative bg-white rounded-2xl p-4 shadow-lg">
-              <Image
-                src="/placeholder.svg?height=300&width=400"
-                alt="White dog standing indoors"
-                width={400}
-                height={300}
-                className="rounded-xl object-cover w-full"
-              />
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-              <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">如何使用</h2>
-          <p className="text-gray-600 mb-12">不到一分钟就能创建永久的纪念 ⚡</p>
-
+        {/* 功能特点 - 极简网格 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-teal-400 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                </svg>
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Heart className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">我们为您撰写</h3>
-              <p className="text-gray-600">
-                分享您宠物的详细信息和照片 — 我们将为您制作美丽的讴告，或者您也可以自己撰写
-              </p>
+              <h3 className="text-lg font-medium text-slate-900">精心制作</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">为每一位爱宠创建独特而美丽的纪念页面</p>
             </div>
-
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-purple-400 rounded-full flex items-center justify-center mx-auto">
-                <Users className="w-8 h-8 text-white" />
+            
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Users className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">与他人连接</h3>
-              <p className="text-gray-600">接收来自朋友、家人和同好宠物爱好者的支持与安慰</p>
+              <h3 className="text-lg font-medium text-slate-900">共同缅怀</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">与朋友家人一起分享珍贵回忆</p>
             </div>
-
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-pink-400 rounded-full flex items-center justify-center mx-auto">
-                <Heart className="w-8 h-8 text-white" />
+            
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Flame className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">让它们的记忆永存</h3>
-              <p className="text-gray-600">点亮虚拟蜡烛，随时访问它们的纪念页面来缅怀</p>
+              <h3 className="text-lg font-medium text-slate-900">永恒纪念</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">点亮蜡烛，让爱永远传递</p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Statistics Section */}
-      <section className="px-4 py-12">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-teal-500 mb-2">203,847</div>
-            <div className="text-gray-600">宠物悼念页已创建</div>
+        {/* 统计数据 - 极简展示 */}
+        <section className="max-w-4xl mx-auto px-6 py-16 text-center">
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">203,847</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">爱宠纪念</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">1,283,921</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">点亮蜡烛</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">2,456,213</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">爱的留言</div>
+            </div>
           </div>
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-purple-400 mb-2">1,283,921</div>
-            <div className="text-gray-600">蜡烛已点亮</div>
-          </div>
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-pink-400 mb-2">2,456,213</div>
-            <div className="text-gray-600">爱的信息</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Recent Pet Obituaries */}
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">最近的宠物悼念页</h2>
-            <p className="text-gray-600">庆祝生命和珍藏的回忆</p>
+        {/* 最近纪念页 - 极简展示 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl font-light text-slate-800 mb-4">最近的纪念</h2>
+            <p className="text-slate-600">每一个生命都值得被纪念</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             {isLoading ? (
-              // 加载状态
+              // 加载状态 - 极简骨架屏
               [...Array(6)].map((_, index) => (
-                <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-                  <div className="aspect-square bg-gray-200"></div>
-                  <div className="p-4">
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded mb-2 w-3/4"></div>
-                    <div className="h-3 bg-gray-200 rounded mb-3 w-1/2"></div>
-                    <div className="flex gap-4">
-                      <div className="h-3 bg-gray-200 rounded w-12"></div>
-                      <div className="h-3 bg-gray-200 rounded w-12"></div>
+                <div key={index} className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 animate-pulse">
+                  <div className="aspect-square bg-slate-100"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-slate-200 rounded mb-3"></div>
+                    <div className="h-3 bg-slate-200 rounded mb-2 w-3/4"></div>
+                    <div className="flex gap-4 mt-4">
+                      <div className="h-3 bg-slate-200 rounded w-16"></div>
+                      <div className="h-3 bg-slate-200 rounded w-16"></div>
                     </div>
                   </div>
                 </div>
               ))
             ) : recentMemorials.length > 0 ? (
-              // 真实数据
+              // 真实数据 - 极简卡片
               recentMemorials.map((memorial) => (
                 <Link
                   key={memorial.id}
                   href={`/community-pet-obituaries/${memorial.slug}`}
                   className="block"
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="aspect-square bg-gray-200">
+                  <div className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 cursor-pointer">
+                    <div className="aspect-square bg-slate-100">
                       <Image
                         src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
                         alt={memorial.subjectName}
-                        width={200}
-                        height={200}
+                        width={240}
+                        height={240}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-800 mb-1">{memorial.subjectName}</h3>
-                      <p className="text-gray-500 text-sm mb-2">永远在我们心中</p>
-                      <p className="text-gray-600 text-sm mb-3">
+                    <div className="p-6">
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
+                      <p className="text-slate-500 text-sm mb-3">
                         {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
                       </p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-1">
                           <Flame className="w-4 h-4" />
-                          <span>{memorial._count.candles} 蜡烛</span>
+                          <span>{memorial._count.candles}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Heart className="w-4 h-4" />
-                          <span>{memorial._count.messages} 消息</span>
+                          <span>{memorial._count.messages}</span>
                         </div>
                       </div>
                     </div>
@@ -231,13 +193,13 @@ export default function HomePage() {
                 </Link>
               ))
             ) : (
-              // 无数据状态
-              <div className="col-span-3 text-center py-12 text-gray-500">
-                <p className="mb-4">暂无宠物纪念页</p>
+              // 无数据状态 - 极简
+              <div className="col-span-3 text-center py-16 text-slate-500">
+                <p className="mb-6">还没有纪念页面</p>
                 <Link href="/create-obituary">
-                  <Button className="bg-teal-400 hover:bg-teal-500 text-white">
-                    创建第一个纪念页
-                  </Button>
+                  <button className="bg-slate-900 text-white px-8 py-3 rounded-2xl hover:bg-slate-800 transition-colors">
+                    创建第一个纪念
+                  </button>
                 </Link>
               </div>
             )}
@@ -245,53 +207,15 @@ export default function HomePage() {
 
           <div className="text-center">
             <Link href="/community-pet-obituaries">
-              <Button
-                variant="outline"
-                className="border-teal-400 text-teal-600 hover:bg-teal-50 px-8 py-3 rounded-full bg-transparent"
-              >
-                查看所有悼念页
-              </Button>
+              <button className="border border-slate-300 text-slate-700 px-8 py-3 rounded-2xl hover:border-slate-400 transition-colors">
+                查看全部纪念
+              </button>
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section className="px-4 py-16 bg-white/50">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-gray-600 text-lg">
-            在几分钟内创建免费的悼念页，给您心爱的宠物应有的敬意。
-          </p>
-          <Link href="/create-obituary">
-            <Button className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-3 text-lg rounded-full">
-              创建免费宠物悼念页 →
-            </Button>
-          </Link>
-        </div>
-      </section>
+      </main>
 
-      {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Star className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
-              <p className="text-gray-600 text-sm">
-                每只宠物都值得拥有美丽的纪念。您的支持帮助我们为全世界正在悲伤的宠物主人免费提供永念服务。
-              </p>
-            </div>
-          </div>
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-            <Heart className="w-4 h-4 mr-2" />
-            进行捐赠
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
       <Footer />
     </div>
   )

@@ -4,10 +4,12 @@ import { z } from 'zod'
 
 const createMessageSchema = z.object({
   memorialId: z.string().min(1, '纪念页ID不能为空'),
-  authorName: z.string().min(1, '作者姓名不能为空').max(50, '作者姓名过长'),
+  authorName: z.string().min(1, '作者姓名不能为空').max(50, '作者姓名过长').optional(),
   authorEmail: z.string().email('邮箱格式不正确').optional(),
   content: z.string().min(1, '留言内容不能为空').max(1000, '留言过长'),
   userId: z.string().optional(),
+}).refine(data => data.userId || data.authorName, {
+  message: '必须提供用户ID或作者姓名',
 })
 
 const querySchema = z.object({
@@ -45,12 +47,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 如果提供了userId，从数据库获取用户信息
+    let authorName = validatedData.authorName
+    if (validatedData.userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: validatedData.userId },
+        select: { name: true }
+      })
+      if (user) {
+        authorName = user.name
+      }
+    }
+
     // 创建留言
     const message = await prisma.message.create({
       data: {
         memorialId: validatedData.memorialId,
         content: validatedData.content,
-        authorName: validatedData.authorName,
+        authorName: authorName || '匿名访客',
         authorEmail: validatedData.authorEmail,
         userId: validatedData.userId,
         ipAddress: request.headers.get('x-forwarded-for') || 

@@ -106,65 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const loginWithGoogle = async () => {
-    setIsLoading(true)
-    try {
-      // 获取Google OAuth授权URL
-      const response = await fetch('/api/auth/google')
-      const data = await response.json()
-      
-      if (!data.success) {
-        throw new Error('获取Google授权链接失败')
-      }
-      
-      // 重定向到Google授权页面
-      window.location.href = data.authUrl
-    } catch (error) {
-      setIsLoading(false)
-      throw error
-    }
-  }
-
-  const handleGoogleCallback = async (token: string) => {
-    try {
-      // 验证并解析token
-      const response = await fetch('/api/auth/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Token验证失败')
-      }
-
-      const data = await response.json()
-      
-      // 保存用户信息
-      localStorage.setItem('authToken', token)
-      setUser(data.user)
-      
-      // 检查是否有保存的表单数据需要恢复
-      const savedData = sessionStorage.getItem('memorialFormData')
-      const savedStep = sessionStorage.getItem('memorialFormStep')
-      const savedType = sessionStorage.getItem('memorialFormType')
-      
-      if (savedData && savedStep && savedType) {
-        // 有保存的表单数据，跳转回对应的创建页面
-        const redirectPath = savedType === 'pet' ? '/create-obituary' : '/create-person-obituary'
-        router.push(redirectPath)
-      } else {
-        // 没有保存的表单数据，根据用户偏好重定向
-        const redirectPath = databaseAuthService.getPreferredRedirect(data.user)
-        router.push(redirectPath)
-      }
-    } catch (error) {
-      console.error('Google login callback error:', error)
-      throw error
-    }
-  }
 
   const value: AuthContextType = {
     user,
@@ -173,9 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     logout,
     updatePreferredSystem,
-    updateUserInfo,
-    loginWithGoogle,
-    handleGoogleCallback
+    updateUserInfo
   }
 
   return (

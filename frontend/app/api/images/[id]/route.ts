@@ -11,10 +11,10 @@ const updateImageSchema = z.object({
 // 获取单个图片详情
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const image = await prisma.memorialImage.findUnique({
       where: { id },
@@ -53,10 +53,10 @@ export async function GET(
 // 更新图片信息
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     
     // 验证输入数据
@@ -130,10 +130,10 @@ export async function PATCH(
 // 删除图片
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // 检查图片是否存在
     const existingImage = await prisma.memorialImage.findUnique({

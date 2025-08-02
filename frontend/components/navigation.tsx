@@ -31,200 +31,182 @@ export function Navigation({ currentPage }: NavigationProps) {
   const isMainHomepage = pathname === '/'
   
   return (
-    <header className="px-4 py-6 bg-white">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between">
-        {/* Logo - 根据所在系统决定链接目标 */}
+    <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 glass-effect floating-nav rounded-full px-8 py-4 border border-white/20">
+      <nav className="flex items-center justify-between space-x-8">
+        {/* Logo - 极简化设计 */}
         <Link href={
           isPetMemorialSystem ? "/pet-memorial" : 
           isHumanMemorialSystem ? "/human-memorial" : 
           "/"
-        } className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-teal-400 rounded-lg flex items-center justify-center">
+        } className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center">
             <Heart className="w-4 h-4 text-white" />
           </div>
-          <span className="text-xl font-semibold text-gray-800">永念</span>
+          <span className="text-lg font-medium text-slate-800">永念</span>
         </Link>
         
-        {/* 导航菜单 - 根据系统显示不同内容 */}
+        {/* 宠物纪念系统导航 - 极简化样式 */}
         {isPetMemorialSystem && (
-          <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center space-x-6 text-sm">
             <Link
               href="/pet-memorial"
-              className={`hover:text-gray-800 ${currentPage === "pet-memorial" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              首页
+              宠物纪念
             </Link>
             <Link
               href="/create-obituary"
-              className={`hover:text-gray-800 ${currentPage === "create" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              创建悼念页
+              创建
             </Link>
             <Link
               href="/community-pet-obituaries"
-              className={`hover:text-gray-800 ${currentPage === "community" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              社区悼念页
-            </Link>
-            <Link
-              href="/pricing"
-              className={`hover:text-gray-800 ${currentPage === "pricing" ? "text-gray-800 font-medium" : "text-gray-600"}`}
-            >
-              价格
-            </Link>
-            <Link href="/donate">
-              <Button
-                className={`${
-                  currentPage === "donate" ? "bg-pink-600 hover:bg-pink-700" : "bg-pink-500 hover:bg-pink-600"
-                } text-white`}
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                捐赠
-              </Button>
+              社区
             </Link>
             
-            {/* 用户设置或登录注册按钮 */}
+            {/* 用户状态管理 - 始终显示 */}
+            <div className="w-px h-4 bg-slate-300"></div>
+            <Link
+              href="/"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              主页
+            </Link>
             {user ? (
-              <Link
-                href="/settings"
-                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4 flex items-center gap-1"
-              >
-                <Settings className="w-3 h-3" />
-                用户设置
-              </Link>
-            ) : (
-              <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-                <Link
-                  href="/"
-                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
-                >
-                  主页
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 text-xs text-slate-600">
+                  <User className="w-3 h-3" />
+                  <span>{user.name}</span>
+                </div>
+                <Link href="/settings">
+                  <button className="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <Settings className="w-4 h-4 text-slate-600" />
+                  </button>
                 </Link>
+                <button 
+                  onClick={logout}
+                  className="text-slate-500 hover:text-slate-700 transition-colors text-xs"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button variant="outline" size="sm" className="text-xs">
+                  <button className="border border-slate-300 text-slate-700 px-4 py-2 rounded-full text-xs hover:border-slate-400 transition-colors">
                     登录
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm" className="bg-teal-500 hover:bg-teal-600 text-white text-xs">
+                  <button className="bg-slate-800 text-white px-4 py-2 rounded-full text-xs hover:bg-slate-900 transition-colors">
                     注册
-                  </Button>
+                  </button>
                 </Link>
               </div>
             )}
           </div>
         )}
         
-        {/* 逝者纪念系统导航 */}
+        {/* 逝者纪念系统导航 - 极简化样式 */}
         {isHumanMemorialSystem && (
-          <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center space-x-6 text-sm">
             <Link
               href="/human-memorial"
-              className={`hover:text-gray-800 ${currentPage === "human-memorial" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              首页
+              逝者纪念
             </Link>
             <Link
               href="/create-person-obituary"
-              className={`hover:text-gray-800 ${currentPage === "create" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              创建纪念页
+              创建
             </Link>
             <Link
               href="/community-person-obituaries"
-              className={`hover:text-gray-800 ${currentPage === "community" ? "text-gray-800 font-medium" : "text-gray-600"}`}
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
-              社区纪念页
-            </Link>
-            <Link
-              href="/pricing"
-              className={`hover:text-gray-800 ${currentPage === "pricing" ? "text-gray-800 font-medium" : "text-gray-600"}`}
-            >
-              价格
-            </Link>
-            <Link href="/donate">
-              <Button
-                className={`${
-                  currentPage === "donate" ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-500 hover:bg-purple-600"
-                } text-white`}
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                捐赠
-              </Button>
+              社区
             </Link>
             
-            {/* 用户设置或登录注册按钮 */}
+            {/* 用户状态管理 - 始终显示 */}
+            <div className="w-px h-4 bg-slate-300"></div>
+            <Link
+              href="/"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              主页
+            </Link>
             {user ? (
-              <Link
-                href="/settings"
-                className="text-gray-500 hover:text-gray-700 text-sm border-l border-gray-300 pl-4 flex items-center gap-1"
-              >
-                <Settings className="w-3 h-3" />
-                用户设置
-              </Link>
-            ) : (
-              <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-                <Link
-                  href="/"
-                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
-                >
-                  主页
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 text-xs text-slate-600">
+                  <User className="w-3 h-3" />
+                  <span>{user.name}</span>
+                </div>
+                <Link href="/settings">
+                  <button className="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <Settings className="w-4 h-4 text-slate-600" />
+                  </button>
                 </Link>
+                <button 
+                  onClick={logout}
+                  className="text-slate-500 hover:text-slate-700 transition-colors text-xs"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button variant="outline" size="sm" className="text-xs">
+                  <button className="border border-slate-300 text-slate-700 px-4 py-2 rounded-full text-xs hover:border-slate-400 transition-colors">
                     登录
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white text-xs">
+                  <button className="bg-slate-800 text-white px-4 py-2 rounded-full text-xs hover:bg-slate-900 transition-colors">
                     注册
-                  </Button>
+                  </button>
                 </Link>
               </div>
             )}
           </div>
         )}
         
-        {/* 总首页或认证页面显示用户状态 */}
+        {/* 总首页显示用户状态 - 极简风格 */}
         {(isMainHomepage || pathname.startsWith('/login') || pathname.startsWith('/register')) && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <User className="w-4 h-4" />
-                  <span>欢迎，{user.name}</span>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 text-xs text-slate-600">
+                  <User className="w-3 h-3" />
+                  <span>{user.name}</span>
                 </div>
                 <Link href="/settings">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-gray-600 hover:text-gray-800"
-                  >
-                    <Settings className="w-4 h-4 mr-1" />
-                    用户设置
-                  </Button>
+                  <button className="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <Settings className="w-4 h-4 text-slate-600" />
+                  </button>
                 </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button 
                   onClick={logout}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-slate-500 hover:text-slate-700 transition-colors text-xs"
                 >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  退出
-                </Button>
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button variant="outline" size="sm">
+                  <button className="border border-slate-300 text-slate-700 px-4 py-2 rounded-full text-xs hover:border-slate-400 transition-colors">
                     登录
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm" className="bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600 text-white">
+                  <button className="bg-slate-800 text-white px-4 py-2 rounded-full text-xs hover:bg-slate-900 transition-colors">
                     注册
-                  </Button>
+                  </button>
                 </Link>
               </div>
             )}

@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma'
 // 通过slug获取纪念页详情
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
 
     const memorial = await prisma.memorial.findUnique({
       where: { 

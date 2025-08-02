@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>永念 | EternalMemory - 极简纪念设计</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-effect { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.1); }
+        .floating-nav { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); }
+        .memorial-card { transition: all 0.3s ease; }
+        .memorial-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-stone-50 min-h-screen">
+    
+    <!-- 极简浮动导航栏 -->
+    <nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 glass-effect floating-nav rounded-full px-8 py-4 border border-white/20">
+        <div class="flex items-center justify-between space-x-8">
+            <!-- Logo 极简化 -->
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center">
+                    <i data-lucide="heart" class="w-4 h-4 text-white"></i>
+                </div>
+                <span class="text-lg font-medium text-slate-800">永念</span>
+            </div>
+            
+            <!-- 导航菜单 - 极简化 -->
+            <div class="flex items-center space-x-6 text-sm">
+                <a href="#" class="text-slate-600 hover:text-slate-900 transition-colors">首页</a>
+                <a href="#" class="text-slate-600 hover:text-slate-900 transition-colors">创建</a>
+                <a href="#" class="text-slate-600 hover:text-slate-900 transition-colors">社区</a>
+                <div class="w-px h-4 bg-slate-300"></div>
+                <button class="bg-slate-800 text-white px-4 py-2 rounded-full text-xs hover:bg-slate-900 transition-colors">
+                    登录
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="pt-32">
+        
+        <!-- Hero 区域 - 极简大气 -->
+        <section class="max-w-4xl mx-auto text-center px-6 pb-20">
+            <div class="space-y-8">
+                <h1 class="text-6xl font-light text-slate-900 leading-tight">
+                    永念
+                    <span class="block text-3xl font-normal text-slate-500 mt-2">让爱永恒存在</span>
+                </h1>
+                
+                <p class="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-light">
+                    为您心爱的人或宠物创建美丽、持久的纪念页面<br>
+                    分享回忆，与他人连接，让他们的精神永远活着
+                </p>
+                
+                <!-- 行动按钮 -->
+                <div class="flex items-center justify-center space-x-4 pt-8">
+                    <button class="bg-slate-900 text-white px-8 py-4 rounded-2xl text-base hover:bg-slate-800 transition-colors flex items-center space-x-2">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>开始创建</span>
+                    </button>
+                    <button class="border border-slate-300 text-slate-700 px-8 py-4 rounded-2xl text-base hover:border-slate-400 transition-colors flex items-center space-x-2">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                        <span>浏览社区</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 纪念类型选择 - 极简卡片设计 -->
+        <section class="max-w-6xl mx-auto px-6 pb-20">
+            <h2 class="text-2xl font-light text-slate-800 text-center mb-12">选择纪念类型</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 宠物纪念 -->
+                <div class="memorial-card bg-white rounded-3xl p-8 border border-slate-200 cursor-pointer">
+                    <div class="flex items-start space-x-6">
+                        <div class="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="heart" class="w-8 h-8 text-teal-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-medium text-slate-900 mb-3">爱宠纪念</h3>
+                            <p class="text-slate-600 leading-relaxed mb-6">
+                                为您心爱的宠物朋友创建温馨的纪念页面，记录它们带给您的欢乐时光与美好回忆
+                            </p>
+                            <div class="flex items-center text-teal-600 text-sm font-medium">
+                                <span>立即创建</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 逝者纪念 -->
+                <div class="memorial-card bg-white rounded-3xl p-8 border border-slate-200 cursor-pointer">
+                    <div class="flex items-start space-x-6">
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="star" class="w-8 h-8 text-purple-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-medium text-slate-900 mb-3">逝者纪念</h3>
+                            <p class="text-slate-600 leading-relaxed mb-6">
+                                为逝去的亲人朋友创建永恒的纪念空间，分享他们的生平故事与珍贵记忆
+                            </p>
+                            <div class="flex items-center text-purple-600 text-sm font-medium">
+                                <span>立即创建</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特点 - 极简网格 -->
+        <section class="max-w-6xl mx-auto px-6 pb-20">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                        <i data-lucide="zap" class="w-6 h-6 text-slate-600"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900">简单快速</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">三步完成创建，无需复杂操作</p>
+                </div>
+                
+                <div class="text-center space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                        <i data-lucide="shield" class="w-6 h-6 text-slate-600"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900">永久免费</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">永远免费使用，无任何隐藏费用</p>
+                </div>
+                
+                <div class="text-center space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                        <i data-lucide="users" class="w-6 h-6 text-slate-600"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900">共同纪念</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">与家人朋友一起分享美好回忆</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计数据 - 极简展示 -->
+        <section class="max-w-4xl mx-auto px-6 py-16 text-center">
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="space-y-2">
+                    <div class="text-4xl font-light text-slate-900">203,847</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">纪念页面</div>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-4xl font-light text-slate-900">1,283,921</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">点亮蜡烛</div>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-4xl font-light text-slate-900">2,456,213</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">爱的信息</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 极简页脚 -->
+    <footer class="border-t border-slate-200 py-12">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p class="text-slate-500 text-sm">© 2024 永念 | EternalMemory. 让爱永恒存在.</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

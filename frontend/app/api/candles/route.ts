@@ -45,6 +45,44 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 检查今日是否已经点过蜡烛
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const clientIP = request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown'
+
+    // 构建查询条件 - 检查同一用户或同一IP是否今天已点过蜡烛
+    const existingCandleWhere: any = {
+      memorialId: validatedData.memorialId,
+      createdAt: {
+        gte: today,
+        lt: tomorrow
+      }
+    }
+
+    if (validatedData.userId) {
+      // 已登录用户：检查用户ID
+      existingCandleWhere.userId = validatedData.userId
+    } else {
+      // 未登录用户：检查IP地址
+      existingCandleWhere.ipAddress = clientIP
+    }
+
+    const existingCandle = await prisma.candle.findFirst({
+      where: existingCandleWhere
+    })
+
+    if (existingCandle) {
+      return NextResponse.json(
+        { error: '您今天已为此纪念页点过蜡烛了，明天再来点亮思念吧' },
+        { status: 429 }
+      )
+    }
+
     // 创建蜡烛记录
     const candle = await prisma.candle.create({
       data: {
@@ -53,9 +91,7 @@ export async function POST(request: NextRequest) {
         email: validatedData.email,
         message: validatedData.message,
         userId: validatedData.userId,
-        ipAddress: request.headers.get('x-forwarded-for') || 
-                   request.headers.get('x-real-ip') || 
-                   'unknown'
+        ipAddress: clientIP
       },
       include: {
         user: {

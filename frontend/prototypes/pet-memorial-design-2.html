@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物纪念详情 - 方案2：居中卡片式</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
+    <!-- 导航栏占位 -->
+    <div class="h-20 bg-white/70 backdrop-blur-sm border-b border-slate-200"></div>
+
+    <!-- 主内容区 -->
+    <main class="max-w-5xl mx-auto px-6 py-12">
+        <!-- 居中的主要信息卡片 -->
+        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden mb-8">
+            <!-- 头部横幅 -->
+            <div class="bg-gradient-to-r from-teal-500 to-emerald-500 h-32 relative">
+                <div class="absolute inset-0 bg-black/10"></div>
+            </div>
+
+            <!-- 头像和基本信息 -->
+            <div class="px-10 pb-10 -mt-16 relative">
+                <div class="flex flex-col md:flex-row md:items-end md:space-x-8">
+                    <!-- 头像 -->
+                    <div class="w-32 h-32 bg-white rounded-3xl border-4 border-white shadow-xl flex items-center justify-center mb-6 md:mb-0 mx-auto md:mx-0">
+                        <div class="text-4xl">🐕</div>
+                    </div>
+
+                    <!-- 基本信息 -->
+                    <div class="text-center md:text-left flex-1">
+                        <h1 class="text-4xl font-light text-slate-900 mb-3">多多妈咪</h1>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-6 text-slate-600 mb-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
+                                <span>金毛犬 • 女孩 • 12岁</span>
+                            </div>
+                        </div>
+                        <div class="text-slate-500">
+                            <span class="text-lg font-light">2012.03.15 - 2024.07.20</span>
+                            <span class="mx-3">•</span>
+                            <span>陪伴了我们 12 年 4 个月</span>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="flex space-x-3 mt-6 md:mt-0 justify-center md:justify-end">
+                        <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-2xl transition-colors flex items-center space-x-2">
+                            <span>🕯️</span>
+                            <span>点亮蜡烛</span>
+                        </button>
+                        <button class="border border-slate-300 text-slate-700 px-6 py-3 rounded-2xl hover:border-slate-400 transition-colors flex items-center space-x-2">
+                            <span>💝</span>
+                            <span>留言</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容网格 -->
+        <div class="grid lg:grid-cols-12 gap-8">
+            <!-- 主要内容区域 -->
+            <div class="lg:col-span-8 space-y-8">
+                <!-- 生平故事 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-8 h-8 bg-teal-100 rounded-2xl flex items-center justify-center">
+                            <span class="text-teal-600">📖</span>
+                        </div>
+                        <h2 class="text-2xl font-light text-slate-900">多多的故事</h2>
+                    </div>
+                    <div class="prose prose-slate max-w-none">
+                        <p class="text-slate-600 leading-relaxed mb-4">
+                            多多妈咪是我们家的开心果，她总是用她温暖的笑容迎接每一个新的早晨。作为一只金毛犬，她不仅拥有美丽的金色毛发，更有着一颗善良的心。
+                        </p>
+                        <p class="text-slate-600 leading-relaxed mb-4">
+                            她最喜欢的事情就是在公园里奔跑，追逐飞舞的蝴蝶，那时候的她是最快乐的。每当我下班回家，她总是第一个冲到门口迎接我，摇着尾巴，仿佛在说"欢迎回家"。
+                        </p>
+                        <p class="text-slate-600 leading-relaxed">
+                            虽然你已经离开了我们，但是你带给我们的快乐和回忆将永远陪伴着我们。多多妈咪，谢谢你让我们的生活如此美好。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 回忆相册 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-teal-100 rounded-2xl flex items-center justify-center">
+                                <span class="text-teal-600">📷</span>
+                            </div>
+                            <h2 class="text-2xl font-light text-slate-900">回忆相册</h2>
+                        </div>
+                        <span class="text-sm text-slate-500">6 张照片</span>
+                    </div>
+                    
+                    <!-- 大图展示 -->
+                    <div class="mb-6">
+                        <div class="aspect-video bg-gradient-to-br from-teal-100 to-teal-200 rounded-2xl flex items-center justify-center">
+                            <span class="text-4xl">📸</span>
+                        </div>
+                    </div>
+
+                    <!-- 缩略图 -->
+                    <div class="grid grid-cols-6 gap-3">
+                        <div class="aspect-square bg-gradient-to-br from-teal-100 to-teal-200 rounded-xl flex items-center justify-center cursor-pointer border-2 border-teal-300">
+                            <span class="text-sm">📸</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center cursor-pointer">
+                            <span class="text-sm">📸</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center cursor-pointer">
+                            <span class="text-sm">📸</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center cursor-pointer">
+                            <span class="text-sm">📸</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center cursor-pointer">
+                            <span class="text-sm">📸</span>
+                        </div>
+                        <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center cursor-pointer">
+                            <span class="text-sm">📸</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧信息栏 -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- 纪念数据 -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200">
+                    <h3 class="text-lg font-medium text-slate-900 mb-4">纪念数据</h3>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-light text-teal-600">234</div>
+                            <div class="text-xs text-slate-500">蜡烛</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-light text-teal-600">18</div>
+                            <div class="text-xs text-slate-500">留言</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-light text-teal-600">1.2K</div>
+                            <div class="text-xs text-slate-500">访问</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创建者信息 -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200">
+                    <h3 class="text-lg font-medium text-slate-900 mb-4">纪念者</h3>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <span class="text-lg">👤</span>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-900">爱心主人</div>
+                            <div class="text-sm text-slate-500 mb-2">多多的爸爸</div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                多多是我们家的小天使，她的离开让我们很难过，但她带给我们的快乐会永远留在心中。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 相关信息 */
+                <div class="bg-white rounded-3xl p-6 border border-slate-200">
+                    <h3 class="text-lg font-medium text-slate-900 mb-4">详细信息</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">品种</span>
+                            <span class="text-slate-900">金毛犬</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">性别</span>
+                            <span class="text-slate-900">女孩</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">颜色</span>
+                            <span class="text-slate-900">金色</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">性格</span>
+                            <span class="text-slate-900">温顺活泼</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">创建时间</span>
+                            <span class="text-slate-900">2024.07.25</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 留言区域 -->
+        <div class="bg-white rounded-3xl p-8 border border-slate-200 mt-8">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-teal-100 rounded-2xl flex items-center justify-center">
+                        <span class="text-teal-600">💝</span>
+                    </div>
+                    <h2 class="text-2xl font-light text-slate-900">留言缅怀</h2>
+                </div>
+                <span class="text-sm text-slate-500">18 条留言</span>
+            </div>
+
+            <!-- 留言输入框 -->
+            <div class="bg-slate-50 rounded-2xl p-4 mb-6">
+                <textarea 
+                    placeholder="写下对多多的思念..."
+                    class="w-full bg-transparent border-none resize-none focus:outline-none placeholder-slate-400 text-slate-700"
+                    rows="3"
+                ></textarea>
+                <div class="flex justify-end mt-3">
+                    <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-xl transition-colors text-sm">
+                        发表留言
+                    </button>
+                </div>
+            </div>
+
+            <!-- 留言列表 -->
+            <div class="space-y-6">
+                <div class="flex space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <span class="text-sm">👤</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="font-medium text-slate-900">朋友A</span>
+                            <span class="text-xs text-slate-500">2天前</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed">多多真的是一只很可爱的狗狗，她的离开让人很难过，但是她留下的美好回忆会永远陪伴着大家。</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <span class="text-sm">👤</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="font-medium text-slate-900">邻居</span>
+                            <span class="text-xs text-slate-500">5天前</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed">记得多多每天散步的时候总是很开心，她是一只很特别的狗狗。愿她在天堂快乐。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

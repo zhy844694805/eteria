@@ -3,18 +3,21 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, Download, Copy, Mail } from "lucide-react"
+import { Heart, Flame, Download, Copy, Mail, MessageCircleHeart, Share2, Sparkles, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
+import { calculateMemorialStatus, getStatusColorClass, getActivityDescription } from "@/lib/memorial-status"
 
 interface Memorial {
   id: string
   title: string
   slug: string
   type: 'PET' | 'HUMAN'
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED'
   subjectName: string
   subjectType?: string
   birthDate?: string
@@ -37,6 +40,7 @@ interface Memorial {
   likeCount: number
   isPublic: boolean
   createdAt: string
+  updatedAt: string
   publishedAt?: string
   author: {
     id: string
@@ -68,10 +72,42 @@ interface Memorial {
 
 export default function PetMemorialPage() {
   const params = useParams()
+  const { user } = useAuth()
   const [message, setMessage] = useState("")
   const [memorial, setMemorial] = useState<Memorial | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [canLightCandle, setCanLightCandle] = useState(true)
+
+  // 检查今日是否可以点蜡烛
+  const checkCandleStatus = async (memorialId: string) => {
+    try {
+      const requestBody: any = {
+        memorialId: memorialId
+      }
+
+      if (user) {
+        requestBody.userId = user.id
+      }
+
+      const response = await fetch('/api/candles/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setCanLightCandle(data.canLight)
+      }
+    } catch (error) {
+      console.error('检查点蜡烛状态失败:', error)
+      // 出错时默认允许点蜡烛
+      setCanLightCandle(true)
+    }
+  }
 
   // 获取纪念页数据
   const fetchMemorial = async () => {
@@ -101,6 +137,9 @@ export default function PetMemorialPage() {
       }
 
       setMemorial(data.memorial)
+      
+      // 获取纪念页后检查点蜡烛状态
+      await checkCandleStatus(data.memorial.id)
     } catch (error) {
       console.error('获取纪念页失败:', error)
       setError('获取纪念页失败，请稍后重试')
@@ -113,33 +152,58 @@ export default function PetMemorialPage() {
     fetchMemorial()
   }, [params.slug])
 
+  // 用户状态变化时重新检查点蜡烛状态
+  useEffect(() => {
+    if (memorial) {
+      checkCandleStatus(memorial.id)
+    }
+  }, [user])
+
   // 点燃蜡烛
   const handleLightCandle = async () => {
     if (!memorial) return
 
     try {
+      const requestBody: any = {
+        memorialId: memorial.id,
+        message: ''
+      }
+
+      // 如果用户已登录，使用用户信息；否则使用匿名
+      if (user) {
+        requestBody.userId = user.id
+        requestBody.lightedBy = user.name
+      } else {
+        requestBody.lightedBy = '匿名访客'
+      }
+
       const response = await fetch(`/api/candles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          memorialId: memorial.id,
-          lightedBy: '匿名',
-          message: ''
-        })
+        body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {
-        throw new Error('点燃蜡烛失败')
+        const errorData = await response.json()
+        // 对于429状态码（限制错误），显示警告而不是错误
+        if (response.status === 429) {
+          toast.warning(errorData.error || '今天已经点过蜡烛了')
+          setCanLightCandle(false)
+          return
+        }
+        throw new Error(errorData.error || '点燃蜡烛失败')
       }
 
       // 重新获取数据以更新蜡烛数量
       fetchMemorial()
-      toast.success('蜡烛已点燃')
-    } catch (error) {
+      // 成功点蜡烛后，设置为今日不可再点
+      setCanLightCandle(false)
+      toast.success('思念之火已点亮')
+    } catch (error: any) {
       console.error('点燃蜡烛失败:', error)
-      toast.error('点燃蜡烛失败')
+      toast.error(error.message || '点燃蜡烛失败')
     }
   }
 
@@ -148,16 +212,25 @@ export default function PetMemorialPage() {
     if (!memorial || !message.trim()) return
 
     try {
+      const requestBody: any = {
+        memorialId: memorial.id,
+        content: message.trim(),
+      }
+
+      // 如果用户已登录，使用用户ID；否则使用匿名访客名称
+      if (user) {
+        requestBody.userId = user.id
+      } else {
+        requestBody.authorName = '匿名访客'
+      }
+
       const response = await fetch(`/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(user && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
         },
-        body: JSON.stringify({
-          memorialId: memorial.id,
-          content: message.trim(),
-          authorName: '匿名访客'
-        })
+        body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {
@@ -175,10 +248,10 @@ export default function PetMemorialPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-400 mx-auto mb-4"></div>
-          <p className="text-gray-600">加载中...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto mb-4"></div>
+          <p className="text-slate-600 font-light">加载中...</p>
         </div>
       </div>
     )
@@ -186,10 +259,15 @@ export default function PetMemorialPage() {
 
   if (error || !memorial) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">{error || '纪念页不存在'}</p>
-          <Button onClick={() => window.history.back()}>返回</Button>
+          <p className="text-slate-600 mb-6 font-light">{error || '纪念页不存在'}</p>
+          <button 
+            onClick={() => window.history.back()}
+            className="bg-slate-900 text-white px-6 py-3 rounded-2xl hover:bg-slate-800 transition-colors"
+          >
+            返回
+          </button>
         </div>
       </div>
     )
@@ -385,281 +463,398 @@ export default function PetMemorialPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50">
+      <style jsx global>{`
+        /* 信息层级系统 */
+        .info-primary { font-size: 1.125rem; font-weight: 400; }
+        .info-secondary { font-size: 0.9rem; font-weight: 300; }
+        .info-tertiary { font-size: 0.8rem; font-weight: 300; }
+        
+        /* 渐进式披露 */
+        .progressive-disclosure {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .expandable-content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+        }
+        
+        .expandable-content.expanded {
+          max-height: 1000px;
+        }
+        
+        /* 微妙交互 */
+        .subtle-hover {
+          transition: all 0.2s ease;
+        }
+        
+        .subtle-hover:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 阅读优化 */
+        .reading-width {
+          max-width: 65ch;
+        }
+        
+        /* 信息卡片系统 */
+        .info-card {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          backdrop-filter: blur(20px);
+        }
+        
+        /* 状态指示器 */
+        .status-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+        }
+        
+        /* 快速操作按钮 */
+        .quick-action {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          z-index: 50;
+        }
+        
+        /* 响应式信息网格 */
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+          .info-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       <Navigation currentPage="community" />
 
-      {/* Main Content */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Pet Photo and Details */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-6">
-              <div className="aspect-square">
+      {/* 主要信息区域 */}
+      <main className="max-w-6xl mx-auto px-4 py-8 pt-32">
+        {/* 核心信息卡片 */}
+        <section className="info-card rounded-xl p-8 mb-8 subtle-hover">
+          <div className="grid md:grid-cols-3 gap-8 items-center">
+            {/* 头像区域 */}
+            <div className="text-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl mx-auto mb-4 overflow-hidden">
                 <Image
                   src={getMainImage()}
                   alt={memorial.subjectName}
-                  width={400}
-                  height={400}
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
                 />
               </div>
+              <div className={`status-indicator ${getStatusColorClass(calculateMemorialStatus(memorial).color)} mr-2`}></div>
+              <span className="info-tertiary text-gray-500">{calculateMemorialStatus(memorial).description}</span>
             </div>
-
-            {/* Pet Details Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{memorial.subjectName}</h2>
-              <div className="text-gray-600 mb-4">
-                {formatDate(memorial.birthDate)} - {formatDate(memorial.deathDate)}
-              </div>
-
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">年龄</span>
-                  <span className="text-gray-800">{getDisplayAge()}</span>
+            
+            {/* 基本信息 */}
+            <div className="md:col-span-2">
+              <h1 className="text-3xl font-light text-gray-900 mb-4">{memorial.subjectName}</h1>
+              
+              <div className="info-grid mb-6">
+                <div>
+                  <div className="info-tertiary text-gray-500 mb-1">品种</div>
+                  <div className="info-secondary text-gray-800">{translateBreed(memorial.breed)}</div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">类型</span>
-                  <span className="text-gray-800">{translatePetType(memorial.subjectType)}</span>
+                <div>
+                  <div className="info-tertiary text-gray-500 mb-1">性别</div>
+                  <div className="info-secondary text-gray-800">{memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'}</div>
                 </div>
-                {memorial.breed && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">品种</span>
-                    <span className="text-gray-800">{translateBreed(memorial.breed)}</span>
+                <div>
+                  <div className="info-tertiary text-gray-500 mb-1">陪伴时间</div>
+                  <div className="info-secondary text-gray-800">{getDisplayAge()}</div>
+                </div>
+                <div>
+                  <div className="info-tertiary text-gray-500 mb-1">纪念状态</div>
+                  <div className="info-secondary text-gray-800 flex items-center">
+                    <div className={`status-indicator ${getStatusColorClass(calculateMemorialStatus(memorial).color)} mr-2`}></div>
+                    {calculateMemorialStatus(memorial).label}
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-500">颜色</span>
-                  <span className="text-gray-800">{translateColor(memorial.color)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">性别</span>
-                  <span className="text-gray-800">{memorial.gender === 'male' ? '雄性' : memorial.gender === 'female' ? '雌性' : '未知'}</span>
                 </div>
               </div>
-            </div>
-
-            {/* Candle Lighting */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 text-center">
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Flame className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-800 mb-1">{memorial.candleCount}</div>
-              <div className="text-gray-600 text-sm mb-4">为 {memorial.subjectName} 祈祷的蜡烛</div>
-              <Button
-                onClick={handleLightCandle}
-                className="w-full bg-teal-400 hover:bg-teal-500 text-white rounded-full"
-              >
-                点燃蜡烛
-              </Button>
-            </div>
-
-            {/* Download Obituary */}
-            <Button
-              variant="outline"
-              className="w-full mb-6 border-teal-400 text-teal-600 hover:bg-teal-50 rounded-full bg-transparent"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              下载纪念文档
-            </Button>
-
-            {/* Partnership */}
-            <div className="bg-gray-50 rounded-2xl p-6 text-center">
-              <div className="text-sm text-gray-600 mb-2">合作伙伴</div>
-              <div className="font-semibold text-gray-800 mb-1">Crystal Soucy, 宠物失落悲伤</div>
-              <div className="font-semibold text-gray-800 mb-2">指导师/认证悲伤教育者</div>
-              <div className="text-xs text-gray-500">
-                网站:{" "}
-                <a href="#" className="text-teal-600 hover:underline">
-                  www.crystalsoucy.com
-                </a>
+              
+              {/* 关键统计 */}
+              <div className="flex items-center space-x-8">
+                <div className="text-center">
+                  <div className="text-2xl font-light text-gray-900">{memorial.candleCount}</div>
+                  <div className="info-tertiary text-gray-500">蜡烛</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-light text-gray-900">{memorial.messageCount}</div>
+                  <div className="info-tertiary text-gray-500">留言</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-light text-gray-900">{memorial.viewCount}</div>
+                  <div className="info-tertiary text-gray-500">访问</div>
+                </div>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Right Column - Obituary and Content */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl p-8 shadow-sm">
-              <h1 className="text-3xl font-bold text-gray-800 mb-6">纪念 {memorial.subjectName}</h1>
+        {/* 详细信息区域 */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* 主要内容 */}
+          <div className="lg:col-span-2 space-y-8">
 
-              {/* 生平故事 */}
-              {memorial.story && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">生平故事</h3>
-                  <div className="prose prose-gray max-w-none">
-                    {memorial.story.split("\n\n").map((paragraph, index) => (
-                      <p key={index} className="text-gray-600 leading-relaxed mb-4">
-                        {paragraph}
-                      </p>
-                    ))}
+            {/* 生平概要 */}
+            <section className="info-card rounded-xl p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-light text-gray-900">生平概要</h2>
+                <button className="info-tertiary text-cyan-600 hover:text-cyan-700 transition-colors" onClick={() => {
+                  const element = document.getElementById('bio-details');
+                  element?.classList.toggle('expanded');
+                }}>
+                  展开详情
+                </button>
+              </div>
+              
+              <div className="reading-width space-y-4">
+                {memorial.story && (
+                  <p className="info-primary text-gray-700">
+                    {memorial.story.split('\n\n')[0]}
+                  </p>
+                )}
+                
+                <div id="bio-details" className="expandable-content">
+                  {memorial.story && memorial.story.split('\n\n').slice(1).map((paragraph, index) => (
+                    <p key={index} className="info-secondary text-gray-600 mb-4">
+                      {paragraph}
+                    </p>
+                  ))}
+                  {memorial.memories && (
+                    <p className="info-secondary text-gray-600 mb-4">
+                      {memorial.memories}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            
+            {/* 照片集锦 */}
+            {memorial.images.length > 0 && (
+              <section className="info-card rounded-xl p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-light text-gray-900">照片集锦</h2>
+                  <div className="flex items-center space-x-2">
+                    <span className="info-tertiary text-gray-500">{memorial.images.length}张照片</span>
+                    <button className="info-tertiary text-cyan-600 hover:text-cyan-700 transition-colors">
+                      查看全部
+                    </button>
                   </div>
                 </div>
-              )}
-
-              {/* 美好回忆 */}
-              {memorial.memories && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">美好回忆</h3>
-                  <div className="prose prose-gray max-w-none">
-                    {memorial.memories.split("\n\n").map((paragraph, index) => (
-                      <p key={index} className="text-gray-600 leading-relaxed mb-4">
-                        {paragraph}
-                      </p>
-                    ))}
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {memorial.images.slice(0, 4).map((image, index) => (
+                    <div key={image.id} className="aspect-square bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl overflow-hidden subtle-hover cursor-pointer">
+                      <Image
+                        src={image.url || "/placeholder.svg"}
+                        alt={`${memorial.subjectName}的回忆`}
+                        width={150}
+                        height={150}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+          
+          {/* 侧边信息栏 */}
+          <div className="space-y-6">
+            {/* 表达思念 */}
+            <section className="info-card rounded-xl p-6">
+              <h3 className="text-lg font-light text-gray-900 mb-4">表达思念</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={handleLightCandle}
+                  disabled={!canLightCandle}
+                  className={`w-full py-3 rounded-xl info-secondary transition-colors flex items-center justify-center space-x-2 ${
+                    canLightCandle 
+                      ? 'bg-gray-900 hover:bg-gray-800 text-white' 
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <Flame className="w-4 h-4" />
+                  <span>{canLightCandle ? '点亮思念之火' : '今日已点亮'}</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    const messageSection = document.getElementById('message-section');
+                    messageSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full border border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 py-3 rounded-xl info-secondary transition-colors flex items-center justify-center space-x-2"
+                >
+                  <MessageCircleHeart className="w-4 h-4" />
+                  <span>写下思念</span>
+                </button>
+                <button 
+                  onClick={handleCopyLink}
+                  className="w-full border border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 py-3 rounded-xl info-secondary transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>传递爱与美好</span>
+                </button>
+              </div>
+            </section>
+            
+            {/* 详细属性 */}
+            <section className="info-card rounded-xl p-6">
+              <h3 className="text-lg font-light text-gray-900 mb-4">详细信息</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="info-tertiary text-gray-500">出生日期</span>
+                  <span className="info-secondary text-gray-800">{formatDate(memorial.birthDate)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="info-tertiary text-gray-500">离别日期</span>
+                  <span className="info-secondary text-gray-800">{formatDate(memorial.deathDate)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="info-tertiary text-gray-500">毛色</span>
+                  <span className="info-secondary text-gray-800">{translateColor(memorial.color)}</span>
+                </div>
+                {memorial.personalityTraits && (
+                  <div className="flex justify-between items-center">
+                    <span className="info-tertiary text-gray-500">性格</span>
+                    <span className="info-secondary text-gray-800">{memorial.personalityTraits.substring(0, 10)}...</span>
                   </div>
-                </div>
-              )}
-
-              {/* 性格特点 */}
-              {memorial.personalityTraits && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">性格特点</h3>
-                  <p className="text-gray-600 leading-relaxed">{memorial.personalityTraits}</p>
-                </div>
-              )}
-
-              {/* 喜好 */}
-              {memorial.favoriteThings && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">喜好</h3>
-                  <p className="text-gray-600 leading-relaxed">{memorial.favoriteThings}</p>
-                </div>
-              )}
-
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-purple-600 font-semibold text-sm">
+                )}
+                {memorial.favoriteThings && (
+                  <div className="flex justify-between items-center">
+                    <span className="info-tertiary text-gray-500">最爱</span>
+                    <span className="info-secondary text-gray-800">{memorial.favoriteThings.substring(0, 10)}...</span>
+                  </div>
+                )}
+              </div>
+            </section>
+            
+            {/* 创建者信息 */}
+            <section className="info-card rounded-xl p-6">
+              <h3 className="text-lg font-light text-gray-900 mb-4 flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-600" />
+                创建者
+              </h3>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-700">
                     {memorial.author.name.substring(0, 2).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <div className="font-medium text-gray-800">作者 {memorial.author.name}</div>
-                  <div className="text-sm text-gray-500">{formatDate(memorial.publishedAt || memorial.createdAt)}</div>
+                  <div className="info-secondary text-gray-800 font-medium">{memorial.author.name}</div>
+                  <div className="info-tertiary text-gray-500">
+                    {memorial.creatorRelation ? `${memorial.subjectName}的${memorial.creatorRelation}` : `${memorial.subjectName}的守护者`}
+                  </div>
                 </div>
               </div>
-
-              <div className="border-t pt-6">
-                <div className="text-sm text-gray-600 mb-4">分享 {memorial.subjectName} 的纪念页</div>
-                <div className="flex gap-2">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleShareFacebook}>
-                    分享
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-gray-800 text-gray-800 bg-transparent"
-                    onClick={handleShareTwitter}
-                  >
-                    发推
-                  </Button>
-                  <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSharePinterest}>
-                    收藏
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleShareEmail}>
-                    <Mail className="w-4 h-4 mr-1" />
-                    邮件
-                  </Button>
-                  <Button size="sm" className="bg-teal-400 hover:bg-teal-500 text-white" onClick={handleCopyLink}>
-                    <Copy className="w-4 h-4 mr-1" />
-                    复制
-                  </Button>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="info-tertiary text-gray-500 text-center">
+                  "感谢您为{memorial.subjectName}创建了这个美好的纪念"
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         </div>
-      </section>
-
-      {/* Photo Memories */}
-      {memorial.images.length > 0 && (
-        <section className="px-4 py-8">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">珍贵回忆</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {memorial.images.map((image, index) => (
-                <div key={image.id} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                  <Image
-                    src={image.url || "/placeholder.svg"}
-                    alt={`${memorial.subjectName}的回忆`}
-                    width={200}
-                    height={200}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+        
+        {/* 爱的寄语 */}
+        <section id="message-section" className="mt-12 info-card rounded-xl p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-light text-gray-900 flex items-center gap-2">
+              <Heart className="w-5 h-5 text-gray-600" />
+              爱的寄语
+            </h2>
+            <div className="flex items-center space-x-2">
+              <span className="info-tertiary text-gray-500">{memorial.messageCount}份思念</span>
+              <button className="info-tertiary text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1">
+                <MessageCircleHeart className="w-4 h-4" />
+                寄语思念
+              </button>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Messages of Love */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">爱的留言</h2>
-
-          {/* Leave a Message */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">留下爱的寄语</h3>
+          
+          {/* 留言输入框 */}
+          <div className="mb-6">
             <Textarea
-              placeholder="分享一段回忆或留下爱的寄语..."
+              placeholder={user ? `以 ${user.name} 的身份分享一段回忆或留下爱的寄语...` : "分享一段回忆或留下爱的寄语...（将以匿名访客身份发表）"}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="mb-4"
+              className="mb-4 border-gray-300 rounded-2xl focus:border-gray-400 focus:outline-none"
               rows={4}
             />
             <div className="flex justify-end">
-              <Button 
+              <button 
                 onClick={handleSendMessage}
                 disabled={!message.trim()}
-                className="bg-teal-400 hover:bg-teal-500 text-white rounded-full px-6 disabled:bg-gray-300"
+                className="bg-gray-900 hover:bg-gray-800 text-white rounded-2xl px-8 py-2 disabled:bg-gray-300 transition-colors flex items-center gap-2"
               >
-                发送
-              </Button>
+                <Heart className="w-4 h-4" />
+                寄出思念
+              </button>
             </div>
           </div>
-
-          {/* Existing Messages */}
-          <div className="space-y-4">
+          
+          {/* 留言列表 */}
+          <div className="space-y-6">
             {memorial.messages.map((msg) => (
-              <div key={msg.id} className="bg-white rounded-2xl p-6 shadow-sm">
-                <p className="text-gray-600 mb-4">{msg.content}</p>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{msg.user?.name || msg.authorName}</span>
-                  <span>{formatDate(msg.createdAt)}</span>
+              <div key={msg.id} className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 subtle-hover">
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <span className="info-tertiary">{(msg.user?.name || msg.authorName).substring(0, 1).toUpperCase()}</span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="info-secondary text-gray-800">{msg.user?.name || msg.authorName}</span>
+                    <div className="status-indicator bg-green-400"></div>
+                    <time className="info-tertiary text-gray-500">{formatDate(msg.createdAt)}</time>
+                  </div>
+                  <p className="info-secondary text-gray-600 reading-width">
+                    {msg.content}
+                  </p>
                 </div>
               </div>
             ))}
             {memorial.messages.length === 0 && (
-              <div className="text-center text-gray-500 py-8">
-                还没有留言，成为第一个留言的人吧
+              <div className="text-center text-gray-500 py-12">
+                <MessageCircleHeart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p className="font-light text-lg mb-2">还没有人为 {memorial.subjectName} 留下思念</p>
+                <p className="text-sm">成为第一个分享美好回忆的人吧</p>
               </div>
             )}
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
-              <p className="text-gray-600 text-sm">
-                每只宠物都应该拥有美好的纪念。您的支持帮助我们为世界各地失去宠物的主人免费提供永念服务。
-              </p>
-            </div>
-          </div>
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-            <Heart className="w-4 h-4 mr-2" />
-            捐赠支持
-          </Button>
-        </div>
-      </section>
+      {/* 快速思念悬浮按钮 */}
+      <div className="quick-action">
+        <button 
+          onClick={handleLightCandle}
+          disabled={!canLightCandle}
+          className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${
+            canLightCandle 
+              ? 'bg-gray-900 hover:bg-gray-800 text-white hover:scale-105' 
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+          title={canLightCandle ? "点亮思念之火" : "今日已点亮"}
+        >
+          <Flame className="w-5 h-5" />
+        </button>
+      </div>
 
-      {/* Footer */}
+      {/* 页脚 */}
       <Footer />
     </div>
   )

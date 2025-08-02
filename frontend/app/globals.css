@@ -6,6 +6,25 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* 极简设计专用样式 */
+  .glass-effect {
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .floating-nav {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  .memorial-card {
+    transition: all 0.3s ease;
+  }
+  
+  .memorial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
 }
 
 @layer base {

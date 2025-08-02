@@ -81,43 +81,44 @@ export default function CreateObituaryPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       <Navigation currentPage="create" />
 
-      {/* Progress Steps */}
-      <section className="px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center mb-8">
+      {/* 极简进度指示器 */}
+      <main className="pt-32">
+        <section className="max-w-4xl mx-auto px-6 pb-16">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-light text-slate-900 mb-4">创建纪念</h1>
+            <p className="text-slate-600">步骤 {currentStep} / 3</p>
+          </div>
+          
+          <div className="flex items-center justify-center mb-12">
             {steps.map((step, index) => (
               <div key={step.number} className="flex items-center">
                 <div className="flex items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
-                      step.completed
-                        ? "bg-teal-400 text-white"
-                        : step.active
-                          ? "bg-teal-400 text-white"
-                          : "bg-gray-200 text-gray-500"
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-medium ${
+                      step.completed || step.active
+                        ? "bg-slate-900 text-white"
+                        : "bg-slate-100 text-slate-400"
                     }`}
                   >
                     {step.number}
                   </div>
-                  <span className={`ml-3 text-sm font-medium ${step.active ? "text-gray-800" : "text-gray-500"}`}>
+                  <span className={`ml-3 text-sm ${step.active ? "text-slate-900 font-medium" : "text-slate-500"}`}>
                     {step.title}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-16 h-0.5 mx-4 ${step.completed ? "bg-teal-400" : "bg-gray-200"}`} />
+                  <div className={`w-16 h-px mx-6 ${step.completed ? "bg-slate-900" : "bg-slate-200"}`} />
                 )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Form Content */}
-      <section className="px-4 pb-16">
-        <div className="max-w-4xl mx-auto">
+        {/* 表单内容区域 */}
+        <section className="max-w-4xl mx-auto px-6">
           {currentStep === 1 && (
             <PetInformationStep formData={formData} updateFormData={updateFormData} onNext={nextStep} />
           )}
@@ -132,28 +133,9 @@ export default function CreateObituaryPage() {
           {currentStep === 3 && (
             <YourInformationStep formData={formData} updateFormData={updateFormData} onBack={prevStep} />
           )}
-        </div>
-      </section>
+        </section>
 
-      {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-xl">⭐</span>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
-              <p className="text-gray-600 text-sm">
-                每只宠物都值得拥有美丽的纪念。您的支持帮助我们为全世界正在悲伤的宠物主人免费提供永念服务。
-              </p>
-            </div>
-          </div>
-          <button className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full flex items-center gap-2">
-            ❤️ 进行捐赠
-          </button>
-        </div>
-      </section>
+      </main>
 
       <Footer />
     </div>

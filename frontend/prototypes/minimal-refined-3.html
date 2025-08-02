@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多多妈咪 - 优雅纪念</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Playfair+Display:wght@300;400;500&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            font-feature-settings: 'liga' 1, 'kern' 1;
+        }
+        
+        .serif { font-family: 'Playfair Display', serif; }
+        
+        .elegant-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .luxury-shadow {
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.03),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .premium-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 50%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+        
+        .elegant-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .elegant-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.1),
+                0 10px 20px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .fade-in {
+            animation: elegantFadeIn 1s ease-out;
+        }
+        
+        @keyframes elegantFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+        
+        .stagger-delay-1 { animation-delay: 0.2s; }
+        .stagger-delay-2 { animation-delay: 0.4s; }
+        .stagger-delay-3 { animation-delay: 0.6s; }
+        .stagger-delay-4 { animation-delay: 0.8s; }
+        
+        .ornamental-line {
+            position: relative;
+        }
+        
+        .ornamental-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+        }
+        
+        .ornamental-line::after {
+            content: '◆';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: #06b6d4;
+            font-size: 8px;
+            background: white;
+            padding: 0 8px;
+        }
+        
+        .elegant-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .elegant-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+        
+        .elegant-button:hover::before {
+            left: 100%;
+        }
+        
+        .quote-mark {
+            font-size: 3rem;
+            line-height: 1;
+            color: #06b6d4;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-gray-50 min-h-screen">
+    <!-- 优雅导航 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 elegant-card border-b">
+        <div class="max-w-7xl mx-auto px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 accent-gradient rounded-full flex items-center justify-center">
+                        <span class="text-white text-xs">🐕</span>
+                    </div>
+                    <span class="text-sm font-light text-slate-600">多多妈咪纪念馆</span>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <button class="text-xs font-light text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-widest">
+                        分享
+                    </button>
+                    <button class="text-xs font-light text-slate-500 hover:text-slate-700 transition-colors uppercase tracking-widest">
+                        下载
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-28">
+        <!-- 英雄区域 -->
+        <section class="px-8 py-24">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center space-y-16">
+                    <!-- 主头像 -->
+                    <div class="fade-in">
+                        <div class="relative inline-block">
+                            <!-- 装饰圆环 -->
+                            <div class="absolute inset-0 w-48 h-48 border border-slate-200 rounded-full opacity-50"></div>
+                            <div class="absolute inset-4 w-40 h-40 border border-slate-150 rounded-full opacity-30"></div>
+                            <div class="absolute inset-8 w-32 h-32 border border-slate-100 rounded-full opacity-20"></div>
+                            
+                            <!-- 主容器 -->
+                            <div class="relative w-48 h-48 elegant-card rounded-full luxury-shadow flex items-center justify-center">
+                                <div class="w-36 h-36 bg-gradient-to-br from-slate-50 to-slate-100 rounded-full flex items-center justify-center">
+                                    <span class="text-6xl">🐕</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 标题信息 -->
+                    <div class="space-y-12">
+                        <div class="fade-in stagger-delay-1">
+                            <h1 class="serif text-6xl font-light premium-gradient mb-6">
+                                多多妈咪
+                            </h1>
+                            <div class="ornamental-line h-4 w-32 mx-auto"></div>
+                        </div>
+                        
+                        <div class="fade-in stagger-delay-2">
+                            <p class="text-xl font-light text-slate-600 mb-6">
+                                一只优雅温柔的金毛犬
+                            </p>
+                            <div class="flex items-center justify-center space-x-12 text-sm font-light text-slate-400">
+                                <time class="uppercase tracking-wider">2012年3月15日</time>
+                                <div class="w-2 h-px bg-slate-300"></div>
+                                <time class="uppercase tracking-wider">2024年7月20日</time>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 精致统计 -->
+                    <div class="fade-in stagger-delay-3">
+                        <div class="elegant-card rounded-3xl p-12 luxury-shadow max-w-2xl mx-auto">
+                            <div class="grid grid-cols-3 gap-12">
+                                <div class="text-center">
+                                    <div class="text-4xl font-thin premium-gradient mb-2">234</div>
+                                    <div class="ornamental-line h-2 w-8 mx-auto mb-2"></div>
+                                    <div class="text-xs font-light text-slate-500 uppercase tracking-widest">蜡烛点亮</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-4xl font-thin premium-gradient mb-2">18</div>
+                                    <div class="ornamental-line h-2 w-8 mx-auto mb-2"></div>
+                                    <div class="text-xs font-light text-slate-500 uppercase tracking-widest">思念留言</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-4xl font-thin premium-gradient mb-2">4,421</div>
+                                    <div class="ornamental-line h-2 w-8 mx-auto mb-2"></div>
+                                    <div class="text-xs font-light text-slate-500 uppercase tracking-widest">美好日子</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 引言区域 -->
+        <section class="px-8 py-24 bg-gradient-to-r from-slate-50 to-gray-50">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="elegant-card rounded-3xl p-16 luxury-shadow">
+                    <div class="quote-mark mb-6">"</div>
+                    <blockquote class="serif text-2xl font-light text-slate-700 leading-relaxed mb-8">
+                        生命的意义不在于长度，而在于深度。<br>
+                        多多用她短暂的一生，给我们带来了无尽的爱与快乐。
+                    </blockquote>
+                    <div class="ornamental-line h-4 w-24 mx-auto mb-6"></div>
+                    <cite class="text-sm font-light text-slate-500 uppercase tracking-widest">
+                        — 永远爱她的家人
+                    </cite>
+                </div>
+            </div>
+        </section>
+
+        <!-- 故事章节 */
+        <section class="px-8 py-24">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="serif text-3xl font-light premium-gradient mb-6">多多的故事</h2>
+                    <div class="ornamental-line h-4 w-32 mx-auto"></div>
+                </div>
+                
+                <div class="elegant-card rounded-3xl p-16 luxury-shadow elegant-hover">
+                    <article class="prose prose-slate max-w-none">
+                        <div class="space-y-8 text-slate-600 leading-relaxed">
+                            <p class="text-xl font-light first-letter:text-6xl first-letter:font-light first-letter:text-cyan-600 first-letter:float-left first-letter:mr-4 first-letter:mt-2 serif first-letter:serif">
+                                多多妈咪是我们家的开心果，她总是用她温暖的笑容迎接每一个新的早晨。
+                                作为一只金毛犬，她不仅拥有美丽的金色毛发，更有着一颗善良的心。
+                            </p>
+                            
+                            <p class="font-light text-lg">
+                                她最喜欢的事情就是在公园里奔跑，追逐飞舞的蝴蝶，那时候的她是最快乐的。
+                                每当我下班回家，她总是第一个冲到门口迎接我，摇着尾巴，仿佛在说"欢迎回家"。
+                            </p>
+                            
+                            <p class="font-light text-lg">
+                                虽然你已经离开了我们，但是你带给我们的快乐和回忆将永远陪伴着我们。
+                                多多妈咪，谢谢你让我们的生活如此美好。
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 精致画廊 -->
+        <section class="px-8 py-24 bg-gradient-to-r from-gray-50 to-slate-50">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="serif text-3xl font-light premium-gradient mb-6">珍贵瞬间</h2>
+                    <div class="ornamental-line h-4 w-32 mx-auto"></div>
+                </div>
+                
+                <!-- 画廊网格 -->
+                <div class="grid lg:grid-cols-3 gap-12">
+                    <!-- 画廊项目1 -->
+                    <div class="elegant-card rounded-2xl p-10 luxury-shadow elegant-hover group">
+                        <div class="aspect-square bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl mb-8 flex items-center justify-center group-hover:from-cyan-100 group-hover:to-blue-100 transition-colors duration-500">
+                            <span class="text-7xl">📸</span>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="serif text-xl font-light text-slate-800 mb-4">初次相遇</h3>
+                            <div class="ornamental-line h-2 w-12 mx-auto mb-4"></div>
+                            <p class="text-sm font-light text-slate-600 leading-relaxed mb-4">
+                                那个春天的下午，我们第一次见到了小多多，她那双明亮的眼睛瞬间俘获了我们的心。
+                            </p>
+                            <time class="text-xs font-light text-slate-400 uppercase tracking-widest">2012年3月</time>
+                        </div>
+                    </div>
+                    
+                    <!-- 画廊项目2 -->
+                    <div class="elegant-card rounded-2xl p-10 luxury-shadow elegant-hover group">
+                        <div class="aspect-square bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl mb-8 flex items-center justify-center group-hover:from-emerald-100 group-hover:to-teal-100 transition-colors duration-500">
+                            <span class="text-7xl">📸</span>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="serif text-xl font-light text-slate-800 mb-4">快乐时光</h3>
+                            <div class="ornamental-line h-2 w-12 mx-auto mb-4"></div>
+                            <p class="text-sm font-light text-slate-600 leading-relaxed mb-4">
+                                公园里的草地是多多最喜欢的地方，她总是在那里尽情奔跑，追逐阳光和蝴蝶。
+                            </p>
+                            <time class="text-xs font-light text-slate-400 uppercase tracking-widest">夏日时光</time>
+                        </div>
+                    </div>
+                    
+                    <!-- 画廊项目3 -->
+                    <div class="elegant-card rounded-2xl p-10 luxury-shadow elegant-hover group">
+                        <div class="aspect-square bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl mb-8 flex items-center justify-center group-hover:from-purple-100 group-hover:to-indigo-100 transition-colors duration-500">
+                            <span class="text-7xl">📸</span>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="serif text-xl font-light text-slate-800 mb-4">温柔岁月</h3>
+                            <div class="ornamental-line h-2 w-12 mx-auto mb-4"></div>
+                            <p class="text-sm font-light text-slate-600 leading-relaxed mb-4">
+                                随着年龄的增长，多多变得更加温和，她喜欢安静地陪伴在我们身边。
+                            </p>
+                            <time class="text-xs font-light text-slate-400 uppercase tracking-widest">晚年时光</time>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 精致互动 -->
+        <section class="px-8 py-24">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="serif text-3xl font-light premium-gradient mb-6">表达敬意</h2>
+                    <div class="ornamental-line h-4 w-32 mx-auto"></div>
+                </div>
+                
+                <div class="space-y-12">
+                    <!-- 操作按钮 -->
+                    <div class="flex justify-center space-x-6">
+                        <button class="elegant-button elegant-card px-10 py-5 rounded-full text-sm font-light text-slate-700 luxury-shadow elegant-hover flex items-center space-x-3">
+                            <span>🕯️</span>
+                            <span class="uppercase tracking-wide">点亮蜡烛</span>
+                        </button>
+                        <button class="elegant-button accent-gradient hover:from-cyan-600 hover:to-blue-600 text-white px-10 py-5 rounded-full text-sm font-light transition-all duration-300 flex items-center space-x-3">
+                            <span>💝</span>
+                            <span class="uppercase tracking-wide">留言缅怀</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 留言输入 -->
+                    <div class="elegant-card rounded-3xl p-12 luxury-shadow">
+                        <div class="text-center mb-8">
+                            <h3 class="serif text-lg font-light text-slate-700 mb-4">写下您的思念</h3>
+                            <div class="ornamental-line h-2 w-16 mx-auto"></div>
+                        </div>
+                        
+                        <textarea 
+                            placeholder="分享您对多多的美好回忆或思念之情..."
+                            class="w-full bg-transparent border-none resize-none focus:outline-none placeholder-slate-400 text-slate-700 font-light leading-relaxed text-center"
+                            rows="5"
+                        ></textarea>
+                        
+                        <div class="flex justify-center mt-8">
+                            <button class="text-cyan-600 hover:text-cyan-700 text-sm font-light transition-colors uppercase tracking-widest">
+                                发表留言 →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 留言展示 -->
+        <section class="px-8 py-24 bg-gradient-to-r from-slate-50 to-gray-50">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="serif text-3xl font-light premium-gradient mb-6">思念之声</h2>
+                    <div class="ornamental-line h-4 w-32 mx-auto"></div>
+                </div>
+                
+                <div class="space-y-12">
+                    <!-- 留言1 -->
+                    <div class="elegant-card rounded-3xl p-12 luxury-shadow elegant-hover">
+                        <div class="flex items-start space-x-6">
+                            <div class="w-14 h-14 accent-gradient rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white font-light">A</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <span class="font-light text-slate-800">朋友A</span>
+                                    <div class="ornamental-line h-2 w-8"></div>
+                                    <time class="text-xs font-light text-slate-400 uppercase tracking-widest">2天前</time>
+                                </div>
+                                <p class="font-light text-slate-600 leading-relaxed">
+                                    多多真的是一只很可爱的狗狗，她的离开让人很难过，但是她留下的美好回忆会永远陪伴着大家。
+                                    她那温暖的眼神和纯真的笑容，至今还深深印在我的心里。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 留言2 */
+                    <div class="elegant-card rounded-3xl p-12 luxury-shadow elegant-hover">
+                        <div class="flex items-start space-x-6">
+                            <div class="w-14 h-14 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white font-light text-sm">邻</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <span class="font-light text-slate-800">邻居老张</span>
+                                    <div class="ornamental-line h-2 w-8"></div>
+                                    <time class="text-xs font-light text-slate-400 uppercase tracking-widest">5天前</time>
+                                </div>
+                                <p class="font-light text-slate-600 leading-relaxed">
+                                    记得多多每天散步的时候总是很开心，她是一只很特别的狗狗。
+                                    她的离去让整个社区都感到难过，但她带给我们的快乐会永远被记住。愿她在天堂快乐。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 优雅页脚 -->
+        <footer class="px-8 py-20 bg-white border-t border-slate-100">
+            <div class="max-w-3xl mx-auto text-center space-y-12">
+                <!-- 纪念标志 -->
+                <div class="elegant-card w-20 h-20 rounded-full mx-auto luxury-shadow flex items-center justify-center">
+                    <span class="text-3xl">🐕</span>
+                </div>
+                
+                <!-- 纪念信息 -->
+                <div class="space-y-6">
+                    <h3 class="serif text-2xl font-light premium-gradient">多多妈咪</h3>
+                    <div class="ornamental-line h-4 w-24 mx-auto"></div>
+                    <div class="space-y-2">
+                        <p class="text-sm font-light text-slate-600">
+                            一只优雅温柔的金毛犬
+                        </p>
+                        <time class="block text-sm font-light text-slate-500">
+                            2012年3月15日 — 2024年7月20日
+                        </time>
+                    </div>
+                </div>
+                
+                <!-- 底部标语 -->
+                <div class="space-y-4">
+                    <div class="serif text-lg font-light text-slate-600 italic">
+                        "爱如永恒，记忆如星辰"
+                    </div>
+                    <div class="text-xs font-light text-slate-400 uppercase tracking-widest">
+                        永远被珍视 · 永远被怀念
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+</body>
+</html>

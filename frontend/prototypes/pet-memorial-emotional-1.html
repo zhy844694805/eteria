@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多多妈咪 - 温暖回忆书</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .floating-hearts {
+            background-image: radial-gradient(2px 2px at 20px 30px, rgba(255,182,193,0.3), transparent),
+                            radial-gradient(2px 2px at 40px 70px, rgba(255,192,203,0.3), transparent),
+                            radial-gradient(1px 1px at 90px 40px, rgba(255,160,122,0.3), transparent);
+            background-repeat: repeat;
+            background-size: 120px 120px;
+        }
+        .memoir-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 20px 20px 60px #d4d4d8, -20px -20px 60px #ffffff;
+        }
+        .love-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        .memory-fade {
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen floating-hearts">
+    <!-- 导航栏占位 -->
+    <div class="h-20 bg-white/80 backdrop-blur-lg border-b border-pink-100"></div>
+
+    <!-- 主内容区 -->
+    <main class="relative">
+        <!-- 情感封面 -->
+        <section class="relative h-screen flex items-center justify-center overflow-hidden">
+            <!-- 背景渐变 -->
+            <div class="absolute inset-0 love-gradient"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white/60"></div>
+            
+            <!-- 漂浮的花瓣动画 -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-20 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-60 animate-pulse"></div>
+                <div class="absolute top-40 right-20 w-6 h-6 bg-rose-200 rounded-full opacity-40 animate-bounce"></div>
+                <div class="absolute bottom-40 left-1/4 w-3 h-3 bg-pink-400 rounded-full opacity-50"></div>
+                <div class="absolute top-1/3 right-1/3 w-5 h-5 bg-rose-300 rounded-full opacity-30 animate-pulse"></div>
+            </div>
+
+            <!-- 主要内容 -->
+            <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+                <!-- 主头像 - 心形边框 -->
+                <div class="relative mb-8">
+                    <div class="w-64 h-64 mx-auto relative">
+                        <!-- 心形背景 -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-400 to-rose-500 transform rotate-45" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;"></div>
+                        <div class="absolute inset-4 bg-white transform rotate-45" style="border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;"></div>
+                        <div class="absolute inset-8 bg-gradient-to-br from-pink-100 to-rose-100 rounded-full flex items-center justify-center">
+                            <div class="text-8xl">🐕</div>
+                        </div>
+                    </div>
+                    <!-- 光环效果 -->
+                    <div class="absolute -inset-4 bg-gradient-to-r from-pink-400 via-transparent to-rose-400 rounded-full blur-xl opacity-30"></div>
+                </div>
+
+                <!-- 标题区域 -->
+                <div class="mb-12">
+                    <h1 class="text-7xl font-light text-gray-800 mb-6 tracking-wide">多多妈咪</h1>
+                    <div class="text-2xl text-gray-600 mb-4 font-light">
+                        我们永远的小天使 ✨
+                    </div>
+                    <div class="flex items-center justify-center space-x-6 text-lg text-gray-500">
+                        <span>🌸 2012.03.15</span>
+                        <span>~</span>
+                        <span>2024.07.20 🌸</span>
+                    </div>
+                    <div class="mt-4 text-xl text-gray-600">
+                        陪伴我们走过了 <span class="text-pink-600 font-medium">4,421</span> 个美好的日子
+                    </div>
+                </div>
+
+                <!-- 情感引言 -->
+                <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-pink-100 max-w-2xl mx-auto mb-12">
+                    <div class="text-2xl text-gray-700 leading-relaxed italic">
+                        "生命的意义不在于长度，<br>
+                        而在于我们给彼此带来的爱与快乐。<br>
+                        多多，你做到了。"
+                    </div>
+                    <div class="mt-4 text-pink-600 font-medium">— 永远爱你的家人</div>
+                </div>
+
+                <!-- 滚动提示 -->
+                <div class="animate-bounce">
+                    <div class="w-8 h-12 border-2 border-pink-400 rounded-full flex justify-center">
+                        <div class="w-1 h-3 bg-pink-400 rounded-full mt-2 animate-pulse"></div>
+                    </div>
+                    <div class="text-pink-600 text-sm mt-2">继续了解多多的故事</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 回忆章节 -->
+        <section class="bg-gradient-to-b from-white to-pink-50 py-20">
+            <div class="max-w-6xl mx-auto px-6">
+                <!-- 章节标题 -->
+                <div class="text-center mb-16">
+                    <h2 class="text-5xl font-light text-gray-800 mb-6">回忆的花园 🌺</h2>
+                    <div class="w-32 h-1 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full mx-auto"></div>
+                </div>
+
+                <!-- 回忆卡片网格 -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    <!-- 回忆卡片1 -->
+                    <div class="memoir-card rounded-3xl p-8 border border-pink-100 transform hover:scale-105 transition-all duration-500">
+                        <div class="w-full h-48 bg-gradient-to-br from-pink-100 to-rose-200 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden">
+                            <span class="text-6xl">📸</span>
+                            <div class="absolute bottom-0 left-0 right-0 memory-fade h-16"></div>
+                            <div class="absolute bottom-2 left-4 text-xs text-gray-600">初次相遇</div>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-800 mb-3">那个春天的午后</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            你小小的身影第一次出现在我们的生活中，那双明亮的眼睛里充满了对世界的好奇...
+                        </p>
+                        <div class="mt-4 flex items-center text-pink-600 text-sm">
+                            <span>💕</span>
+                            <span class="ml-2">2012年3月15日</span>
+                        </div>
+                    </div>
+
+                    <!-- 回忆卡片2 -->
+                    <div class="memoir-card rounded-3xl p-8 border border-pink-100 transform hover:scale-105 transition-all duration-500">
+                        <div class="w-full h-48 bg-gradient-to-br from-emerald-100 to-teal-200 rounded-2xl mb-6 flex items-center justify-center relative">
+                            <span class="text-6xl">📸</span>
+                            <div class="absolute bottom-0 left-0 right-0 memory-fade h-16"></div>
+                            <div class="absolute bottom-2 left-4 text-xs text-gray-600">公园时光</div>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-800 mb-3">奔跑的快乐</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            公园的草地是你的天堂，每次看到你自由奔跑的样子，我们的心里都充满了幸福...
+                        </p>
+                        <div class="mt-4 flex items-center text-pink-600 text-sm">
+                            <span>🌿</span>
+                            <span class="ml-2">无数个快乐时光</span>
+                        </div>
+                    </div>
+
+                    <!-- 回忆卡片3 */
+                    <div class="memoir-card rounded-3xl p-8 border border-pink-100 transform hover:scale-105 transition-all duration-500">
+                        <div class="w-full h-48 bg-gradient-to-br from-amber-100 to-orange-200 rounded-2xl mb-6 flex items-center justify-center relative">
+                            <span class="text-6xl">📸</span>
+                            <div class="absolute bottom-0 left-0 right-0 memory-fade h-16"></div>
+                            <div class="absolute bottom-2 left-4 text-xs text-gray-600">温暖陪伴</div>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-800 mb-3">最好的陪伴</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            无论开心还是难过，你总是静静地陪在我们身边，用你的温暖治愈着我们的心...
+                        </p>
+                        <div class="mt-4 flex items-center text-pink-600 text-sm">
+                            <span>🏠</span>
+                            <span class="ml-2">家的温暖</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 大段文字回忆 -->
+                <div class="bg-white rounded-3xl p-12 shadow-xl border border-pink-100">
+                    <div class="max-w-4xl mx-auto">
+                        <h3 class="text-3xl font-light text-gray-800 mb-8 text-center">致我们的多多 💕</h3>
+                        <div class="prose prose-lg prose-pink max-w-none text-gray-700 leading-relaxed">
+                            <p class="text-xl mb-6 first-letter:text-6xl first-letter:font-bold first-letter:text-pink-500 first-letter:mr-3 first-letter:float-left">
+                                亲爱的多多妈咪，虽然你已经离开了我们，但你留下的爱和回忆永远不会消失。每当想起你摇着尾巴迎接我们回家的样子，想起你在阳光下奔跑的身影，想起你安静陪伴我们的温暖时光，我们的心中就充满了感激。
+                            </p>
+                            <p class="text-lg mb-6">
+                                你教会了我们什么是无条件的爱，什么是忠诚，什么是简单的快乐。在那些艰难的日子里，是你的存在给了我们力量；在那些美好的时光里，是你的陪伴让快乐加倍。
+                            </p>
+                            <p class="text-lg">
+                                现在你在彩虹桥的另一边等着我们，那里有无尽的草地供你奔跑，有温暖的阳光陪伴你休息。我们知道，总有一天我们会再次相遇，那时候，你一定还是那个活泼可爱的多多妈咪。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 互动纪念区 -->
+        <section class="bg-gradient-to-b from-pink-50 to-white py-20">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-light text-gray-800 mb-4">点亮思念之灯 🕯️</h2>
+                    <p class="text-lg text-gray-600">让我们一起为多多点亮永不熄灭的爱之光</p>
+                </div>
+
+                <!-- 蜡烛互动区 -->
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-12 mb-12 text-center border border-amber-100">
+                    <div class="flex justify-center space-x-4 mb-8">
+                        <!-- 蜡烛动画 -->
+                        <div class="text-4xl animate-pulse">🕯️</div>
+                        <div class="text-4xl animate-pulse" style="animation-delay: 0.5s;">🕯️</div>
+                        <div class="text-4xl animate-pulse" style="animation-delay: 1s;">🕯️</div>
+                        <div class="text-4xl animate-pulse" style="animation-delay: 1.5s;">🕯️</div>
+                        <div class="text-4xl animate-pulse" style="animation-delay: 2s;">🕯️</div>
+                    </div>
+                    <div class="text-2xl text-amber-800 mb-4">已有 <span class="font-bold text-3xl text-amber-600">234</span> 位朋友为多多点亮了蜡烛</div>
+                    <button class="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white px-12 py-4 rounded-full text-xl font-medium transform hover:scale-105 transition-all duration-300 shadow-lg">
+                        为多多点亮一盏灯 🕯️
+                    </button>
+                </div>
+
+                <!-- 留言心愿墙 -->
+                <div class="bg-white rounded-3xl p-10 shadow-xl border border-pink-100">
+                    <h3 class="text-2xl font-light text-gray-800 mb-8 text-center">心愿留言墙 💌</h3>
+                    
+                    <!-- 留言输入 -->
+                    <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl p-8 mb-8">
+                        <textarea 
+                            placeholder="写下你想对多多说的话，或者分享你们的美好回忆..."
+                            class="w-full bg-white border-2 border-pink-200 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-400 placeholder-gray-400 text-gray-700 text-lg"
+                            rows="4"
+                        ></textarea>
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="text-sm text-gray-500">用心写下的每一个字都是对多多的爱</div>
+                            <button class="bg-gradient-to-r from-pink-400 to-rose-500 hover:from-pink-500 hover:to-rose-600 text-white px-8 py-3 rounded-full font-medium transform hover:scale-105 transition-all duration-300">
+                                发送给多多 💕
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 留言展示 -->
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border-l-4 border-blue-400">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                                <div>
+                                    <div class="font-medium text-gray-800">朋友A</div>
+                                    <div class="text-sm text-gray-500">2天前 • 来自心底的思念</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 leading-relaxed">多多真的是一只很特别的狗狗，她的温暖和善良感染了每一个遇见她的人。虽然她离开了，但她教会我们的爱和忠诚会永远传承下去。愿她在天堂里快乐奔跑！🌈</p>
+                            <div class="flex items-center space-x-4 mt-4">
+                                <button class="text-pink-600 hover:text-pink-700 transition-colors flex items-center space-x-1">
+                                    <span>💕</span>
+                                    <span>12</span>
+                                </button>
+                                <button class="text-gray-500 hover:text-gray-700 transition-colors">回复</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border-l-4 border-green-400">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">邻</div>
+                                <div>
+                                    <div class="font-medium text-gray-800">邻居老张</div>
+                                    <div class="text-sm text-gray-500">5天前 • 永远的好邻居</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 leading-relaxed">记得多多每天路过我家门口的时候，总是会停下来看看我，那双温柔的眼睛仿佛在说"你好"。她是我见过最有灵性的狗狗，愿她安息。🌸</p>
+                            <div class="flex items-center space-x-4 mt-4">
+                                <button class="text-pink-600 hover:text-pink-700 transition-colors flex items-center space-x-1">
+                                    <span>💕</span>
+                                    <span>8</span>
+                                </button>
+                                <button class="text-gray-500 hover:text-gray-700 transition-colors">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部纪念信息 -->
+        <footer class="bg-gradient-to-r from-pink-100 via-rose-100 to-pink-100 py-12">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <div class="text-6xl mb-4">🌈</div>
+                <h3 class="text-2xl font-light text-gray-800 mb-4">多多妈咪</h3>
+                <p class="text-lg text-gray-600 mb-6">
+                    2012.03.15 - 2024.07.20<br>
+                    一只带给世界温暖的小天使
+                </p>
+                <div class="flex justify-center space-x-8 text-pink-600">
+                    <div class="text-center">
+                        <div class="text-2xl font-light">234</div>
+                        <div class="text-sm">点亮的蜡烛</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-light">18</div>
+                        <div class="text-sm">爱的留言</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-light">4,421</div>
+                        <div class="text-sm">美好的日子</div>
+                    </div>
+                </div>
+                <div class="mt-8 text-gray-500 text-sm">
+                    "爱没有终点，只有新的开始" 💕
+                </div>
+            </div>
+        </footer>
+    </main>
+</body>
+</html>

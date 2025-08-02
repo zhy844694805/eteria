@@ -5,41 +5,44 @@ import Link from "next/link"
 
 export function Footer() {
   return (
-    <footer className="px-4 py-12 bg-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-teal-400 rounded-lg flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-gray-800">永念</span>
-            </Link>
-            <p className="text-gray-600 text-sm">
-              为心爱的宠物创建持久的纪念，庆祝它们独特的精神和分享的无条件的爱。
-            </p>
-          </div>
+    <footer className="px-4 py-16 bg-white border-t border-gray-100">
+      <div className="max-w-4xl mx-auto">
+        {/* 品牌介绍 */}
+        <div className="text-center mb-12">
+          <Link href="/" className="inline-flex items-center gap-3 mb-4">
+            <div className="w-6 h-6 bg-gray-900 rounded-lg flex items-center justify-center">
+              <Heart className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-xl font-light text-gray-900">永念</span>
+          </Link>
+          <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
+            让每一份珍贵的爱都被永远铭记，为心爱的生命创建美好而持久的纪念。
+          </p>
+        </div>
+        
+        {/* 导航链接 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
 
           <div>
-            <h4 className="font-semibold text-gray-800 mb-4">公司</h4>
-            <div className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-light text-gray-900 mb-3 text-sm">公司</h4>
+            <div className="space-y-2 text-xs text-gray-500">
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <Link href="/about" className="hover:text-gray-700 transition-colors">
                   关于永念
-                </a>
+                </Link>
               </div>
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <Link href="/blog" className="hover:text-gray-700 transition-colors">
                   博客
-                </a>
+                </Link>
               </div>
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <Link href="/contact" className="hover:text-gray-700 transition-colors">
                   联系我们
-                </a>
+                </Link>
               </div>
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <a href="#" className="hover:text-gray-700 transition-colors">
                   捐赠
                 </a>
               </div>
@@ -47,39 +50,42 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-gray-800 mb-4">法律</h4>
-            <div className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-light text-gray-900 mb-3 text-sm">法律</h4>
+            <div className="space-y-2 text-xs text-gray-500">
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <Link href="/privacy" className="hover:text-gray-700 transition-colors">
                   隐私政策
-                </a>
+                </Link>
               </div>
               <div>
-                <a href="#" className="hover:text-gray-800">
+                <Link href="/terms" className="hover:text-gray-700 transition-colors">
                   服务条款
-                </a>
+                </Link>
               </div>
             </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-gray-800 mb-4">通讯</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              获取关于宠物悲伤的有用提示和纪念您心爱宠物的有意义的方式。
+          <div className="md:col-span-2">
+            <h4 className="font-light text-gray-900 mb-3 text-sm">通讯</h4>
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+              获取关于陪伴悲伤的温暖指引，以及纪念挚爱的美好方式。
             </p>
-            <div className="space-y-2">
-              <Input placeholder="输入您的邮箱" className="text-sm" />
-              <Button className="w-full bg-teal-400 hover:bg-teal-500 text-white">订阅</Button>
+            <div className="flex gap-2 max-w-sm">
+              <Input 
+                placeholder="输入您的邮箱" 
+                className="text-xs border-gray-300 focus:border-gray-400 rounded-lg" 
+              />
+              <Button className="bg-gray-900 hover:bg-gray-800 text-white text-xs px-4 rounded-lg">
+                订阅
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="border-t pt-8 flex items-center justify-between text-sm text-gray-500">
-          <div>© 永念. 保留所有权利。</div>
-          <div>
-            <a href="#" className="hover:text-gray-700">
-              成为宠物伙伴
-            </a>
+        {/* 版权信息 */}
+        <div className="border-t border-gray-100 pt-8 text-center">
+          <div className="text-xs text-gray-400 font-light">
+            © 2024 永念 | EternalMemory. 让每一份爱都被永远纪念.
           </div>
         </div>
       </div>

@@ -18,8 +18,6 @@ export interface AuthContextType {
   logout: () => void
   updatePreferredSystem: (system: 'pet' | 'human') => Promise<void>
   updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => Promise<boolean>
-  loginWithGoogle: () => Promise<void>
-  handleGoogleCallback: (token: string) => Promise<void>
 }
 
 export interface LoginFormData {

@@ -269,69 +269,71 @@ export default function CommunityPetObituariesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
+      {/* Header - 极简浮动导航 */}
       <Navigation currentPage="community" />
 
-      {/* Hero Section */}
-      <section className="px-4 py-16 bg-gradient-to-r from-purple-100 to-pink-100">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">社区宠物悼念页</h1>
-          <p className="text-gray-600 text-lg">庆祝心爱宠物的生命</p>
-        </div>
-      </section>
+      {/* Hero Section - 极简标题 */}
+      <main className="pt-32">
+        <section className="max-w-6xl mx-auto text-center px-6 pb-16">
+          <h1 className="text-4xl font-light text-slate-900 mb-4">纪念社区</h1>
+          <p className="text-slate-600">每一个生命都值得被纪念</p>
+        </section>
 
-      {/* Filter Section */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        {/* 筛选器 - 极简风格 */}
+        <section className="max-w-6xl mx-auto px-6 pb-12">
+          <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex flex-wrap gap-2">
               {filterCategories.map((category, index) => (
-                <Button
+                <button
                   key={index}
-                  variant={activeFilter === category.value ? "default" : "outline"}
                   onClick={() => handleFilterClick(category.value)}
-                  className={`rounded-full ${
+                  className={`px-4 py-2 rounded-2xl text-sm transition-colors ${
                     activeFilter === category.value
-                      ? "bg-purple-500 hover:bg-purple-600 text-white"
-                      : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                      ? "bg-slate-900 text-white"
+                      : "border border-slate-300 text-slate-600 hover:border-slate-400"
                   }`}
                 >
                   {category.name}
-                </Button>
+                </button>
               ))}
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input 
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <input 
                 placeholder="按名字搜索..." 
-                className="pl-10 w-64 rounded-full border-gray-300"
+                className="pl-10 pr-4 py-2 w-64 rounded-2xl border border-slate-300 focus:border-slate-400 focus:outline-none bg-white"
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Pet Obituaries Grid */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+        {/* 纪念网格 - 极简卡片 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
           {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-              <span className="ml-2 text-gray-600">加载中...</span>
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <span className="ml-3 text-slate-600">加载中...</span>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600 mb-4">{error}</p>
-              <Button onClick={() => window.location.reload()}>重试</Button>
+            <div className="text-center py-16">
+              <p className="text-slate-600 mb-6">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="bg-slate-900 text-white px-6 py-2 rounded-2xl hover:bg-slate-800 transition-colors"
+              >
+                重试
+              </button>
             </div>
           ) : filteredMemorials.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">{memorials.length === 0 ? '暂无宠物纪念页' : '没有找到匹配的纪念页'}</p>
+            <div className="text-center py-16">
+              <p className="text-slate-600 mb-6">{memorials.length === 0 ? '还没有纪念页面' : '没有找到匹配的纪念页'}</p>
               <Link href="/create-obituary">
-                <Button className="bg-purple-500 hover:bg-purple-600">创建第一个纪念页</Button>
+                <button className="bg-slate-900 text-white px-6 py-2 rounded-2xl hover:bg-slate-800 transition-colors">
+                  创建第一个纪念
+                </button>
               </Link>
             </div>
           ) : (
@@ -342,8 +344,8 @@ export default function CommunityPetObituariesPage() {
                   href={`/community-pet-obituaries/${memorial.slug}`}
                   className="block"
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="aspect-square bg-gray-200">
+                  <div className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 cursor-pointer">
+                    <div className="aspect-square bg-slate-100">
                       <Image
                         src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
                         alt={memorial.subjectName}
@@ -353,21 +355,21 @@ export default function CommunityPetObituariesPage() {
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">{memorial.subjectName}</h3>
-                      <div className="text-gray-600 text-sm mb-1">
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
+                      <div className="text-slate-500 text-sm mb-1">
                         {formatDateRange(memorial.birthDate, memorial.deathDate)} • {calculateAge(memorial.birthDate, memorial.deathDate)}
                       </div>
-                      <div className="text-purple-500 text-sm mb-4 font-medium">
+                      <div className="text-slate-600 text-sm mb-4">
                         {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-1">
-                          <Flame className="w-4 h-4 text-orange-400" />
-                          <span>{memorial._count.candles} 蜡烛</span>
+                          <Flame className="w-4 h-4" />
+                          <span>{memorial._count.candles}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Heart className="w-4 h-4 text-pink-400" />
-                          <span>{memorial._count.messages} 消息</span>
+                          <Heart className="w-4 h-4" />
+                          <span>{memorial._count.messages}</span>
                         </div>
                       </div>
                     </div>
@@ -376,57 +378,10 @@ export default function CommunityPetObituariesPage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
+        </section>
 
-      {/* Pagination */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-2">
-          <Button variant="outline" size="sm" className="rounded-full bg-transparent">
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Prev
-          </Button>
-          <Button className="bg-purple-500 hover:bg-purple-600 text-white rounded-full w-8 h-8 p-0">1</Button>
-          <Button variant="outline" className="rounded-full w-8 h-8 p-0 bg-transparent">
-            2
-          </Button>
-          <Button variant="outline" className="rounded-full w-8 h-8 p-0 bg-transparent">
-            3
-          </Button>
-          <span className="text-gray-400">...</span>
-          <Button variant="outline" className="rounded-full w-8 h-8 p-0 bg-transparent">
-            5
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full bg-transparent">
-            Next
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </div>
-      </section>
+      </main>
 
-      {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">Support Our Mission</h3>
-              <p className="text-gray-600 text-sm">
-                Every pet deserves a beautiful memorial. Your support helps us keep Tuckerly free for grieving pet
-                parents everywhere.
-              </p>
-            </div>
-          </div>
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-            <Heart className="w-4 h-4 mr-2" />
-            Make a Donation
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
       <Footer />
     </div>
   )

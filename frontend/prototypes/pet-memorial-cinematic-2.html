@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多多妈咪 - 生命的电影</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .cinematic-title { font-family: 'Playfair Display', serif; }
+        .parallax-bg {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+        .film-grain {
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,.15) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .spotlight {
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+        }
+        .movie-frame {
+            border: 8px solid #333;
+            border-radius: 4px;
+            box-shadow: 
+                inset 0 0 0 2px #666,
+                0 20px 40px rgba(0,0,0,0.3);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .floating { animation: float 6s ease-in-out infinite; }
+        
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid rgba(255,255,255,0.75);
+            white-space: nowrap;
+            animation: typewriter 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: rgba(255,255,255,0.75); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white overflow-x-hidden">
+    <!-- 电影式开场 -->
+    <section class="relative h-screen flex items-center justify-center parallax-bg film-grain">
+        <!-- 聚光灯效果 -->
+        <div class="absolute inset-0 spotlight"></div>
+        
+        <!-- 主要内容 -->
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <!-- 电影标题卡 -->
+            <div class="bg-black/80 backdrop-blur-sm rounded-lg p-12 border-2 border-white/20 movie-frame">
+                <div class="text-sm uppercase tracking-widest text-gray-300 mb-4">永念纪念片厂 出品</div>
+                <h1 class="cinematic-title text-8xl font-bold text-white mb-6 typewriter">多多妈咪</h1>
+                <div class="text-2xl text-gray-200 mb-8">
+                    <span class="border-l-4 border-yellow-400 pl-4">一个关于爱与告别的真实故事</span>
+                </div>
+                <div class="flex justify-center items-center space-x-8 text-xl text-gray-300">
+                    <span>主演：多多妈咪</span>
+                    <span>•</span>
+                    <span>时长：12年4个月</span>
+                    <span>•</span>
+                    <span>类型：温情记录片</span>
+                </div>
+            </div>
+
+            <!-- 播放按钮 -->
+            <div class="mt-12">
+                <button class="group relative bg-red-600 hover:bg-red-700 text-white px-12 py-6 rounded-full text-xl font-medium transform hover:scale-110 transition-all duration-500 shadow-2xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 relative">
+                            <div class="absolute left-1 top-0 w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent"></div>
+                        </div>
+                        <span>开始观看多多的故事</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 下滑提示 -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center animate-bounce">
+            <div class="text-white text-sm mb-2">继续观看</div>
+            <div class="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第一幕：相遇 -->
+    <section class="relative min-h-screen bg-gradient-to-b from-amber-900 via-amber-800 to-orange-900">
+        <div class="absolute inset-0 bg-black/40"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-6 py-20">
+            <!-- 章节标题 */
+            <div class="text-center mb-16">
+                <div class="text-amber-400 text-lg uppercase tracking-widest mb-4">第一幕</div>
+                <h2 class="cinematic-title text-6xl font-bold text-white mb-6">初次相遇</h2>
+                <div class="w-32 h-1 bg-amber-400 mx-auto"></div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- 电影胶片效果的图片 -->
+                <div class="relative">
+                    <div class="movie-frame bg-black p-4">
+                        <div class="aspect-video bg-gradient-to-br from-amber-200 to-orange-300 rounded flex items-center justify-center relative overflow-hidden">
+                            <span class="text-9xl">📸</span>
+                            <!-- 胶片孔效果 -->
+                            <div class="absolute left-0 top-0 bottom-0 w-8 bg-black"></div>
+                            <div class="absolute right-0 top-0 bottom-0 w-8 bg-black"></div>
+                            <div class="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-around items-center">
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                            </div>
+                            <div class="absolute right-0 top-0 bottom-0 w-8 flex flex-col justify-around items-center">
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                                <div class="w-4 h-4 bg-gray-800 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4 text-amber-300 text-sm">2012年3月15日 | 第一场戏</div>
+                    </div>
+                </div>
+
+                <!-- 故事文本 */
+                <div class="space-y-8">
+                    <div class="bg-black/60 rounded-2xl p-8 border border-amber-400/30">
+                        <h3 class="text-3xl font-semibold text-amber-300 mb-6">春天里的小演员</h3>
+                        <div class="text-lg text-gray-200 leading-relaxed space-y-4">
+                            <p>
+                                2012年的那个春天，阳光透过窗户洒在地板上，一个小小的身影怯生生地走进了镜头。
+                                那是多多第一次出现在我们的生活舞台上。
+                            </p>
+                            <p>
+                                她的眼睛像两颗璀璨的星星，金色的毛发在阳光下闪闪发光。
+                                从那一刻起，我们就知道，这将是一部关于爱与陪伴的经典之作。
+                            </p>
+                        </div>
+                        
+                        <!-- 电影信息条 */
+                        <div class="mt-6 flex items-center space-x-6 text-amber-400 text-sm">
+                            <span>📅 拍摄日期：2012.03.15</span>
+                            <span>📍 地点：温暖的家</span>
+                            <span>🎬 导演：命运</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第二幕：快乐时光 */
+    <section class="relative min-h-screen bg-gradient-to-b from-emerald-900 via-teal-800 to-cyan-900">
+        <div class="absolute inset-0 bg-black/40"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <div class="text-cyan-400 text-lg uppercase tracking-widest mb-4">第二幕</div>
+                <h2 class="cinematic-title text-6xl font-bold text-white mb-6">黄金岁月</h2>
+                <div class="w-32 h-1 bg-cyan-400 mx-auto"></div>
+            </div>
+
+            <!-- 多个场景展示 -->
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="movie-frame bg-black p-3 floating">
+                    <div class="aspect-square bg-gradient-to-br from-emerald-200 to-teal-300 rounded flex items-center justify-center relative">
+                        <span class="text-6xl">📸</span>
+                        <div class="absolute bottom-2 left-2 right-2 bg-black/70 text-white text-xs p-2 rounded">
+                            公园里的奔跑
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-frame bg-black p-3 floating" style="animation-delay: 1s;">
+                    <div class="aspect-square bg-gradient-to-br from-yellow-200 to-amber-300 rounded flex items-center justify-center relative">
+                        <span class="text-6xl">📸</span>
+                        <div class="absolute bottom-2 left-2 right-2 bg-black/70 text-white text-xs p-2 rounded">
+                            阳光下的午睡
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-frame bg-black p-3 floating" style="animation-delay: 2s;">
+                    <div class="aspect-square bg-gradient-to-br from-pink-200 to-rose-300 rounded flex items-center justify-center relative">
+                        <span class="text-6xl">📸</span>
+                        <div class="absolute bottom-2 left-2 right-2 bg-black/70 text-white text-xs p-2 rounded">
+                            温暖的拥抱
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 蒙太奇文字 */
+            <div class="bg-black/80 rounded-3xl p-12 border border-cyan-400/30">
+                <h3 class="text-4xl font-semibold text-cyan-300 mb-8 text-center">蒙太奇：美好时光片段</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-cyan-400 pl-6">
+                            <h4 class="text-xl font-medium text-white mb-2">清晨的例行公事</h4>
+                            <p class="text-gray-300">每天早上7点，多多总是准时出现在我们的床边，用她特有的方式叫我们起床...</p>
+                        </div>
+                        <div class="border-l-4 border-emerald-400 pl-6">
+                            <h4 class="text-xl font-medium text-white mb-2">公园里的明星</h4>
+                            <p class="text-gray-300">在公园里，多多是所有人的开心果，她的友善感染着每一个遇见她的人...</p>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-yellow-400 pl-6">
+                            <h4 class="text-xl font-medium text-white mb-2">雨天的陪伴</h4>
+                            <p class="text-gray-300">就算是下雨天不能出门，多多也会安静地陪在我们身边，那份温暖超越了语言...</p>
+                        </div>
+                        <div class="border-l-4 border-pink-400 pl-6">
+                            <h4 class="text-xl font-medium text-white mb-2">生日的惊喜</h4>
+                            <p class="text-gray-300">每年的生日，我们都会为多多准备特别的惊喜，而她的快乐就是我们最大的礼物...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第三幕：永恒的告别 -->
+    <section class="relative min-h-screen bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900">
+        <div class="absolute inset-0 bg-black/50"></div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center">
+            <div class="mb-16">
+                <div class="text-purple-400 text-lg uppercase tracking-widest mb-4">第三幕</div>
+                <h2 class="cinematic-title text-6xl font-bold text-white mb-6">永恒的告别</h2>
+                <div class="w-32 h-1 bg-purple-400 mx-auto"></div>
+            </div>
+
+            <div class="bg-black/80 rounded-3xl p-16 border border-purple-400/30 max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <div class="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mx-auto mb-8 flex items-center justify-center">
+                        <span class="text-6xl text-white">🌟</span>
+                    </div>
+                    <h3 class="text-4xl font-semibold text-purple-300 mb-6">虽然告别了，但故事永远不会结束</h3>
+                </div>
+
+                <div class="text-xl text-gray-200 leading-relaxed space-y-6 mb-12">
+                    <p>
+                        2024年7月20日，多多完成了她在这个世界上的最后一场戏。
+                        虽然镜头停止了转动，但这部关于爱的电影永远不会落幕。
+                    </p>
+                    <p>
+                        在天堂的片场里，她一定还在快乐地奔跑，等待着我们的续集。
+                        这不是结束，而是一个新故事的开始。
+                    </p>
+                </div>
+
+                <!-- 影片信息 */
+                <div class="bg-purple-900/50 rounded-2xl p-8 mb-8">
+                    <h4 class="text-2xl font-semibold text-purple-300 mb-6">影片资料</h4>
+                    <div class="grid md:grid-cols-2 gap-6 text-left">
+                        <div class="space-y-3">
+                            <div><span class="text-purple-400">片名：</span>多多妈咪的一生</div>
+                            <div><span class="text-purple-400">类型：</span>温情记录片</div>
+                            <div><span class="text-purple-400">时长：</span>12年4个月</div>
+                        </div>
+                        <div class="space-y-3">
+                            <div><span class="text-purple-400">主演：</span>多多妈咪（金毛犬）</div>
+                            <div><span class="text-purple-400">上映：</span>2012.03.15</div>
+                            <div><span class="text-purple-400">制作：</span>爱与回忆工作室</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 观众留言区（影院风格）*/
+    <section class="bg-black py-20">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="cinematic-title text-5xl font-bold text-white mb-6">观众留言</h2>
+                <p class="text-xl text-gray-400">看完这部电影的观众都有话要说</p>
+            </div>
+
+            <!-- 留言输入区 */
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-10 mb-12 border border-gray-700">
+                <h3 class="text-2xl font-semibold text-white mb-6">写下您的观后感</h3>
+                <div class="space-y-4">
+                    <textarea 
+                        placeholder="这部关于多多的电影给您带来了什么感受？"
+                        class="w-full bg-gray-800 border border-gray-600 rounded-xl p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:border-purple-400"
+                        rows="4"
+                    ></textarea>
+                    <div class="flex justify-between items-center">
+                        <div class="flex space-x-4">
+                            <span class="text-gray-400 text-sm">为这部电影评分：</span>
+                            <div class="flex space-x-1">
+                                <span class="text-yellow-400 cursor-pointer hover:text-yellow-300">⭐</span>
+                                <span class="text-yellow-400 cursor-pointer hover:text-yellow-300">⭐</span>
+                                <span class="text-yellow-400 cursor-pointer hover:text-yellow-300">⭐</span>
+                                <span class="text-yellow-400 cursor-pointer hover:text-yellow-300">⭐</span>
+                                <span class="text-yellow-400 cursor-pointer hover:text-yellow-300">⭐</span>
+                            </div>
+                        </div>
+                        <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-medium transition-all duration-300">
+                            发表观后感
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 观众评论 -->
+            <div class="space-y-8">
+                <div class="bg-gray-900 rounded-2xl p-8 border border-gray-700">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="text-white font-medium">电影爱好者A</span>
+                                <div class="flex space-x-1">
+                                    <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                                </div>
+                                <span class="text-gray-500 text-sm">2天前</span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                这是我看过最感人的记录片。多多的故事让我想起了自己的宠物朋友。
+                                镜头语言很简单，但每一个画面都充满了爱。这不仅仅是一部关于宠物的电影，
+                                更是关于家庭、关于陪伴、关于生命意义的深刻思考。强烈推荐！
+                            </p>
+                            <div class="flex items-center space-x-4">
+                                <button class="text-red-400 hover:text-red-300 transition-colors flex items-center space-x-1">
+                                    <span>❤️</span>
+                                    <span>15</span>
+                                </button>
+                                <button class="text-gray-400 hover:text-gray-300 transition-colors">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900 rounded-2xl p-8 border border-gray-700">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold">邻</div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="text-white font-medium">邻居老王</span>
+                                <div class="flex space-x-1">
+                                    <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                                </div>
+                                <span class="text-gray-500 text-sm">5天前</span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed mb-4">
+                                作为多多的邻居，我见证了她从小到大的成长。这部电影完美地记录了她的一生，
+                                让我想起了那些美好的时光。多多不仅仅是一只狗，她是我们整个社区的一份子。
+                                谢谢制作这部电影，让多多的故事能够永远传承下去。
+                            </p>
+                            <div class="flex items-center space-x-4">
+                                <button class="text-red-400 hover:text-red-300 transition-colors flex items-center space-x-1">
+                                    <span>❤️</span>
+                                    <span>23</span>
+                                </button>
+                                <button class="text-gray-400 hover:text-gray-300 transition-colors">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 片尾致谢 */
+    <section class="bg-gradient-to-b from-black to-gray-900 py-20 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="space-y-8">
+                <h2 class="cinematic-title text-5xl font-bold text-white">制作团队</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 text-lg text-gray-300">
+                    <div>
+                        <div class="text-yellow-400 font-semibold mb-2">主演</div>
+                        <div>多多妈咪</div>
+                    </div>
+                    <div>
+                        <div class="text-yellow-400 font-semibold mb-2">制片人</div>
+                        <div>爱心家庭</div>
+                    </div>
+                    <div>
+                        <div class="text-yellow-400 font-semibold mb-2">摄影师</div>
+                        <div>生活的每一个瞬间</div>
+                    </div>
+                    <div>
+                        <div class="text-yellow-400 font-semibold mb-2">剪辑师</div>
+                        <div>时间与回忆</div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-700 pt-8">
+                    <div class="text-2xl text-white mb-4">特别感谢</div>
+                    <div class="text-gray-400">
+                        所有爱过多多的人<br>
+                        所有为多多点亮蜡烛的朋友<br>
+                        所有相信爱会永恒的心灵
+                    </div>
+                </div>
+
+                <div class="text-yellow-400 text-xl">
+                    🎬 End Credits 🎬
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
