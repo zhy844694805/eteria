@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, Download, Copy, Mail, MessageCircleHeart, Share2, Sparkles, User } from "lucide-react"
+import { Heart, Flame, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
-import { calculateMemorialStatus, getStatusColorClass, getActivityDescription } from "@/lib/memorial-status"
 
 interface Memorial {
   id: string
@@ -109,47 +108,56 @@ export default function PetMemorialPage() {
     }
   }
 
-  // 获取纪念页数据
-  const fetchMemorial = async () => {
-    if (!params.slug) return
-
-    try {
-      setLoading(true)
-      setError(null)
-
-      // 首先通过slug查找纪念页
-      const response = await fetch(`/api/memorials/slug/${params.slug}`)
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          setError('纪念页不存在')
-        } else {
-          throw new Error('获取纪念页失败')
-        }
-        return
-      }
-
-      const data = await response.json()
-      
-      if (data.memorial.type !== 'PET') {
-        setError('这不是一个宠物纪念页')
-        return
-      }
-
-      setMemorial(data.memorial)
-      
-      // 获取纪念页后检查点蜡烛状态
-      await checkCandleStatus(data.memorial.id)
-    } catch (error) {
-      console.error('获取纪念页失败:', error)
-      setError('获取纪念页失败，请稍后重试')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
-    fetchMemorial()
+    const abortController = new AbortController()
+    
+    const fetchMemorialWithCancel = async () => {
+      if (!params.slug) return
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        const response = await fetch(`/api/memorials/slug/${params.slug}`, {
+          signal: abortController.signal
+        })
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('纪念页不存在')
+          } else {
+            throw new Error('获取纪念页失败')
+          }
+          return
+        }
+
+        const data = await response.json()
+        
+        if (data.memorial.type !== 'PET') {
+          setError('这不是一个宠物纪念页')
+          return
+        }
+
+        if (!abortController.signal.aborted) {
+          setMemorial(data.memorial)
+          await checkCandleStatus(data.memorial.id)
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError' && !abortController.signal.aborted) {
+          console.error('获取纪念页失败:', error)
+          setError('获取纪念页失败，请稍后重试')
+        }
+      } finally {
+        if (!abortController.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    fetchMemorialWithCancel()
+    
+    return () => abortController.abort()
   }, [params.slug])
 
   // 用户状态变化时重新检查点蜡烛状态
@@ -197,7 +205,7 @@ export default function PetMemorialPage() {
       }
 
       // 重新获取数据以更新蜡烛数量
-      fetchMemorial()
+      window.location.reload()
       // 成功点蜡烛后，设置为今日不可再点
       setCanLightCandle(false)
       toast.success('思念之火已点亮')
@@ -238,7 +246,7 @@ export default function PetMemorialPage() {
       }
 
       setMessage('')
-      fetchMemorial()
+      window.location.reload()
       toast.success('留言已发送')
     } catch (error) {
       console.error('发送留言失败:', error)
@@ -273,32 +281,6 @@ export default function PetMemorialPage() {
     )
   }
 
-  const handleShareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`, "_blank")
-  }
-
-  const handleShareTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=纪念 ${memorial.subjectName}&url=${window.location.href}`,
-      "_blank",
-    )
-  }
-
-  const handleSharePinterest = () => {
-    window.open(
-      `https://pinterest.com/pin/create/button/?url=${window.location.href}&description=纪念 ${memorial.subjectName}`,
-      "_blank",
-    )
-  }
-
-  const handleShareEmail = () => {
-    window.location.href = `mailto:?subject=纪念 ${memorial.subjectName}&body=我想与您分享这个美丽的纪念页面: ${window.location.href}`
-  }
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
-    toast.success('链接已复制')
-  }
 
   // 获取主图片
   const getMainImage = () => {
@@ -476,6 +458,7 @@ export default function PetMemorialPage() {
               width={96}
               height={96}
               className="w-full h-full object-cover"
+              priority
             />
           </div>
           <h1 className="text-6xl font-extralight text-gray-900 mb-6">{memorial.subjectName}</h1>
@@ -526,6 +509,9 @@ export default function PetMemorialPage() {
                       width={300}
                       height={300}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
                   </div>
                 ))}

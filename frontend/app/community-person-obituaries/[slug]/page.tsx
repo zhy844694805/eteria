@@ -106,44 +106,56 @@ export default function PersonMemorialPage() {
     }
   }
 
-  // 获取纪念页数据
-  const fetchMemorial = async () => {
-    if (!params.slug) return
-
-    try {
-      setLoading(true)
-      setError(null)
-
-      const response = await fetch(`/api/memorials/slug/${params.slug}`)
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          setError('纪念页不存在')
-        } else {
-          throw new Error('获取纪念页失败')
-        }
-        return
-      }
-
-      const data = await response.json()
-      
-      if (data.memorial.type !== 'HUMAN') {
-        setError('这不是一个人员纪念页')
-        return
-      }
-
-      setMemorial(data.memorial)
-      await checkCandleStatus(data.memorial.id)
-    } catch (error) {
-      console.error('获取纪念页失败:', error)
-      setError('获取纪念页失败，请稍后重试')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
-    fetchMemorial()
+    const abortController = new AbortController()
+    
+    const fetchMemorialWithCancel = async () => {
+      if (!params.slug) return
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        const response = await fetch(`/api/memorials/slug/${params.slug}`, {
+          signal: abortController.signal
+        })
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('纪念页不存在')
+          } else {
+            throw new Error('获取纪念页失败')
+          }
+          return
+        }
+
+        const data = await response.json()
+        
+        if (data.memorial.type !== 'HUMAN') {
+          setError('这不是一个人员纪念页')
+          return
+        }
+
+        if (!abortController.signal.aborted) {
+          setMemorial(data.memorial)
+          await checkCandleStatus(data.memorial.id)
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError' && !abortController.signal.aborted) {
+          console.error('获取纪念页失败:', error)
+          setError('获取纪念页失败，请稍后重试')
+        }
+      } finally {
+        if (!abortController.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    fetchMemorialWithCancel()
+    
+    return () => abortController.abort()
   }, [params.slug])
 
   useEffect(() => {
@@ -187,7 +199,7 @@ export default function PersonMemorialPage() {
         throw new Error(errorData.error || '点燃蜡烛失败')
       }
 
-      fetchMemorial()
+      window.location.reload()
       setCanLightCandle(false)
       toast.success('思念之火已点亮')
     } catch (error: any) {
@@ -226,7 +238,7 @@ export default function PersonMemorialPage() {
       }
 
       setMessage('')
-      fetchMemorial()
+      window.location.reload()
       toast.success('留言已发送')
     } catch (error) {
       console.error('发送留言失败:', error)
@@ -322,6 +334,7 @@ export default function PersonMemorialPage() {
               width={96}
               height={96}
               className="w-full h-full object-cover"
+              priority
             />
           </div>
           <h1 className="text-6xl font-extralight text-gray-900 mb-6">{memorial.subjectName}</h1>
@@ -372,6 +385,9 @@ export default function PersonMemorialPage() {
                       width={300}
                       height={300}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
                   </div>
                 ))}

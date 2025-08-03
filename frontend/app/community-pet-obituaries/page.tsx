@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Image from "next/image"
-import { Heart, Flame, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Heart, Flame, Search, Loader2 } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
+import MemorialCard from "@/components/memorial-card"
 
 interface Memorial {
   id: string
@@ -33,7 +32,6 @@ interface Memorial {
 
 export default function CommunityPetObituariesPage() {
   const [memorials, setMemorials] = useState<Memorial[]>([])
-  const [filteredMemorials, setFilteredMemorials] = useState<Memorial[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string>('all')
@@ -41,30 +39,45 @@ export default function CommunityPetObituariesPage() {
 
   // 获取宠物纪念页数据
   useEffect(() => {
+    const abortController = new AbortController()
+    
     const fetchMemorials = async () => {
       try {
-        const response = await fetch('/api/memorials?type=PET&limit=50')
+        const response = await fetch('/api/memorials?type=PET&limit=50', {
+          signal: abortController.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error(response.status === 404 ? '未找到纪念页' : '获取纪念页失败')
+        }
+        
         const data = await response.json()
         
-        if (response.ok) {
-          setMemorials(data.memorials)
-          setFilteredMemorials(data.memorials)
-        } else {
-          setError(data.error || '获取纪念页失败')
+        if (!abortController.signal.aborted) {
+          setMemorials(data.memorials || [])
         }
-      } catch (error) {
-        console.error('Fetch memorials error:', error)
-        setError('网络错误')
+      } catch (error: any) {
+        if (error.name !== 'AbortError' && !abortController.signal.aborted) {
+          console.error('Fetch memorials error:', error)
+          setError(error.message || '网络错误')
+        }
       } finally {
-        setIsLoading(false)
+        if (!abortController.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchMemorials()
+    
+    return () => abortController.abort()
   }, [])
 
-  // 过滤纪念页
-  useEffect(() => {
+  // 使用useMemo优化过滤逻辑
+  const filteredMemorials = useMemo(() => {
     let filtered = memorials
 
     // 按宠物类型过滤
@@ -92,12 +105,13 @@ export default function CommunityPetObituariesPage() {
 
     // 按名字搜索
     if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim()
       filtered = filtered.filter(memorial =>
-        memorial.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        memorial.subjectName.toLowerCase().includes(query)
       )
     }
 
-    setFilteredMemorials(filtered)
+    return filtered
   }, [memorials, activeFilter, searchQuery])
 
   // 格式化日期范围
@@ -107,7 +121,108 @@ export default function CommunityPetObituariesPage() {
     return `${birthYear} - ${deathYear}`
   }
 
-  // 计算年龄
+  // 翻译品种名称
+  const translateBreed = (breed?: string) => {
+    if (!breed) return '未知'
+    
+    const breedTranslations: { [key: string]: string } = {
+      // 狗类品种
+      'labrador': '拉布拉多',
+      'golden-retriever': '金毛寻回犬',
+      'german-shepherd': '德国牧羊犬',
+      'bulldog': '斗牛犬',
+      'poodle': '贵宾犬',
+      'husky': '哈士奇',
+      'chihuahua': '吉娃娃',
+      'shiba-inu': '柴犬',
+      'corgi': '柯基',
+      'beagle': '比格犬',
+      'border-collie': '边境牧羊犬',
+      'rottweiler': '罗威纳',
+      'yorkshire-terrier': '约克夏梗',
+      'dachshund': '腊肠犬',
+      'boxer': '拳师犬',
+      'australian-shepherd': '澳洲牧羊犬',
+      'siberian-husky': '西伯利亚雪橇犬',
+      'great-dane': '大丹犬',
+      'pomeranian': '博美',
+      'shih-tzu': '西施犬',
+      'boston-terrier': '波士顿梗',
+      'bernese-mountain-dog': '伯恩山犬',
+      'french-bulldog': '法国斗牛犬',
+      'cocker-spaniel': '可卡犬',
+      'maltese': '马尔济斯',
+      'mixed-breed-dog': '混种犬',
+      'other-dog': '其他犬种',
+      
+      // 猫类品种
+      'persian': '波斯猫',
+      'maine-coon': '缅因猫',
+      'siamese': '暹罗猫',
+      'ragdoll': '布偶猫',
+      'british-shorthair': '英国短毛猫',
+      'american-shorthair': '美国短毛猫',
+      'scottish-fold': '苏格兰折耳猫',
+      'russian-blue': '俄罗斯蓝猫',
+      'bengal': '孟加拉猫',
+      'abyssinian': '阿比西尼亚猫',
+      'birman': '伯曼猫',
+      'exotic-shorthair': '异国短毛猫',
+      'norwegian-forest': '挪威森林猫',
+      'sphynx': '斯芬克斯猫',
+      'oriental-shorthair': '东方短毛猫',
+      'devon-rex': '德文卷毛猫',
+      'turkish-angora': '土耳其安哥拉猫',
+      'munchkin': '曼基康猫',
+      'domestic-shorthair': '家养短毛猫',
+      'domestic-longhair': '家养长毛猫',
+      'mixed-breed-cat': '混种猫',
+      'other-cat': '其他猫种',
+      
+      // 鸟类品种
+      'canary': '金丝雀',
+      'budgerigar': '虎皮鹦鹉',
+      'cockatiel': '玄凤鹦鹉',
+      'lovebird': '爱情鸟',
+      'macaw': '金刚鹦鹉',
+      'african-grey': '非洲灰鹦鹉',
+      'cockatoo': '凤头鹦鹉',
+      'conure': '锥尾鹦鹉',
+      'finch': '雀',
+      'parakeet': '长尾小鹦鹉',
+      'other-bird': '其他鸟类',
+      
+      // 兔子品种
+      'holland-lop': '荷兰垂耳兔',
+      'mini-rex': '迷你雷克斯兔',
+      'netherland-dwarf': '荷兰侏儒兔',
+      'lionhead': '狮子头兔',
+      'flemish-giant': '佛兰德巨兔',
+      'angora': '安哥拉兔',
+      'rex': '雷克斯兔',
+      'dutch': '荷兰兔',
+      'english-lop': '英国垂耳兔',
+      'mini-lop': '迷你垂耳兔',
+      'other-rabbit': '其他兔种',
+      
+      // 仓鼠品种
+      'syrian': '叙利亚仓鼠',
+      'dwarf-hamster': '侏儒仓鼠',
+      'chinese': '中国仓鼠',
+      'roborovski': '罗伯罗夫斯基仓鼠',
+      'other-hamster': '其他仓鼠',
+      
+      // 豚鼠品种
+      'american': '美国豚鼠',
+      'peruvian': '秘鲁豚鼠',
+      'abyssinian': '阿比西尼亚豚鼠',
+      'silkie': '丝毛豚鼠',
+      'other-guinea-pig': '其他豚鼠'
+    }
+    
+    return breedTranslations[breed.toLowerCase()] || breed
+  }
+
   // 翻译宠物类型
   const translatePetType = (type?: string) => {
     if (!type) return '宠物'
@@ -156,137 +271,6 @@ export default function CommunityPetObituariesPage() {
     }
   }
 
-  const pets = [
-    {
-      name: "Nemo",
-      years: "2010 - 2023",
-      age: "12 years",
-      breed: "美国短毛猫",
-      candles: 5,
-      messages: 2,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "cat",
-    },
-    {
-      name: "Jaxon",
-      years: "2014 - 2024",
-      age: "10 years",
-      breed: "拳师犬",
-      candles: 6,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-    {
-      name: "Nico",
-      years: "2001 - 2014",
-      age: "12 years",
-      breed: "金毛寻回犬",
-      candles: 3,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-    {
-      name: "Palmer",
-      years: "2013 - 2024",
-      age: "11 years",
-      breed: "美国短毛猫",
-      candles: 5,
-      messages: 2,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "cat",
-    },
-    {
-      name: "Goccia",
-      years: "2010 - 2024",
-      age: "14 years",
-      breed: "虎斑猫",
-      candles: 2,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "cat",
-    },
-    {
-      name: "Koschei",
-      years: "2017 - 2025",
-      age: "8 years",
-      breed: "美国短毛猫",
-      candles: 3,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "cat",
-    },
-    {
-      name: "Albert",
-      years: "2019 - 2025",
-      age: "6 years",
-      breed: "豚鼠",
-      candles: 4,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "other",
-    },
-    {
-      name: "Belle",
-      years: "2010 - 2024",
-      age: "14 years",
-      breed: "马尔济斯犬",
-      candles: 2,
-      messages: 1,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-    {
-      name: "Rocky",
-      years: "2025 - 2025",
-      age: "9 months",
-      breed: "拳师犬",
-      candles: 4,
-      messages: 3,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-    {
-      name: "Lila",
-      years: "2009 - 2023",
-      age: "14 years",
-      breed: "混种",
-      candles: 4,
-      messages: 2,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-    {
-      name: "Anderson",
-      years: "2010 - 2025",
-      age: "14 years",
-      breed: "兔子",
-      candles: 5,
-      messages: 3,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "rabbit",
-    },
-    {
-      name: "Wilson",
-      years: "2016 - 2024",
-      age: "7 years",
-      breed: "混种",
-      candles: 7,
-      messages: 4,
-      image: "/placeholder.svg?height=200&width=200",
-      type: "dog",
-    },
-  ]
-
-  const generateSlug = (name: string) => {
-    return (
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "")
-        .substring(0, 6) + "h2"
-    )
-  }
 
   const filterCategories = [
     { name: "所有宠物", value: "all" },
@@ -379,42 +363,15 @@ export default function CommunityPetObituariesPage() {
           ) : (
             <div className="grid md:grid-cols-3 gap-6">
               {filteredMemorials.map((memorial) => (
-                <Link
+                <MemorialCard
                   key={memorial.id}
-                  href={`/community-pet-obituaries/${memorial.slug}`}
-                  className="block"
-                >
-                  <div className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 cursor-pointer">
-                    <div className="aspect-square bg-slate-100">
-                      <Image
-                        src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
-                        alt={memorial.subjectName}
-                        width={300}
-                        height={300}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
-                      <div className="text-slate-500 text-sm mb-1">
-                        {formatDateRange(memorial.birthDate, memorial.deathDate)} • {calculateAge(memorial.birthDate, memorial.deathDate)}
-                      </div>
-                      <div className="text-slate-600 text-sm mb-4">
-                        {memorial.breed ? `${translatePetType(memorial.subjectType)} • ${memorial.breed}` : translatePetType(memorial.subjectType)}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-400">
-                        <div className="flex items-center gap-1">
-                          <Flame className="w-4 h-4" />
-                          <span>{memorial._count.candles}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
-                          <span>{memorial._count.messages}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                  memorial={memorial}
+                  formatDateRange={formatDateRange}
+                  calculateAge={calculateAge}
+                  translatePetType={translatePetType}
+                  translateBreed={translateBreed}
+                  isPetMemorial={true}
+                />
               ))}
             </div>
           )}

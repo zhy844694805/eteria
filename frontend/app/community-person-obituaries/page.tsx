@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Image from "next/image"
 import { Heart, Flame, Search, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
+import MemorialCard from "@/components/memorial-card"
 
 interface Memorial {
   id: string
@@ -39,7 +39,6 @@ interface Memorial {
 
 export default function CommunityPersonObituariesPage() {
   const [memorials, setMemorials] = useState<Memorial[]>([])
-  const [filteredMemorials, setFilteredMemorials] = useState<Memorial[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string>('all')
@@ -47,30 +46,45 @@ export default function CommunityPersonObituariesPage() {
 
   // 获取人员纪念页数据
   useEffect(() => {
+    const abortController = new AbortController()
+    
     const fetchMemorials = async () => {
       try {
-        const response = await fetch('/api/memorials?type=HUMAN&limit=50')
+        const response = await fetch('/api/memorials?type=HUMAN&limit=50', {
+          signal: abortController.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error(response.status === 404 ? '未找到纪念页' : '获取纪念页失败')
+        }
+        
         const data = await response.json()
         
-        if (response.ok) {
-          setMemorials(data.memorials)
-          setFilteredMemorials(data.memorials)
-        } else {
-          setError(data.error || '获取纪念页失败')
+        if (!abortController.signal.aborted) {
+          setMemorials(data.memorials || [])
         }
-      } catch (error) {
-        console.error('Fetch memorials error:', error)
-        setError('网络错误')
+      } catch (error: any) {
+        if (error.name !== 'AbortError' && !abortController.signal.aborted) {
+          console.error('Fetch memorials error:', error)
+          setError(error.message || '网络错误')
+        }
       } finally {
-        setIsLoading(false)
+        if (!abortController.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchMemorials()
+    
+    return () => abortController.abort()
   }, [])
 
-  // 过滤纪念页
-  useEffect(() => {
+  // 使用useMemo优化过滤逻辑
+  const filteredMemorials = useMemo(() => {
     let filtered = memorials
 
     // 按关系类型过滤
@@ -100,7 +114,7 @@ export default function CommunityPersonObituariesPage() {
 
     // 按搜索关键词过滤
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
+      const query = searchQuery.toLowerCase().trim()
       filtered = filtered.filter(memorial =>
         memorial.subjectName.toLowerCase().includes(query) ||
         memorial.occupation?.toLowerCase().includes(query) ||
@@ -109,7 +123,7 @@ export default function CommunityPersonObituariesPage() {
       )
     }
 
-    setFilteredMemorials(filtered)
+    return filtered
   }, [memorials, activeFilter, searchQuery])
 
   const formatAge = (birthDate: string | null, deathDate: string | null, age?: number) => {
@@ -130,6 +144,23 @@ export default function CommunityPersonObituariesPage() {
       return `${birth} - ${death}`
     }
     return ''
+  }
+
+  const translateRelationship = (relationship?: string) => {
+    if (!relationship) return ''
+    
+    const relationshipTranslations: { [key: string]: string } = {
+      'parent': '父母',
+      'spouse': '配偶',
+      'child': '子女',
+      'sibling': '兄弟姐妹',
+      'relative': '亲戚',
+      'friend': '朋友',
+      'colleague': '同事',
+      'other': '其他'
+    }
+    
+    return relationshipTranslations[relationship] || relationship
   }
 
   const filterCategories = [
@@ -230,50 +261,16 @@ export default function CommunityPersonObituariesPage() {
 
           {!isLoading && !error && filteredMemorials.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
-              {filteredMemorials.map((memorial) => {
-                const mainImage = memorial.images.find(img => img.isMain) || memorial.images[0]
-                const ageDisplay = formatAge(memorial.birthDate, memorial.deathDate, memorial.age)
-                const dateRange = formatDateRange(memorial.birthDate, memorial.deathDate)
-                
-                return (
-                  <Link
-                    key={memorial.id}
-                    href={`/community-person-obituaries/${memorial.slug}`}
-                    className="block"
-                  >
-                    <div className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 cursor-pointer hover:shadow-lg transition-shadow">
-                      <div className="aspect-square bg-slate-100">
-                        <Image
-                          src={mainImage?.url || "/placeholder.svg"}
-                          alt={memorial.subjectName}
-                          width={300}
-                          height={300}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
-                        <p className="text-slate-500 text-sm mb-1">
-                          {dateRange && `${dateRange} • `}{ageDisplay}
-                        </p>
-                        <p className="text-slate-500 text-sm mb-3">
-                          {memorial.relationship} {memorial.occupation && `• ${memorial.occupation}`}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-slate-400">
-                          <div className="flex items-center gap-1">
-                            <Flame className="w-4 h-4" />
-                            <span>{memorial._count.candles}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Heart className="w-4 h-4" />
-                            <span>{memorial._count.messages}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
+              {filteredMemorials.map((memorial) => (
+                <MemorialCard
+                  key={memorial.id}
+                  memorial={memorial}
+                  formatDateRange={formatDateRange}
+                  formatAge={formatAge}
+                  translateRelationship={translateRelationship}
+                  isPetMemorial={false}
+                />
+              ))}
             </div>
           ) : !isLoading && !error ? (
             // 空状态 - 极简
