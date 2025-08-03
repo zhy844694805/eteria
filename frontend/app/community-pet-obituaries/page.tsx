@@ -36,6 +36,7 @@ export default function CommunityPetObituariesPage() {
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
 
   // 获取宠物纪念页数据
   useEffect(() => {
@@ -213,10 +214,10 @@ export default function CommunityPetObituariesPage() {
       'other-hamster': '其他仓鼠',
       
       // 豚鼠品种
-      'american': '美国豚鼠',
-      'peruvian': '秘鲁豚鼠',
-      'abyssinian': '阿比西尼亚豚鼠',
-      'silkie': '丝毛豚鼠',
+      'american-guinea-pig': '美国豚鼠',
+      'peruvian-guinea-pig': '秘鲁豚鼠',
+      'abyssinian-guinea-pig': '阿比西尼亚豚鼠',
+      'silkie-guinea-pig': '丝毛豚鼠',
       'other-guinea-pig': '其他豚鼠'
     }
     
@@ -274,12 +275,12 @@ export default function CommunityPetObituariesPage() {
 
   const filterCategories = [
     { name: "所有宠物", value: "all" },
-    { name: "🐕 狗", value: "dog" },
-    { name: "🐱 猫", value: "cat" },
-    { name: "🐦 鸟", value: "bird" },
-    { name: "🐰 兔子", value: "rabbit" },
-    { name: "🐹 仓鼠", value: "hamster" },
-    { name: "🐾 其他", value: "other" },
+    { name: "狗", value: "dog" },
+    { name: "猫", value: "cat" },
+    { name: "鸟", value: "bird" },
+    { name: "兔子", value: "rabbit" },
+    { name: "仓鼠", value: "hamster" },
+    { name: "其他", value: "other" },
   ]
 
   // 处理筛选器点击
@@ -287,9 +288,40 @@ export default function CommunityPetObituariesPage() {
     setActiveFilter(filterValue)
   }
 
-  // 处理搜索
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
+  // 处理搜索 - 使用搜索API
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value
+    setSearchQuery(query)
+    
+    if (!query.trim()) {
+      // 如果搜索为空，重新加载所有宠物纪念页
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/memorials?type=PET&limit=50')
+        if (response.ok) {
+          const data = await response.json()
+          setMemorials(data.memorials || [])
+        }
+      } catch (error) {
+        console.error('Error reloading memorials:', error)
+      } finally {
+        setIsLoading(false)
+      }
+      return
+    }
+    
+    setIsSearching(true)
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=PET&limit=50`)
+      if (response.ok) {
+        const data = await response.json()
+        setMemorials(data.results || [])
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   return (
@@ -323,9 +355,13 @@ export default function CommunityPetObituariesPage() {
               ))}
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              {isSearching ? (
+                <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 animate-spin" />
+              ) : (
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              )}
               <input 
-                placeholder="按名字搜索..." 
+                placeholder="搜索宠物名字、品种、故事..." 
                 className="pl-10 pr-4 py-2 w-64 rounded-2xl border border-slate-300 focus:border-slate-400 focus:outline-none bg-white"
                 value={searchQuery}
                 onChange={handleSearchChange}

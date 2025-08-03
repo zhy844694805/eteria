@@ -43,6 +43,7 @@ export default function CommunityPersonObituariesPage() {
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
 
   // 获取人员纪念页数据
   useEffect(() => {
@@ -165,14 +166,50 @@ export default function CommunityPersonObituariesPage() {
 
   const filterCategories = [
     { name: "所有纪念", value: "all" },
-    { name: "👨👩 父母", value: "parent" },
-    { name: "💕 配偶", value: "spouse" },
-    { name: "👶 子女", value: "child" },
-    { name: "👥 兄弟姐妹", value: "sibling" },
-    { name: "👫 朋友", value: "friend" },
-    { name: "💼 同事", value: "colleague" },
-    { name: "👤 亲戚", value: "relative" },
+    { name: "父母", value: "parent" },
+    { name: "配偶", value: "spouse" },
+    { name: "子女", value: "child" },
+    { name: "兄弟姐妹", value: "sibling" },
+    { name: "朋友", value: "friend" },
+    { name: "同事", value: "colleague" },
+    { name: "亲戚", value: "relative" },
   ]
+
+  // 处理搜索 - 使用搜索API
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value
+    setSearchQuery(query)
+    
+    if (!query.trim()) {
+      // 如果搜索为空，重新加载所有人员纪念页
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/memorials?type=HUMAN&limit=50')
+        if (response.ok) {
+          const data = await response.json()
+          setMemorials(data.memorials || [])
+        }
+      } catch (error) {
+        console.error('Error reloading memorials:', error)
+      } finally {
+        setIsLoading(false)
+      }
+      return
+    }
+    
+    setIsSearching(true)
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=HUMAN&limit=50`)
+      if (response.ok) {
+        const data = await response.json()
+        setMemorials(data.results || [])
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setIsSearching(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
@@ -209,11 +246,15 @@ export default function CommunityPersonObituariesPage() {
               ))}
             </div>
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              {isSearching ? (
+                <Loader2 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 animate-spin" />
+              ) : (
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              )}
               <Input 
-                placeholder="搜索纪念页面..." 
+                placeholder="搜索姓名、职业、故事..." 
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="pl-12 w-64 rounded-xl border-slate-200 bg-white" 
               />
             </div>

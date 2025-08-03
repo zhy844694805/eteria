@@ -10,10 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ArrowLeftIcon, SaveIcon, Upload, X, Plus } from 'lucide-react'
+import { ArrowLeftIcon, SaveIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
 import { DatePicker } from '@/components/ui/date-picker'
+import { ImageManager } from '@/components/image-manager'
 
 interface Memorial {
   id: string
@@ -43,6 +44,8 @@ interface Memorial {
     id: string
     url: string
     isMain: boolean
+    order: number
+    filename: string
   }>
 }
 
@@ -55,8 +58,6 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
   const [memorial, setMemorial] = useState<Memorial | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [imageFiles, setImageFiles] = useState<File[]>([])
-  const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -217,57 +218,10 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     }
   }, [memorial?.birthDate, memorial?.deathDate])
 
-  // 处理图片上传
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    if (files.length === 0) return
-
-    // 限制最多10张图片
-    const totalImages = (memorial?.images?.length || 0) + imageFiles.length + files.length
-    if (totalImages > 10) {
-      toast.error('最多只能上传10张图片')
-      return
-    }
-
-    setImageFiles(prev => [...prev, ...files])
-    
-    // 生成预览
-    files.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreviews(prev => [...prev, e.target?.result as string])
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  // 删除现有图片
-  const removeExistingImage = (imageId: string) => {
+  // 处理图片更新回调
+  const handleImagesUpdate = (updatedImages: Memorial['images']) => {
     if (!memorial) return
-    const updatedImages = memorial.images.filter(img => img.id !== imageId)
     setMemorial({ ...memorial, images: updatedImages })
-  }
-
-  // 删除新上传的图片
-  const removeNewImage = (index: number) => {
-    const newImageFiles = [...imageFiles]
-    const newImagePreviews = [...imagePreviews]
-    newImageFiles.splice(index, 1)
-    newImagePreviews.splice(index, 1)
-    setImageFiles(newImageFiles)
-    setImagePreviews(newImagePreviews)
-  }
-
-  // 设置主图片
-  const setMainImage = (imageId: string, isExisting: boolean) => {
-    if (!memorial) return
-    if (isExisting) {
-      const updatedImages = memorial.images.map(img => ({
-        ...img,
-        isMain: img.id === imageId
-      }))
-      setMemorial({ ...memorial, images: updatedImages })
-    }
   }
 
   const getPetBreeds = () => {
@@ -585,111 +539,12 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
           <div className="bg-white rounded-2xl p-8 shadow-sm">
             <h2 className="text-xl font-light text-slate-900 mb-2">图片管理</h2>
             <p className="text-slate-600 mb-6">管理纪念页的照片（最多10张）</p>
-            <div className="space-y-6">
-              {/* 现有图片 */}
-              {memorial.images && memorial.images.length > 0 && (
-                <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-2 block">现有图片</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    {memorial.images.map((image) => (
-                      <div key={image.id} className="relative group">
-                        <Image
-                          src={image.url}
-                          alt="纪念照片"
-                          width={200}
-                          height={200}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        {image.isMain && (
-                          <div className="absolute top-2 left-2 bg-teal-500 text-white text-xs px-2 py-1 rounded">
-                            主图
-                          </div>
-                        )}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => removeExistingImage(image.id)}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                        {!image.isMain && (
-                          <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs"
-                              onClick={() => setMainImage(image.id, true)}
-                            >
-                              设为主图
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 新上传图片预览 */}
-              {imagePreviews.length > 0 && (
-                <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-2 block">新上传图片</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative group">
-                        <Image
-                          src={preview}
-                          alt="新图片预览"
-                          width={200}
-                          height={200}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => removeNewImage(index)}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                        <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                          新增
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 上传按钮 */}
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center">
-                <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <p className="text-slate-600 mb-2">添加更多照片</p>
-                <p className="text-sm text-slate-500 mb-4">
-                  当前图片数量: {(memorial.images?.length || 0) + imageFiles.length}/10
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => document.getElementById('image-upload-input')?.click()}
-                  disabled={(memorial.images?.length || 0) + imageFiles.length >= 10}
-                  className="border-slate-300 text-slate-600"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  选择图片
-                </Button>
-                <input
-                  id="image-upload-input"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
-              </div>
-            </div>
+            <ImageManager
+              memorialId={memorial.id}
+              images={memorial.images}
+              onImagesUpdate={handleImagesUpdate}
+              maxImages={10}
+            />
           </div>
 
           {/* 设置 */}
