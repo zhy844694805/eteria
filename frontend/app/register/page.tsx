@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Heart, Mail, Lock, User, AlertCircle } from 'lucide-react'
+import { GoogleLoginButton } from '@/components/google-login-button'
 import type { RegisterFormData } from '@/lib/types/auth'
 
 function RegisterWithParams() {
@@ -165,6 +166,19 @@ function RegisterWithParams() {
                 {isLoading ? '注册中...' : '创建账户'}
               </button>
             </form>
+
+            {/* 分割线 */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-4 text-slate-500 font-light">或</span>
+              </div>
+            </div>
+
+            {/* Google 注册按钮 */}
+            <GoogleLoginButton isLoading={isLoading} buttonText="使用Google注册" />
 
             {/* Agreement - 极简协议区 */}
             <div className="mt-6 text-center">

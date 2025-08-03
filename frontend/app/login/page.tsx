@@ -9,16 +9,70 @@ import { Input } from '@/components/ui/input'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Heart, Mail, Lock, AlertCircle } from 'lucide-react'
+import { GoogleLoginButton } from '@/components/google-login-button'
+import { toast } from 'sonner'
 import type { LoginFormData } from '@/lib/types/auth'
 
 // 简化的登录组件
 function LoginWithParams() {
-  const { login, isLoading } = useAuth()
+  const { login, isLoading, setUser } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: ''
   })
   const [error, setError] = useState('')
+
+  // 处理Google登录回调
+  useEffect(() => {
+    const googleAuth = searchParams.get('google_auth')
+    const token = searchParams.get('token')
+    const errorParam = searchParams.get('error')
+
+    if (googleAuth === 'success' && token) {
+      // Google登录成功
+      try {
+        // 解析token并设置用户
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        localStorage.setItem('token', token)
+        
+        // 获取用户信息并设置
+        fetch('/api/auth/verify', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.user) {
+            setUser(data.user)
+            toast.success('Google登录成功！')
+            router.push('/')
+          }
+        })
+        .catch(err => {
+          console.error('Verify token error:', err)
+          toast.error('登录验证失败')
+        })
+      } catch (err) {
+        console.error('Token parsing error:', err)
+        toast.error('登录处理失败')
+      }
+    } else if (errorParam) {
+      // 处理各种错误
+      const errorMessages: { [key: string]: string } = {
+        'oauth_error': 'Google授权失败',
+        'missing_code': '授权码缺失',
+        'no_email': '无法获取邮箱信息',
+        'oauth_failed': 'OAuth处理失败'
+      }
+      
+      const errorMessage = errorMessages[errorParam] || 'Google登录失败'
+      setError(errorMessage)
+      toast.error(errorMessage)
+    }
+  }, [searchParams, setUser, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -113,6 +167,19 @@ function LoginWithParams() {
                 {isLoading ? '登录中...' : '登录'}
               </button>
             </form>
+
+            {/* 分割线 */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white px-4 text-slate-500 font-light">或</span>
+              </div>
+            </div>
+
+            {/* Google 登录按钮 */}
+            <GoogleLoginButton isLoading={isLoading} />
 
             {/* Links - 极简链接 */}
             <div className="mt-6 text-center">
