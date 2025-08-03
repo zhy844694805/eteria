@@ -18,6 +18,7 @@ export interface AuthContextType {
   logout: () => void
   updatePreferredSystem: (system: 'pet' | 'human') => Promise<void>
   updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => Promise<boolean>
+  autoDetectAndSetPreferredSystem: (pathname: string) => Promise<void>
 }
 
 export interface LoginFormData {

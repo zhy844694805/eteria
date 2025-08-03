@@ -94,6 +94,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // 自动检测和更新用户偏好系统
+  const autoDetectAndSetPreferredSystem = async (pathname: string) => {
+    if (!user || user.preferredSystem) return // 如果已经有偏好，不自动更新
+    
+    let detectedSystem: 'pet' | 'human' | null = null
+    
+    // 检测用户当前访问的系统
+    if (pathname.startsWith('/pet-memorial') || 
+        pathname.startsWith('/create-obituary') || 
+        pathname.startsWith('/community-pet-obituaries')) {
+      detectedSystem = 'pet'
+    } else if (pathname.startsWith('/human-memorial') || 
+               pathname.startsWith('/create-person-obituary') || 
+               pathname.startsWith('/community-person-obituaries')) {
+      detectedSystem = 'human'
+    }
+    
+    if (detectedSystem) {
+      await updatePreferredSystem(detectedSystem)
+    }
+  }
+
   const updateUserInfo = async (updates: Partial<Pick<User, 'name'>>): Promise<boolean> => {
     if (!user) return false
     try {
@@ -114,7 +136,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     logout,
     updatePreferredSystem,
-    updateUserInfo
+    updateUserInfo,
+    autoDetectAndSetPreferredSystem
   }
 
   return (

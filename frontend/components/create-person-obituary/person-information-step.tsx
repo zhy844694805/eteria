@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Plus } from "lucide-react"
 
 interface PersonInformationStepProps {
@@ -56,7 +57,7 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建纪念页面</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费纪念页</h1>
         <p className="text-gray-600">用永久存在的美丽纪念向逝去的亲人致敬</p>
       </div>
 
@@ -102,10 +103,11 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
             <label className="block text-sm font-medium text-gray-700 mb-2">
               出生日期 <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="date"
+            <DatePicker
               value={formData.birthDate}
-              onChange={(e) => updateFormData({ birthDate: e.target.value })}
+              onChange={(date) => updateFormData({ birthDate: date })}
+              maxYear={new Date().getFullYear()}
+              minYear={1900}
             />
             <p className="text-xs text-gray-500 mt-1">大概日期即可</p>
           </div>
@@ -113,10 +115,11 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
             <label className="block text-sm font-medium text-gray-700 mb-2">
               去世日期 <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="date"
+            <DatePicker
               value={formData.passingDate}
-              onChange={(e) => updateFormData({ passingDate: e.target.value })}
+              onChange={(date) => updateFormData({ passingDate: date })}
+              maxYear={new Date().getFullYear()}
+              minYear={1900}
             />
           </div>
         </div>
@@ -189,7 +192,7 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
           <Button
             onClick={onNext}
             disabled={!canProceed}
-            className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full"
+            className="bg-purple-400 hover:bg-purple-500 text-white px-8 py-2 rounded-full"
           >
             下一步
           </Button>

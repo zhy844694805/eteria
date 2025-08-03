@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowLeftIcon, SaveIcon, Upload, X, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { DatePicker } from '@/components/ui/date-picker'
 
 interface Memorial {
   id: string
@@ -135,24 +136,24 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
         },
         body: JSON.stringify({
           subjectName: memorial.subjectName,
-          subjectType: memorial.subjectType,
+          subjectType: memorial.subjectType || null,
           birthDate: memorial.birthDate || null,
           deathDate: memorial.deathDate || null,
-          age: memorial.age,
-          breed: memorial.breed,
-          color: memorial.color,
-          gender: memorial.gender,
-          relationship: memorial.relationship,
-          occupation: memorial.occupation,
-          location: memorial.location,
-          story: memorial.story,
-          memories: memorial.memories,
-          personalityTraits: memorial.personalityTraits,
-          favoriteThings: memorial.favoriteThings,
+          age: memorial.age || null,
+          breed: memorial.breed || null,
+          color: memorial.color || null,
+          gender: memorial.gender || null,
+          relationship: memorial.relationship || null,
+          occupation: memorial.occupation || null,
+          location: memorial.location || null,
+          story: memorial.story || null,
+          memories: memorial.memories || null,
+          personalityTraits: memorial.personalityTraits || null,
+          favoriteThings: memorial.favoriteThings || null,
           creatorName: memorial.creatorName,
-          creatorEmail: memorial.creatorEmail,
-          creatorPhone: memorial.creatorPhone,
-          creatorRelation: memorial.creatorRelation,
+          creatorEmail: memorial.creatorEmail || null,
+          creatorPhone: memorial.creatorPhone || null,
+          creatorRelation: memorial.creatorRelation || null,
           isPublic: memorial.isPublic
         })
       })
@@ -304,10 +305,10 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-400 mx-auto mb-4"></div>
-          <p className="text-gray-600">加载中...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto mb-4"></div>
+          <p className="text-slate-600">加载中...</p>
         </div>
       </div>
     )
@@ -315,94 +316,117 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
 
   if (!memorial) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">纪念页不存在</p>
+          <p className="text-slate-600">纪念页不存在</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-12 pt-24">
           <Button
             variant="ghost"
             onClick={() => router.push('/settings?tab=memorials')}
-            className="mb-4"
+            className="mb-6 text-slate-600 hover:text-slate-900"
           >
             <ArrowLeftIcon className="w-4 h-4 mr-2" />
             返回设置
           </Button>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">编辑纪念页</h1>
-          <p className="text-gray-600">修改 {memorial.subjectName} 的纪念页信息</p>
+          <div className="text-center">
+            <h1 className="text-4xl font-light text-slate-900 mb-4">编辑纪念</h1>
+            <p className="text-slate-600">修改 {memorial.subjectName} 的纪念页信息</p>
+          </div>
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-8">
           {/* 基本信息 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                基本信息
-                {memorial.type === 'PET' ? (
-                  <span className="text-sm bg-teal-100 text-teal-700 px-2 py-1 rounded">宠物纪念</span>
-                ) : (
-                  <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded">逝者纪念</span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <h2 className="text-xl font-light text-slate-900 mb-6 flex items-center gap-3">
+              基本信息
+              {memorial.type === 'PET' ? (
+                <span className="text-sm bg-teal-100 text-teal-700 px-3 py-1 rounded-full">宠物纪念</span>
+              ) : (
+                <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">逝者纪念</span>
+              )}
+            </h2>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label>姓名 *</Label>
+                  <Label className="text-slate-700 font-medium">姓名 *</Label>
                   <Input
                     value={memorial.subjectName}
                     onChange={(e) => updateField('subjectName', e.target.value)}
                     placeholder="请输入姓名"
+                    className="mt-2"
                   />
                 </div>
                 <div>
-                  <Label>{memorial.type === 'PET' ? '宠物类型' : '关系'}</Label>
-                  <Input
-                    value={memorial.subjectType || ''}
-                    onChange={(e) => updateField('subjectType', e.target.value)}
-                    placeholder={memorial.type === 'PET' ? '如：狗、猫' : '如：父亲、母亲'}
-                  />
+                  <Label className="text-slate-700 font-medium">{memorial.type === 'PET' ? '宠物类型' : '关系'}</Label>
+                  {memorial.type === 'PET' ? (
+                    <Select value={memorial.subjectType || ''} onValueChange={(value) => updateField('subjectType', value)}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="选择宠物类型" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dog">狗</SelectItem>
+                        <SelectItem value="cat">猫</SelectItem>
+                        <SelectItem value="bird">鸟</SelectItem>
+                        <SelectItem value="rabbit">兔子</SelectItem>
+                        <SelectItem value="hamster">仓鼠</SelectItem>
+                        <SelectItem value="guinea-pig">豚鼠</SelectItem>
+                        <SelectItem value="other">其他</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      value={memorial.subjectType || ''}
+                      onChange={(e) => updateField('subjectType', e.target.value)}
+                      placeholder="如：父亲、母亲"
+                      className="mt-2"
+                    />
+                  )}
                 </div>
                 <div>
-                  <Label>出生日期</Label>
-                  <Input
-                    type="date"
-                    value={memorial.birthDate || ''}
-                    onChange={(e) => updateField('birthDate', e.target.value)}
-                  />
+                  <Label className="text-slate-700 font-medium">出生日期</Label>
+                  <div className="mt-2">
+                    <DatePicker
+                      value={memorial.birthDate || ''}
+                      onChange={(date) => updateField('birthDate', date)}
+                      maxYear={new Date().getFullYear()}
+                      minYear={memorial.type === 'PET' ? 1980 : 1900}
+                    />
+                  </div>
                 </div>
                 <div>
-                  <Label>逝世日期</Label>
-                  <Input
-                    type="date"
-                    value={memorial.deathDate || ''}
-                    onChange={(e) => updateField('deathDate', e.target.value)}
-                  />
+                  <Label className="text-slate-700 font-medium">逝世日期</Label>
+                  <div className="mt-2">
+                    <DatePicker
+                      value={memorial.deathDate || ''}
+                      onChange={(date) => updateField('deathDate', date)}
+                      maxYear={new Date().getFullYear()}
+                      minYear={memorial.type === 'PET' ? 1980 : 1900}
+                    />
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 宠物特有字段 */}
           {memorial.type === 'PET' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>宠物详情</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-2xl p-8 shadow-sm">
+              <h2 className="text-xl font-light text-slate-900 mb-6">宠物详情</h2>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <Label>品种</Label>
+                    <Label className="text-slate-700 font-medium">品种</Label>
                     {getPetBreeds().length > 0 ? (
                       <Select value={memorial.breed || ''} onValueChange={(value) => updateField('breed', value)}>
-                        <SelectTrigger>
+                        <SelectTrigger className="mt-2">
                           <SelectValue placeholder="选择品种" />
                         </SelectTrigger>
                         <SelectContent>
@@ -418,46 +442,54 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                         value={memorial.breed || ''}
                         onChange={(e) => updateField('breed', e.target.value)}
                         placeholder="请输入品种"
+                        className="mt-2"
                       />
                     )}
                   </div>
                   <div>
-                    <Label>颜色</Label>
-                    <Input
-                      value={memorial.color || ''}
-                      onChange={(e) => updateField('color', e.target.value)}
-                      placeholder="如：黑色、白色"
-                    />
+                    <Label className="text-slate-700 font-medium">颜色</Label>
+                    <Select value={memorial.color || ''} onValueChange={(value) => updateField('color', value)}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="选择颜色" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="black">黑色</SelectItem>
+                        <SelectItem value="white">白色</SelectItem>
+                        <SelectItem value="brown">棕色</SelectItem>
+                        <SelectItem value="gray">灰色</SelectItem>
+                        <SelectItem value="black-white">黑白色</SelectItem>
+                        <SelectItem value="brown-white">棕白色</SelectItem>
+                        <SelectItem value="multicolor">多色</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
-                    <Label>性别</Label>
+                    <Label className="text-slate-700 font-medium">性别</Label>
                     <Select value={memorial.gender || ''} onValueChange={(value) => updateField('gender', value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="mt-2">
                         <SelectValue placeholder="选择性别" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="male">雄性/公</SelectItem>
-                        <SelectItem value="female">雌性/母</SelectItem>
+                        <SelectItem value="male">雄性</SelectItem>
+                        <SelectItem value="female">雌性</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* 逝者特有字段 */}
           {memorial.type === 'HUMAN' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>逝者详情</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-2xl p-8 shadow-sm">
+              <h2 className="text-xl font-light text-slate-900 mb-6">逝者详情</h2>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <Label>关系</Label>
+                    <Label className="text-slate-700 font-medium">关系</Label>
                     <Select value={memorial.relationship || ''} onValueChange={(value) => updateField('relationship', value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="mt-2">
                         <SelectValue placeholder="选择关系" />
                       </SelectTrigger>
                       <SelectContent>
@@ -473,66 +505,91 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                     </Select>
                   </div>
                   <div>
-                    <Label>职业</Label>
+                    <Label className="text-slate-700 font-medium">职业</Label>
                     <Input
                       value={memorial.occupation || ''}
                       onChange={(e) => updateField('occupation', e.target.value)}
                       placeholder="请输入职业"
+                      className="mt-2"
                     />
                   </div>
                   <div>
-                    <Label>地点</Label>
+                    <Label className="text-slate-700 font-medium">地点</Label>
                     <Input
                       value={memorial.location || ''}
                       onChange={(e) => updateField('location', e.target.value)}
                       placeholder="请输入地点"
+                      className="mt-2"
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
+          {/* 缅怀故事编辑 */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <h2 className="text-xl font-light text-slate-900 mb-6">缅怀{memorial.subjectName}</h2>
+            <div className="space-y-6">
+              <div>
+                <Label className="text-slate-700 font-medium">
+                  {memorial.type === 'PET' ? '成长故事' : '生平故事'}
+                </Label>
+                <Textarea
+                  value={memorial.story || ''}
+                  onChange={(e) => updateField('story', e.target.value)}
+                  placeholder={
+                    memorial.type === 'PET' 
+                      ? "分享关于 TA 的成长经历、可爱瞬间、陪伴回忆..."
+                      : "分享关于 TA 的生平故事、性格特点、美好回忆..."
+                  }
+                  rows={8}
+                  className="mt-2"
+                />
+                <p className="text-sm text-slate-500 mt-2">
+                  这段内容将在纪念页面的"缅怀{memorial.subjectName}"部分显示
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* 创建者信息 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>创建者信息</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <h2 className="text-xl font-light text-slate-900 mb-6">创建者信息</h2>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label>姓名 *</Label>
+                  <Label className="text-slate-700 font-medium">姓名 *</Label>
                   <Input
                     value={memorial.creatorName}
                     onChange={(e) => updateField('creatorName', e.target.value)}
                     placeholder="请输入您的姓名"
+                    className="mt-2"
                   />
                 </div>
                 <div>
-                  <Label>邮箱</Label>
+                  <Label className="text-slate-700 font-medium">邮箱</Label>
                   <Input
                     type="email"
                     value={memorial.creatorEmail || ''}
                     onChange={(e) => updateField('creatorEmail', e.target.value)}
                     placeholder="请输入您的邮箱"
+                    className="mt-2"
                   />
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 图片管理 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>图片管理</CardTitle>
-              <CardDescription>管理纪念页的照片（最多10张）</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <h2 className="text-xl font-light text-slate-900 mb-2">图片管理</h2>
+            <p className="text-slate-600 mb-6">管理纪念页的照片（最多10张）</p>
+            <div className="space-y-6">
               {/* 现有图片 */}
               {memorial.images && memorial.images.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">现有图片</Label>
+                  <Label className="text-sm font-medium text-slate-700 mb-2 block">现有图片</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     {memorial.images.map((image) => (
                       <div key={image.id} className="relative group">
@@ -578,7 +635,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
               {/* 新上传图片预览 */}
               {imagePreviews.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">新上传图片</Label>
+                  <Label className="text-sm font-medium text-slate-700 mb-2 block">新上传图片</Label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     {imagePreviews.map((preview, index) => (
                       <div key={index} className="relative group">
@@ -608,16 +665,17 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
               )}
 
               {/* 上传按钮 */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Plus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600 mb-2">添加更多照片</p>
-                <p className="text-sm text-gray-500 mb-4">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center">
+                <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <p className="text-slate-600 mb-2">添加更多照片</p>
+                <p className="text-sm text-slate-500 mb-4">
                   当前图片数量: {(memorial.images?.length || 0) + imageFiles.length}/10
                 </p>
                 <Button
                   variant="outline"
                   onClick={() => document.getElementById('image-upload-input')?.click()}
                   disabled={(memorial.images?.length || 0) + imageFiles.length >= 10}
+                  className="border-slate-300 text-slate-600"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   选择图片
@@ -631,38 +689,35 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                   onChange={handleImageUpload}
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 设置 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>纪念页设置</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isPublic"
-                  checked={memorial.isPublic}
-                  onCheckedChange={(checked) => updateField('isPublic', checked)}
-                />
-                <Label htmlFor="isPublic">公开显示在社区中</Label>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
+            <h2 className="text-xl font-light text-slate-900 mb-6">纪念页设置</h2>
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="isPublic"
+                checked={memorial.isPublic}
+                onCheckedChange={(checked) => updateField('isPublic', checked)}
+              />
+              <Label htmlFor="isPublic" className="text-slate-700 font-medium">公开显示在社区中</Label>
+            </div>
+          </div>
 
           {/* 操作按钮 */}
-          <div className="flex justify-end gap-4 py-6">
+          <div className="flex justify-center gap-6 py-8">
             <Button
               variant="outline"
               onClick={() => router.push('/settings?tab=memorials')}
+              className="px-8 py-3 border-slate-300 text-slate-600 hover:bg-slate-50"
             >
               取消
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving || !memorial.subjectName || !memorial.creatorName}
-              className="bg-teal-400 hover:bg-teal-500 text-white"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-full"
             >
               <SaveIcon className="w-4 h-4 mr-2" />
               {saving ? '保存中...' : '保存更改'}

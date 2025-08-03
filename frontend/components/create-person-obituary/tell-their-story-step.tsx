@@ -85,7 +85,7 @@ ${formData.personName}的一生是爱与奉献的一生，他们的精神将在�
     return (
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">创建纪念页面</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费纪念页</h1>
           <p className="text-gray-600">用永久存在的美丽纪念向逝去的亲人致敬</p>
         </div>
 
@@ -136,7 +136,7 @@ ${formData.personName}的一生是爱与奉献的一生，他们的精神将在�
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建纪念页面</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费纪念页</h1>
         <p className="text-gray-600">用永久存在的美丽纪念向逝去的亲人致敬</p>
       </div>
 

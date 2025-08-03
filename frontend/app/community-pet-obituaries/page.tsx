@@ -108,12 +108,52 @@ export default function CommunityPetObituariesPage() {
   }
 
   // 计算年龄
+  // 翻译宠物类型
+  const translatePetType = (type?: string) => {
+    if (!type) return '宠物'
+    
+    const typeTranslations: { [key: string]: string } = {
+      'dog': '狗',
+      'cat': '猫',
+      'bird': '鸟',
+      'rabbit': '兔子',
+      'hamster': '仓鼠',
+      'guinea-pig': '豚鼠',
+      'other': '其他'
+    }
+    
+    return typeTranslations[type.toLowerCase()] || type
+  }
+
+  // 计算年龄
   const calculateAge = (birth: string | null, death: string | null) => {
     if (!birth || !death) return '未知年龄'
+    
     const birthDate = new Date(birth)
     const deathDate = new Date(death)
-    const years = deathDate.getFullYear() - birthDate.getFullYear()
-    return `${years} 岁`
+    
+    if (deathDate < birthDate) return '日期无效'
+    
+    const diffTime = deathDate.getTime() - birthDate.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays < 30) {
+      return `${diffDays}天`
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30)
+      const remainingDays = diffDays % 30
+      return remainingDays > 0 ? `${months}个月${remainingDays}天` : `${months}个月`
+    } else {
+      const years = Math.floor(diffDays / 365)
+      const remainingDays = diffDays % 365
+      const months = Math.floor(remainingDays / 30)
+      
+      if (months > 0) {
+        return `${years}年${months}个月`
+      } else {
+        return `${years}年`
+      }
+    }
   }
 
   const pets = [
@@ -360,7 +400,7 @@ export default function CommunityPetObituariesPage() {
                         {formatDateRange(memorial.birthDate, memorial.deathDate)} • {calculateAge(memorial.birthDate, memorial.deathDate)}
                       </div>
                       <div className="text-slate-600 text-sm mb-4">
-                        {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
+                        {memorial.breed ? `${translatePetType(memorial.subjectType)} • ${memorial.breed}` : translatePetType(memorial.subjectType)}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-1">

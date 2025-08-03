@@ -244,6 +244,8 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
               placeholder="分享您爱宠的故事、性格、喜爱的活动，以及您将永远珍藏的特别回忆..."
               rows={12}
               className="mb-4"
+              value={formData.selfWrittenObituary}
+              onChange={(e) => updateFormData({ selfWrittenObituary: e.target.value })}
             />
             <p className="text-sm text-gray-500">
               慢慢来，精心撰写一个能够捉捉它独特精神的美丽纪念文。
@@ -266,7 +268,11 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
             </Button>
           )}
           {formData.writingMethod === "self" && (
-            <Button onClick={onNext} className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full">
+            <Button 
+              onClick={onNext} 
+              disabled={!formData.selfWrittenObituary?.trim()}
+              className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full disabled:bg-gray-300"
+            >
               下一步
             </Button>
           )}

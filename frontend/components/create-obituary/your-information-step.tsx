@@ -42,7 +42,7 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
         subjectName: isPet ? formData.petName : formData.personName,
         birthDate: formData.birthDate,
         deathDate: formData.passingDate,
-        story: formData.aiGeneratedObituary || formData.specialMemory,
+        story: formData.aiGeneratedObituary || formData.selfWrittenObituary || formData.specialMemory,
         authorId: user.id,
         creatorName: user.name,
         creatorEmail: user.email,
@@ -114,12 +114,14 @@ export function YourInformationStep({ formData, updateFormData, onBack }: YourIn
           }
         }
         
-        setMessage({ type: 'success', text: '纪念页创建成功！正在跳转...' })
+        setMessage({ type: 'success', text: '纪念页创建成功！正在跳转到详情页面...' })
         
-        // 根据纪念类型跳转到对应的社区页面
+        // 跳转到新创建的纪念页面详情
         setTimeout(() => {
-          const communityPath = isPet ? '/community-pet-obituaries' : '/community-person-obituaries'
-          router.push(communityPath)
+          const detailPath = isPet 
+            ? `/community-pet-obituaries/${memorial.slug}` 
+            : `/community-person-obituaries/${memorial.slug}`
+          router.push(detailPath)
         }, 2000)
       } else {
         setMessage({ type: 'error', text: result.error || '创建纪念页失败，请重试' })

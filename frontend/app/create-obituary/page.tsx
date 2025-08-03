@@ -27,6 +27,7 @@ export default function CreateObituaryPage() {
     activities: [] as string[],
     specialMemory: "",
     aiGeneratedObituary: "",
+    selfWrittenObituary: "",
 
     // Your Information (would be added in step 3)
     ownerName: "",

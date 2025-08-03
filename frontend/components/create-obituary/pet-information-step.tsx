@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Plus } from "lucide-react"
 
 interface PetInformationStepProps {
@@ -292,10 +293,11 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
             <label className="block text-sm font-medium text-gray-700 mb-2">
               出生日期 <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="date"
+            <DatePicker
               value={formData.birthDate}
-              onChange={(e) => updateFormData({ birthDate: e.target.value })}
+              onChange={(date) => updateFormData({ birthDate: date })}
+              maxYear={new Date().getFullYear()}
+              minYear={1980}
             />
             <p className="text-xs text-gray-500 mt-1">大概日期即可</p>
           </div>
@@ -303,10 +305,11 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
             <label className="block text-sm font-medium text-gray-700 mb-2">
               去世日期 <span className="text-red-500">*</span>
             </label>
-            <Input
-              type="date"
+            <DatePicker
               value={formData.passingDate}
-              onChange={(e) => updateFormData({ passingDate: e.target.value })}
+              onChange={(date) => updateFormData({ passingDate: date })}
+              maxYear={new Date().getFullYear()}
+              minYear={1980}
             />
           </div>
         </div>

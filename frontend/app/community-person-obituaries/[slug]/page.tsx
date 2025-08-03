@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, Download, Copy, Mail, MessageCircleHeart, Share2, Sparkles, User } from "lucide-react"
+import { Heart, Flame, MessageCircleHeart, Share2, User, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
-import { calculateMemorialStatus, getStatusColorClass, getActivityDescription } from "@/lib/memorial-status"
 
 interface Memorial {
   id: string
@@ -19,13 +18,12 @@ interface Memorial {
   type: 'PET' | 'HUMAN'
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED'
   subjectName: string
-  subjectType?: string
   birthDate?: string
   deathDate?: string
-  age?: string
-  breed?: string
-  color?: string
-  gender?: string
+  age?: number
+  relationship?: string
+  occupation?: string
+  location?: string
   story?: string
   memories?: string
   personalityTraits?: string
@@ -70,7 +68,7 @@ interface Memorial {
   }>
 }
 
-export default function PetMemorialPage() {
+export default function PersonMemorialPage() {
   const params = useParams()
   const { user } = useAuth()
   const [message, setMessage] = useState("")
@@ -104,7 +102,6 @@ export default function PetMemorialPage() {
       }
     } catch (error) {
       console.error('检查点蜡烛状态失败:', error)
-      // 出错时默认允许点蜡烛
       setCanLightCandle(true)
     }
   }
@@ -117,7 +114,6 @@ export default function PetMemorialPage() {
       setLoading(true)
       setError(null)
 
-      // 首先通过slug查找纪念页
       const response = await fetch(`/api/memorials/slug/${params.slug}`)
       
       if (!response.ok) {
@@ -131,14 +127,12 @@ export default function PetMemorialPage() {
 
       const data = await response.json()
       
-      if (data.memorial.type !== 'PET') {
-        setError('这不是一个宠物纪念页')
+      if (data.memorial.type !== 'HUMAN') {
+        setError('这不是一个人员纪念页')
         return
       }
 
       setMemorial(data.memorial)
-      
-      // 获取纪念页后检查点蜡烛状态
       await checkCandleStatus(data.memorial.id)
     } catch (error) {
       console.error('获取纪念页失败:', error)
@@ -152,7 +146,6 @@ export default function PetMemorialPage() {
     fetchMemorial()
   }, [params.slug])
 
-  // 用户状态变化时重新检查点蜡烛状态
   useEffect(() => {
     if (memorial) {
       checkCandleStatus(memorial.id)
@@ -169,7 +162,6 @@ export default function PetMemorialPage() {
         message: ''
       }
 
-      // 如果用户已登录，使用用户信息；否则使用匿名
       if (user) {
         requestBody.userId = user.id
         requestBody.lightedBy = user.name
@@ -187,7 +179,6 @@ export default function PetMemorialPage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        // 对于429状态码（限制错误），显示警告而不是错误
         if (response.status === 429) {
           toast.warning(errorData.error || '今天已经点过蜡烛了')
           setCanLightCandle(false)
@@ -196,9 +187,7 @@ export default function PetMemorialPage() {
         throw new Error(errorData.error || '点燃蜡烛失败')
       }
 
-      // 重新获取数据以更新蜡烛数量
       fetchMemorial()
-      // 成功点蜡烛后，设置为今日不可再点
       setCanLightCandle(false)
       toast.success('思念之火已点亮')
     } catch (error: any) {
@@ -217,7 +206,6 @@ export default function PetMemorialPage() {
         content: message.trim(),
       }
 
-      // 如果用户已登录，使用用户ID；否则使用匿名访客名称
       if (user) {
         requestBody.userId = user.id
       } else {
@@ -246,11 +234,58 @@ export default function PetMemorialPage() {
     }
   }
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    toast.success('链接已复制')
+  }
+
+  // 获取主图片
+  const getMainImage = () => {
+    const mainImage = memorial?.images.find(img => img.isMain) || memorial?.images[0]
+    return mainImage?.url || '/placeholder.svg'
+  }
+
+  // 格式化日期
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '未知'
+    return new Date(dateString).toLocaleDateString('zh-CN')
+  }
+
+  // 格式化年龄显示
+  const formatAge = (age?: number, birthDate?: string, deathDate?: string) => {
+    if (age) return `${age}年`
+    if (birthDate && deathDate) {
+      const birth = new Date(birthDate)
+      const death = new Date(deathDate)
+      const years = death.getFullYear() - birth.getFullYear()
+      return `${years}年`
+    }
+    return ''
+  }
+
+  // 翻译关系
+  const translateRelationship = (relationship?: string) => {
+    if (!relationship) return ''
+    
+    const relationshipTranslations: { [key: string]: string } = {
+      'parent': '父母',
+      'spouse': '配偶',
+      'child': '子女',
+      'sibling': '兄弟姐妹',
+      'relative': '亲戚',
+      'friend': '朋友',
+      'colleague': '同事',
+      'other': '其他'
+    }
+    
+    return relationshipTranslations[relationship] || relationship
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto mb-4"></div>
+          <Loader2 className="animate-spin h-12 w-12 text-slate-900 mx-auto mb-4" />
           <p className="text-slate-600 font-light">加载中...</p>
         </div>
       </div>
@@ -273,195 +308,6 @@ export default function PetMemorialPage() {
     )
   }
 
-  const handleShareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`, "_blank")
-  }
-
-  const handleShareTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=纪念 ${memorial.subjectName}&url=${window.location.href}`,
-      "_blank",
-    )
-  }
-
-  const handleSharePinterest = () => {
-    window.open(
-      `https://pinterest.com/pin/create/button/?url=${window.location.href}&description=纪念 ${memorial.subjectName}`,
-      "_blank",
-    )
-  }
-
-  const handleShareEmail = () => {
-    window.location.href = `mailto:?subject=纪念 ${memorial.subjectName}&body=我想与您分享这个美丽的纪念页面: ${window.location.href}`
-  }
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
-    toast.success('链接已复制')
-  }
-
-  // 获取主图片
-  const getMainImage = () => {
-    const mainImage = memorial.images.find(img => img.isMain) || memorial.images[0]
-    return mainImage?.url || '/placeholder.svg'
-  }
-
-  // 格式化日期
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '未知'
-    return new Date(dateString).toLocaleDateString('zh-CN')
-  }
-
-  // 翻译品种名称
-  const translateBreed = (breed?: string) => {
-    if (!breed) return '未知'
-    
-    const breedTranslations: { [key: string]: string } = {
-      // 狗类品种
-      'labrador': '拉布拉多',
-      'golden-retriever': '金毛寻回犬',
-      'german-shepherd': '德国牧羊犬',
-      'bulldog': '斗牛犬',
-      'poodle': '贵宾犬',
-      'husky': '哈士奇',
-      'chihuahua': '吉娃娃',
-      'shiba-inu': '柴犬',
-      'corgi': '柯基',
-      'beagle': '比格犬',
-      'border-collie': '边境牧羊犬',
-      'rottweiler': '罗威纳',
-      'yorkshire-terrier': '约克夏梗',
-      'dachshund': '腊肠犬',
-      'boxer': '拳师犬',
-      'australian-shepherd': '澳洲牧羊犬',
-      'siberian-husky': '西伯利亚雪橇犬',
-      'great-dane': '大丹犬',
-      'pomeranian': '博美',
-      'shih-tzu': '西施犬',
-      'boston-terrier': '波士顿梗',
-      'bernese-mountain-dog': '伯恩山犬',
-      'french-bulldog': '法国斗牛犬',
-      'cocker-spaniel': '可卡犬',
-      'maltese': '马尔济斯',
-      'mixed-breed-dog': '混种犬',
-      'other-dog': '其他犬种',
-      
-      // 猫类品种
-      'persian': '波斯猫',
-      'maine-coon': '缅因猫',
-      'siamese': '暹罗猫',
-      'ragdoll': '布偶猫',
-      'british-shorthair': '英国短毛猫',
-      'american-shorthair': '美国短毛猫',
-      'scottish-fold': '苏格兰折耳猫',
-      'russian-blue': '俄罗斯蓝猫',
-      'bengal': '孟加拉猫',
-      'abyssinian': '阿比西尼亚猫',
-      'birman': '伯曼猫',
-      'exotic-shorthair': '异国短毛猫',
-      'norwegian-forest': '挪威森林猫',
-      'sphynx': '斯芬克斯猫',
-      'oriental-shorthair': '东方短毛猫',
-      'devon-rex': '德文卷毛猫',
-      'turkish-angora': '土耳其安哥拉猫',
-      'munchkin': '曼基康猫',
-      'domestic-shorthair': '家养短毛猫',
-      'domestic-longhair': '家养长毛猫',
-      'mixed-breed-cat': '混种猫',
-      'other-cat': '其他猫种',
-      
-      // 鸟类品种
-      'canary': '金丝雀',
-      'budgerigar': '虎皮鹦鹉',
-      'cockatiel': '玄凤鹦鹉',
-      'lovebird': '爱情鸟',
-      'macaw': '金刚鹦鹉',
-      'african-grey': '非洲灰鹦鹉',
-      'cockatoo': '凤头鹦鹉',
-      'conure': '锥尾鹦鹉',
-      'finch': '雀',
-      'parakeet': '长尾小鹦鹉',
-      'other-bird': '其他鸟类'
-    }
-    
-    return breedTranslations[breed] || breed
-  }
-
-  // 翻译颜色
-  const translateColor = (color?: string) => {
-    if (!color) return '未知'
-    
-    const colorTranslations: { [key: string]: string } = {
-      'black': '黑色',
-      'white': '白色',
-      'brown': '棕色',
-      'gray': '灰色',
-      'black-white': '黑白色',
-      'brown-white': '棕白色',
-      'multicolor': '多色'
-    }
-    
-    return colorTranslations[color] || color
-  }
-
-  // 翻译宠物类型
-  const translatePetType = (type?: string) => {
-    if (!type) return '宠物'
-    
-    const typeTranslations: { [key: string]: string } = {
-      'dog': '狗',
-      'cat': '猫',
-      'bird': '鸟',
-      'rabbit': '兔子',
-      'hamster': '仓鼠',
-      'guinea-pig': '豚鼠',
-      'other': '其他'
-    }
-    
-    return typeTranslations[type] || type
-  }
-
-  // 计算年龄（如果数据库中没有年龄信息）
-  const calculateAge = (birthDate?: string, deathDate?: string) => {
-    if (!birthDate || !deathDate) return '未知'
-    
-    const birth = new Date(birthDate)
-    const death = new Date(deathDate)
-    
-    if (death < birth) return '日期无效'
-    
-    const diffTime = death.getTime() - birth.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
-    if (diffDays < 30) {
-      return `${diffDays}天`
-    } else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30)
-      const remainingDays = diffDays % 30
-      return remainingDays > 0 ? `${months}个月${remainingDays}天` : `${months}个月`
-    } else {
-      const years = Math.floor(diffDays / 365)
-      const remainingDays = diffDays % 365
-      const months = Math.floor(remainingDays / 30)
-      
-      if (months > 0) {
-        return `${years}年${months}个月`
-      } else {
-        return `${years}年`
-      }
-    }
-  }
-
-  // 获取显示的年龄
-  const getDisplayAge = () => {
-    // 如果数据库中有年龄信息，优先使用
-    if (memorial?.age && memorial.age !== '未知') {
-      return memorial.age
-    }
-    // 否则根据出生和去世日期计算
-    return calculateAge(memorial?.birthDate, memorial?.deathDate)
-  }
-
   return (
     <div className="min-h-screen bg-white">
       <Navigation currentPage="community" />
@@ -479,12 +325,12 @@ export default function PetMemorialPage() {
             />
           </div>
           <h1 className="text-6xl font-extralight text-gray-900 mb-6">{memorial.subjectName}</h1>
-          <div className="w-16 h-px bg-teal-400 mx-auto mb-6"></div>
+          <div className="w-16 h-px bg-purple-400 mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 font-light">
             {formatDate(memorial.birthDate)} - {formatDate(memorial.deathDate)}
           </p>
           <p className="text-sm text-gray-500 font-light mt-2">
-            {translateBreed(memorial.breed)} • {memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'} • 陪伴了我们{getDisplayAge()}
+            {translateRelationship(memorial.relationship)} • {formatAge(memorial.age, memorial.birthDate, memorial.deathDate)} • {memorial.occupation}
           </p>
         </div>
 
@@ -567,28 +413,28 @@ export default function PetMemorialPage() {
               <h2 className="text-2xl font-light text-gray-900">信息</h2>
             </div>
             <div className="max-w-md mx-auto space-y-6">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">出生日期</span>
-                <span className="text-gray-900 font-light">{formatDate(memorial.birthDate)}</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">离别日期</span>
-                <span className="text-gray-900 font-light">{formatDate(memorial.deathDate)}</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">毛色</span>
-                <span className="text-gray-900 font-light">{translateColor(memorial.color)}</span>
-              </div>
-              {memorial.personalityTraits && (
+              {memorial.birthDate && (
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-500 font-light">性格</span>
-                  <span className="text-gray-900 font-light">{memorial.personalityTraits}</span>
+                  <span className="text-gray-500 font-light">出生日期</span>
+                  <span className="text-gray-900 font-light">{formatDate(memorial.birthDate)}</span>
                 </div>
               )}
-              {memorial.favoriteThings && (
+              {memorial.deathDate && (
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-500 font-light">最爱</span>
-                  <span className="text-gray-900 font-light">{memorial.favoriteThings}</span>
+                  <span className="text-gray-500 font-light">离别日期</span>
+                  <span className="text-gray-900 font-light">{formatDate(memorial.deathDate)}</span>
+                </div>
+              )}
+              {memorial.occupation && (
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-500 font-light">职业</span>
+                  <span className="text-gray-900 font-light">{memorial.occupation}</span>
+                </div>
+              )}
+              {memorial.location && (
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-500 font-light">地点</span>
+                  <span className="text-gray-900 font-light">{memorial.location}</span>
                 </div>
               )}
             </div>
@@ -684,7 +530,7 @@ export default function PetMemorialPage() {
               </div>
               <h4 className="font-light text-gray-900 mb-2">{memorial.author.name}</h4>
               <p className="text-sm text-gray-500 font-light">
-                {memorial.creatorRelation ? `${memorial.subjectName}的${memorial.creatorRelation}` : `${memorial.subjectName}的守护者`}
+                {memorial.creatorRelation ? `${memorial.subjectName}的${memorial.creatorRelation}` : `${memorial.subjectName}的亲友`}
               </p>
               <div className="mt-6 max-w-md mx-auto">
                 <p className="text-sm text-gray-600 font-light italic">
@@ -696,7 +542,6 @@ export default function PetMemorialPage() {
         </div>
       </main>
 
-      {/* 页脚 */}
       <Footer />
     </div>
   )

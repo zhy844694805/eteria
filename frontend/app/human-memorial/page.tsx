@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from 'react'
 import Image from "next/image"
 import { Heart, Users, Flame, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -5,262 +8,218 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 
+interface Memorial {
+  id: string
+  slug: string
+  subjectName: string
+  relationship?: string
+  age?: number
+  occupation?: string
+  images: Array<{
+    id: string
+    url: string
+    isMain: boolean
+  }>
+  _count: {
+    messages: number
+    candles: number
+  }
+}
+
 export default function HomePage() {
+  const [recentMemorials, setRecentMemorials] = useState<Memorial[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // 获取最近的人员纪念页
+  useEffect(() => {
+    const fetchRecentMemorials = async () => {
+      try {
+        const response = await fetch('/api/memorials?type=HUMAN&limit=6&sort=recent')
+        const data = await response.json()
+        
+        if (response.ok) {
+          setRecentMemorials(data.memorials)
+        }
+      } catch (error) {
+        console.error('获取最近纪念页失败:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRecentMemorials()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
+      {/* Header - 极简浮动导航 */}
       <Navigation currentPage="human-memorial" />
 
-      {/* Hero Section */}
-      <section className="px-4 py-12">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-                为逝去的亲人创建纪念页
-              </h1>
-              <p className="text-xl text-purple-500 font-medium">永远怀念</p>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                为逝去的亲人朋友创建温馨、持久的纪念页面。记录他们的生平故事，分享珍贵的回忆。
-                让他们的精神与爱永远传续下去。
-              </p>
-            </div>
-
-            <Link href="/create-person-obituary">
-              <Button className="bg-purple-400 hover:bg-purple-500 text-white px-8 py-3 text-lg rounded-full">
-                <Heart className="w-5 h-5 mr-2" />
-                创建纪念页面
-              </Button>
-            </Link>
-
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span>永久免费</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>•</span>
-                <span>无需信用卡</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>•</span>
-                <span>与亲人分享</span>
-              </div>
+      {/* Hero Section - 极简大气 */}
+      <main className="pt-32">
+        <section className="max-w-5xl mx-auto text-center px-6 pb-20">
+          <div className="space-y-8">
+            <h1 className="text-5xl font-light text-slate-900 leading-tight">
+              人员纪念
+              <span className="block text-2xl font-normal text-slate-500 mt-2">为逝去的亲人创建永恒纪念</span>
+            </h1>
+            
+            <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light">
+              为逝去的亲人朋友创建美丽、持久的纪念页面<br />
+              记录珍贵回忆，分享温暖故事，让他们的精神永远陪伴
+            </p>
+            
+            {/* 行动按钮 */}
+            <div className="flex items-center justify-center space-x-4 pt-8">
+              <Link href="/create-person-obituary">
+                <button className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-base hover:bg-slate-800 transition-colors flex items-center space-x-2">
+                  <Heart className="w-5 h-5" />
+                  <span>开始创建</span>
+                </button>
+              </Link>
+              <Link href="/community-person-obituaries">
+                <button className="border border-slate-300 text-slate-700 px-10 py-4 rounded-2xl text-base hover:border-slate-400 transition-colors flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>浏览社区</span>
+                </button>
+              </Link>
             </div>
           </div>
+        </section>
 
-          <div className="relative">
-            <div className="relative bg-white rounded-2xl p-4 shadow-lg">
-              <Image
-                src="/placeholder.svg?height=300&width=400"
-                alt="White dog standing indoors"
-                width={400}
-                height={300}
-                className="rounded-xl object-cover w-full"
-              />
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-              <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">如何使用</h2>
-          <p className="text-gray-600 mb-12">不到一分钟就能创建永久的纪念 ⚡</p>
-
+        {/* 功能特点 - 极简网格 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-teal-400 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                </svg>
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Heart className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">我们为您撰写</h3>
-              <p className="text-gray-600">
-                分享他们的生平信息和珍贵照片 — 我们将为您制作美丽的纪念文，或者您也可以自己撰写
-              </p>
+              <h3 className="text-lg font-medium text-slate-900">精心制作</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">为每一位逝者创建独特而美丽的纪念页面</p>
             </div>
-
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-purple-400 rounded-full flex items-center justify-center mx-auto">
-                <Users className="w-8 h-8 text-white" />
+            
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Users className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">与他人连接</h3>
-              <p className="text-gray-600">接收来自朋友、家人和亲友们的支持与安慰</p>
+              <h3 className="text-lg font-medium text-slate-900">共同缅怀</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">与亲人朋友一起分享珍贵回忆</p>
             </div>
-
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-pink-400 rounded-full flex items-center justify-center mx-auto">
-                <Heart className="w-8 h-8 text-white" />
+            
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Flame className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">让记忆永存</h3>
-              <p className="text-gray-600">点亮纪念蜡烛，随时访问他们的纪念页面来缅怀与思念</p>
+              <h3 className="text-lg font-medium text-slate-900">永恒纪念</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">点亮蜡烛，让爱永远传递</p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Statistics Section */}
-      <section className="px-4 py-12">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-teal-500 mb-2">203,847</div>
-            <div className="text-gray-600">纪念页面已创建</div>
+        {/* 统计数据 - 极简展示 */}
+        <section className="max-w-4xl mx-auto px-6 py-16 text-center">
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">203,847</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">人员纪念</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">1,283,921</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">点亮蜡烛</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-light text-slate-900">2,456,213</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">爱的留言</div>
+            </div>
           </div>
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-purple-400 mb-2">983,547</div>
-            <div className="text-gray-600">纪念蜡烛已点亮</div>
-          </div>
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="text-4xl font-bold text-pink-400 mb-2">1,756,892</div>
-            <div className="text-gray-600">情感寄語</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Recent Person Obituaries */}
-      <section className="px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">最近的纪念页面</h2>
-            <p className="text-gray-600">缅怀生命中的珍贵回忆</p>
+        {/* 最近纪念页 - 极简展示 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl font-light text-slate-800 mb-4">最近的纪念</h2>
+            <p className="text-slate-600">每一个生命都值得被纪念</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {[
-              { 
-                name: "王德华", 
-                subtitle: "桃李满天下的好老师", 
-                description: "1945-2024，享年79岁 · 退休教师", 
-                candles: 156, 
-                messages: 89,
-                story: "热爱教育事业40年，培养学生无数，深受师生爱戴"
-              },
-              { 
-                name: "李秀英", 
-                subtitle: "白衣天使般的母亲", 
-                description: "1950-2024，享年74岁 · 退休护士", 
-                candles: 203, 
-                messages: 127,
-                story: "慈祥温柔的母亲，救死扶伤30载，是家人心中的守护神"
-              },
-              { 
-                name: "张建军", 
-                subtitle: "深爱家庭的好丈夫", 
-                description: "1968-2024，享年56岁 · 高级工程师", 
-                candles: 324, 
-                messages: 198,
-                story: "勤劳敬业的技术专家，用智慧和双手为家庭撑起一片天"
-              },
-              {
-                name: "陈小雨",
-                subtitle: "阳光开朗的设计师",
-                description: "1995-2024，享年29岁 · 平面设计师",
-                candles: 267,
-                messages: 145,
-                story: "用创意点亮生活，为世界带来美好设计的年轻才女"
-              },
-              { 
-                name: "刘志明", 
-                subtitle: "技术带头人", 
-                description: "1960-2024，享年64岁 · 高级工程师", 
-                candles: 112, 
-                messages: 67,
-                story: "兢兢业业35年，深受同事敬重，是公司的技术骨干"
-              },
-              {
-                name: "赵雅丽",
-                subtitle: "深受师生爱戴的校长",
-                description: "1972-2024，享年52岁 · 小学校长",
-                candles: 189,
-                messages: 103,
-                story: "温柔贤惠的姐姐，致力于教育事业，培养了一代又一代孩子"
-              },
-            ].map((person, index) => (
-              <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                <div className="aspect-square bg-gray-200">
-                  <Image
-                    src={`/placeholder.svg?height=200&width=200&query=person memorial photo`}
-                    alt={person.name}
-                    width={200}
-                    height={200}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-800 mb-1">{person.name}</h3>
-                  <p className="text-purple-500 text-sm mb-1 font-medium">{person.subtitle}</p>
-                  <p className="text-gray-600 text-sm mb-2">{person.description}</p>
-                  <p className="text-gray-500 text-xs mb-3 leading-relaxed">{person.story}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Flame className="w-4 h-4 text-orange-400" />
-                      <span>{person.candles} 蜡烛</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Heart className="w-4 h-4 text-pink-400" />
-                      <span>{person.messages} 消息</span>
+            {isLoading ? (
+              // 加载状态 - 极简骨架屏
+              [...Array(6)].map((_, index) => (
+                <div key={index} className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 animate-pulse">
+                  <div className="aspect-square bg-slate-100"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-slate-200 rounded mb-3"></div>
+                    <div className="h-3 bg-slate-200 rounded mb-2 w-3/4"></div>
+                    <div className="flex gap-4 mt-4">
+                      <div className="h-3 bg-slate-200 rounded w-16"></div>
+                      <div className="h-3 bg-slate-200 rounded w-16"></div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : recentMemorials.length > 0 ? (
+              // 真实数据 - 极简卡片
+              recentMemorials.map((memorial) => (
+                <Link
+                  key={memorial.id}
+                  href={`/community-person-obituaries/${memorial.slug}`}
+                  className="block"
+                >
+                  <div className="memorial-card bg-white rounded-3xl overflow-hidden border border-slate-200 cursor-pointer">
+                    <div className="aspect-square bg-slate-100">
+                      <Image
+                        src={memorial.images.find(img => img.isMain)?.url || memorial.images[0]?.url || "/placeholder.svg"}
+                        alt={memorial.subjectName}
+                        width={240}
+                        height={240}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
+                      <p className="text-slate-500 text-sm mb-3">
+                        {memorial.relationship ? `${memorial.relationship}` : ''}
+                        {memorial.age ? ` • 享年${memorial.age}岁` : ''}
+                        {memorial.occupation ? ` • ${memorial.occupation}` : ''}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
+                        <div className="flex items-center gap-1">
+                          <Flame className="w-4 h-4" />
+                          <span>{memorial._count.candles}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          <span>{memorial._count.messages}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              // 无数据状态 - 极简
+              <div className="col-span-3 text-center py-16 text-slate-500">
+                <p className="mb-6">还没有纪念页面</p>
+                <Link href="/create-person-obituary">
+                  <button className="bg-slate-900 text-white px-8 py-3 rounded-2xl hover:bg-slate-800 transition-colors">
+                    创建第一个纪念
+                  </button>
+                </Link>
               </div>
-            ))}
+            )}
           </div>
 
           <div className="text-center">
             <Link href="/community-person-obituaries">
-              <Button
-                variant="outline"
-                className="border-purple-400 text-purple-600 hover:bg-purple-50 px-8 py-3 rounded-full bg-transparent"
-              >
-                查看所有纪念页
-              </Button>
+              <button className="border border-slate-300 text-slate-700 px-8 py-3 rounded-2xl hover:border-slate-400 transition-colors">
+                查看全部纪念
+              </button>
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section className="px-4 py-16 bg-white/50">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-gray-600 text-lg">
-            在几分钟内创建美丽的纪念页面，给逝去的亲人应有的敬意。
-          </p>
-          <Link href="/create-person-obituary">
-            <Button className="bg-purple-400 hover:bg-purple-500 text-white px-8 py-3 text-lg rounded-full">
-              创建纪念页面 →
-            </Button>
-          </Link>
-        </div>
-      </section>
 
-      {/* Support Mission */}
-      <section className="px-4 py-12 bg-teal-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Star className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">支持我们的使命</h3>
-              <p className="text-gray-600 text-sm">
-                每个生命都值得被永远纪念。您的支持帮助我们为全世界的家庭免费提供纪念服务。
-              </p>
-            </div>
-          </div>
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-            <Heart className="w-4 h-4 mr-2" />
-            进行捐赠
-          </Button>
-        </div>
-      </section>
+      </main>
 
       {/* Footer */}
       <Footer />

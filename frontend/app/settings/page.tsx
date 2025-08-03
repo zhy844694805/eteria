@@ -53,7 +53,7 @@ interface Memorial {
 }
 
 function SettingsForm() {
-  const { user, logout, updatePreferredSystem, updateUserInfo } = useAuth()
+  const { user, logout, updatePreferredSystem, updateUserInfo, autoDetectAndSetPreferredSystem } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [editMode, setEditMode] = useState(false)
@@ -76,6 +76,18 @@ function SettingsForm() {
       router.push('/login')
     }
   }, [user, router])
+
+  // 自动检测用户偏好系统
+  useEffect(() => {
+    if (user && !user.preferredSystem) {
+      // 从浏览器历史或referrer检测用户访问的系统
+      const referrer = document.referrer
+      if (referrer) {
+        const url = new URL(referrer)
+        autoDetectAndSetPreferredSystem(url.pathname)
+      }
+    }
+  }, [user, autoDetectAndSetPreferredSystem])
 
   // 检查是否有数据需要迁移
   useEffect(() => {
@@ -196,19 +208,42 @@ function SettingsForm() {
       await updatePreferredSystem(system)
       setMessage({ 
         type: 'success', 
-        text: `已切换到${system === 'pet' ? '宠物' : '人类'}纪念系统` 
+        text: `偏好已设置为${system === 'pet' ? '宠物' : '人类'}纪念系统，正在跳转...` 
       })
       
-      // 延迟跳转到对应系统
+      // 立即跳转到对应系统
       setTimeout(() => {
         const redirectPath = system === 'pet' ? '/pet-memorial' : '/human-memorial'
         router.push(redirectPath)
-      }, 1500)
+      }, 1000)
     } catch (error) {
       setMessage({ 
         type: 'error', 
-        text: '切换系统失败，请重试' 
+        text: '设置偏好失败，请重试' 
       })
+    }
+  }
+
+  // 获取偏好系统的显示文本
+  const getPreferredSystemText = () => {
+    if (!user?.preferredSystem) {
+      // 基于用户的纪念页类型自动推断偏好
+      const petCount = memorials.filter(m => m.type === 'PET').length
+      const humanCount = memorials.filter(m => m.type === 'HUMAN').length
+      
+      if (petCount > humanCount) {
+        return { system: 'pet', text: '宠物纪念系统', auto: true }
+      } else if (humanCount > petCount) {
+        return { system: 'human', text: '人类纪念系统', auto: true }
+      } else {
+        return { system: null, text: '未设置偏好', auto: false }
+      }
+    }
+    
+    return {
+      system: user.preferredSystem,
+      text: user.preferredSystem === 'pet' ? '宠物纪念系统' : '人类纪念系统',
+      auto: false
     }
   }
 
@@ -470,17 +505,27 @@ function SettingsForm() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {memorials.map((memorial) => (
-                      <div key={memorial.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                        <div className="p-6">
+                      <div key={memorial.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 group relative">
+                        {/* 卡片内容区域 - 点击进入编辑 */}
+                        <div 
+                          className="p-6 cursor-pointer"
+                          onClick={() => router.push(`/settings/edit/${memorial.id}`)}
+                        >
                           <div className="aspect-video relative mb-6 rounded-xl overflow-hidden bg-gray-100">
                             <img
                               src={getMainImage(memorial)}
                               alt={memorial.subjectName}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             />
+                            {/* 编辑提示 */}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white rounded-full p-2">
+                                <PenIcon className="w-4 h-4 text-gray-700" />
+                              </div>
+                            </div>
                           </div>
                           <div className="flex justify-between items-start mb-3">
-                            <h3 className="text-lg font-light text-gray-900">{memorial.subjectName}</h3>
+                            <h3 className="text-lg font-light text-gray-900 group-hover:text-gray-700 transition-colors">{memorial.subjectName}</h3>
                             <div className="flex gap-2">
                               <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-light">
                                 {memorial.type === 'PET' ? '宠物' : '逝者'}
@@ -493,44 +538,40 @@ function SettingsForm() {
                           {memorial.subjectType && (
                             <p className="text-sm text-gray-500 font-light mb-4">{memorial.subjectType}</p>
                           )}
-                        </div>
-                        <div className="px-6 pb-6">
-                          <div className="flex justify-between text-sm text-gray-500 mb-6">
+                          <div className="flex justify-between text-sm text-gray-500">
                             <span className="font-light">浏览 {memorial.viewCount}</span>
                             <span className="font-light">留言 {memorial.messageCount}</span>
                             <span className="font-light">点烛 {memorial.candleCount}</span>
                           </div>
+                        </div>
+
+                        {/* 悬浮操作按钮 */}
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
+                            {/* 查看按钮 */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
                                 const baseUrl = memorial.type === 'PET' ? '/community-pet-obituaries' : '/community-person-obituaries'
                                 router.push(`${baseUrl}/${memorial.slug}`)
                               }}
-                              className="rounded-lg border-gray-300 font-light"
+                              className="w-8 h-8 bg-white hover:bg-slate-100 rounded-full shadow-md flex items-center justify-center transition-colors"
+                              title="查看纪念页"
                             >
-                              <EyeIcon className="w-4 h-4 mr-1" />
-                              查看
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => router.push(`/settings/edit/${memorial.id}`)}
-                              className="rounded-lg border-gray-300 font-light"
+                              <EyeIcon className="w-4 h-4 text-slate-600" />
+                            </button>
+                            
+                            {/* 删除按钮 */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteMemorial(memorial.id)
+                              }}
+                              className="w-8 h-8 bg-white hover:bg-red-50 rounded-full shadow-md flex items-center justify-center transition-colors"
+                              title="删除纪念页"
                             >
-                              <PenIcon className="w-4 h-4 mr-1" />
-                              编辑
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteMemorial(memorial.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg border-gray-300 font-light"
-                            >
-                              <TrashIcon className="w-4 h-4 mr-1" />
-                              删除
-                            </Button>
+                              <TrashIcon className="w-4 h-4 text-red-500 hover:text-red-600" />
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -549,7 +590,7 @@ function SettingsForm() {
                     <h2 className="text-xl font-light text-gray-900">系统偏好</h2>
                   </div>
                   <p className="text-gray-600 text-sm font-light">
-                    选择您偏好的纪念系统
+                    选择您偏好的纪念系统，系统会自动记住您的选择
                   </p>
                 </div>
                 <div className="space-y-8">
@@ -559,26 +600,30 @@ function SettingsForm() {
                         当前偏好系统
                       </label>
                       <div className="flex items-center gap-2 mb-4">
-                        {user.preferredSystem === 'pet' && (
-                          <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-light">
-                            <Heart className="w-3 h-3 mr-1" />
-                            宠物纪念系统
-                          </span>
-                        )}
-                        {user.preferredSystem === 'human' && (
-                          <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-light">
-                            <Users className="w-3 h-3 mr-1" />
-                            人类纪念系统
-                          </span>
-                        )}
-                        {!user.preferredSystem && (
-                          <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-sm font-light">
-                            未设置偏好
-                          </span>
-                        )}
+                        {(() => {
+                          const preferred = getPreferredSystemText()
+                          const IconComponent = preferred.system === 'pet' ? Heart : 
+                                              preferred.system === 'human' ? Users : SettingsIcon
+                          const bgColor = preferred.system === 'pet' ? 'bg-teal-100 text-teal-700' :
+                                         preferred.system === 'human' ? 'bg-purple-100 text-purple-700' :
+                                         'bg-gray-100 text-gray-500'
+                          
+                          return (
+                            <span className={`inline-flex items-center px-3 py-1 ${bgColor} rounded-full text-sm font-light`}>
+                              <IconComponent className="w-3 h-3 mr-1" />
+                              {preferred.text}
+                              {preferred.auto && !user?.preferredSystem && (
+                                <span className="ml-1 text-xs opacity-70">(智能推荐)</span>
+                              )}
+                            </span>
+                          )
+                        })()}
                       </div>
                       <p className="text-sm text-gray-600 font-light">
-                        下次访问网站时会自动进入您偏好的系统
+                        {user?.preferredSystem ? 
+                          '下次访问网站时会自动进入您偏好的系统' :
+                          '系统基于您的纪念页类型智能推荐，您可以在下方手动设置偏好'
+                        }
                       </p>
                     </div>
 
@@ -586,20 +631,23 @@ function SettingsForm() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        切换系统
+                        选择偏好系统
                       </label>
+                      <p className="text-sm text-gray-500 font-light mb-4">
+                        点击下方选项设置偏好并直接进入对应系统
+                      </p>
                       <div className="space-y-3">
                         <button
                           onClick={() => handleSystemChange('pet')}
-                          className={`w-full p-6 rounded-xl border transition-all text-left ${
-                            user.preferredSystem === 'pet'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                          className={`w-full p-6 rounded-xl border transition-all text-left hover:shadow-md ${
+                            user.preferredSystem === 'pet' || (!user.preferredSystem && getPreferredSystemText().system === 'pet')
+                              ? 'border-teal-300 bg-teal-50'
+                              : 'border-gray-200 hover:border-teal-200 hover:bg-teal-50'
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center">
+                              <div className="w-12 h-12 bg-teal-500 rounded-2xl flex items-center justify-center">
                                 <Heart className="w-5 h-5 text-white" />
                               </div>
                               <div>
@@ -613,15 +661,15 @@ function SettingsForm() {
 
                         <button
                           onClick={() => handleSystemChange('human')}
-                          className={`w-full p-6 rounded-xl border transition-all text-left ${
-                            user.preferredSystem === 'human'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                          className={`w-full p-6 rounded-xl border transition-all text-left hover:shadow-md ${
+                            user.preferredSystem === 'human' || (!user.preferredSystem && getPreferredSystemText().system === 'human')
+                              ? 'border-purple-300 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-200 hover:bg-purple-50'
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-gray-900 rounded-2xl flex items-center justify-center">
+                              <div className="w-12 h-12 bg-purple-500 rounded-2xl flex items-center justify-center">
                                 <Users className="w-5 h-5 text-white" />
                               </div>
                               <div>

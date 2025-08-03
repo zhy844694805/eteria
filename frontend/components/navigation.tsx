@@ -5,6 +5,7 @@ import { Heart, User, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
+import { useEffect } from "react"
 
 interface NavigationProps {
   currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate"
@@ -12,7 +13,7 @@ interface NavigationProps {
 
 export function Navigation({ currentPage }: NavigationProps) {
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { user, logout, autoDetectAndSetPreferredSystem } = useAuth()
   
   // 检查是否在宠物纪念系统中
   const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
@@ -29,6 +30,13 @@ export function Navigation({ currentPage }: NavigationProps) {
   
   // 检查是否在总首页
   const isMainHomepage = pathname === '/'
+
+  // 自动检测用户偏好系统
+  useEffect(() => {
+    if (user && (isPetMemorialSystem || isHumanMemorialSystem)) {
+      autoDetectAndSetPreferredSystem(pathname)
+    }
+  }, [user, pathname, isPetMemorialSystem, isHumanMemorialSystem, autoDetectAndSetPreferredSystem])
   
   return (
     <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 glass-effect floating-nav rounded-full px-8 py-4 border border-white/20">

@@ -4,28 +4,28 @@ import { z } from 'zod'
 
 const updateMemorialSchema = z.object({
   subjectName: z.string().min(1, '姓名不能为空').max(100, '姓名过长').optional(),
-  subjectType: z.string().optional(),
-  birthDate: z.string().optional(),
-  deathDate: z.string().optional(),
-  age: z.string().optional(),
-  story: z.string().optional(),
-  memories: z.string().optional(),
-  personalityTraits: z.string().optional(),
-  favoriteThings: z.string().optional(),
+  subjectType: z.string().nullable().optional(),
+  birthDate: z.string().nullable().optional(),
+  deathDate: z.string().nullable().optional(),
+  age: z.string().nullable().optional(),
+  story: z.string().nullable().optional(),
+  memories: z.string().nullable().optional(),
+  personalityTraits: z.string().nullable().optional(),
+  favoriteThings: z.string().nullable().optional(),
   isPublic: z.boolean().optional(),
   // Pet-specific fields
-  breed: z.string().optional(),
-  color: z.string().optional(),
-  gender: z.string().optional(),
+  breed: z.string().nullable().optional(),
+  color: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
   // Human-specific fields
-  relationship: z.string().optional(),
-  occupation: z.string().optional(),
-  location: z.string().optional(),
+  relationship: z.string().nullable().optional(),
+  occupation: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
   // Creator information
   creatorName: z.string().min(1, '创建者姓名不能为空').max(50, '创建者姓名过长').optional(),
-  creatorEmail: z.string().email('邮箱格式不正确').optional(),
-  creatorPhone: z.string().optional(),
-  creatorRelation: z.string().optional(),
+  creatorEmail: z.string().email('邮箱格式不正确').or(z.literal('')).nullable().optional(),
+  creatorPhone: z.string().nullable().optional(),
+  creatorRelation: z.string().nullable().optional(),
 })
 
 // 获取单个纪念页详情
