@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { SettingsSkeleton, MemorialCardSkeleton, EmptyState, ErrorState } from '@/components/loading-skeletons'
+import { systemToasts, memorialToasts } from '@/lib/toast-helper'
 import { 
   User, 
   Mail, 
@@ -29,7 +31,8 @@ import {
   PenIcon,
   TrashIcon,
   EyeIcon,
-  PlusIcon
+  PlusIcon,
+  Bell
 } from 'lucide-react'
 
 interface Memorial {
@@ -69,6 +72,9 @@ function SettingsForm() {
   // 纪念页管理状态
   const [memorials, setMemorials] = useState<Memorial[]>([])
   const [memorialsLoading, setMemorialsLoading] = useState(true)
+  
+  // 通知设置状态
+  const [emailNotificationEnabled, setEmailNotificationEnabled] = useState(true)
 
   // 如果用户未登录，重定向到登录页
   useEffect(() => {
@@ -97,9 +103,10 @@ function SettingsForm() {
     setHasDataToMigrate(hasData)
     setMigrationStats(stats)
     
-    // 获取用户纪念页
+    // 获取用户纪念页和通知设置
     if (user) {
       fetchMemorials()
+      fetchNotificationSettings()
     }
   }, [user])
 
@@ -117,6 +124,53 @@ function SettingsForm() {
     } finally {
       setMemorialsLoading(false)
     }
+  }
+
+  // 获取用户通知设置
+  const fetchNotificationSettings = async () => {
+    try {
+      const response = await fetch(`/api/user/notification-settings?userId=${user!.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setEmailNotificationEnabled(data.settings.emailNotificationEnabled)
+      }
+    } catch (error) {
+      console.error('获取通知设置失败:', error)
+    }
+  }
+
+  // 更新邮件通知设置
+  const handleEmailNotificationChange = async (enabled: boolean) => {
+    try {
+      const response = await fetch(`/api/user/notification-settings?userId=${user!.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          emailNotificationEnabled: enabled
+        })
+      })
+
+      if (response.ok) {
+        setEmailNotificationEnabled(enabled)
+        setMessage({ 
+          type: 'success', 
+          text: enabled ? '邮件通知已开启' : '邮件通知已关闭' 
+        })
+      } else {
+        throw new Error('更新设置失败')
+      }
+    } catch (error) {
+      console.error('更新邮件通知设置失败:', error)
+      setMessage({ 
+        type: 'error', 
+        text: '更新通知设置失败，请重试' 
+      })
+    }
+    
+    // 清除消息
+    setTimeout(() => setMessage(null), 3000)
   }
 
   // 删除纪念页
@@ -680,6 +734,58 @@ function SettingsForm() {
                             <ArrowRight className="w-4 h-4 text-gray-400" />
                           </div>
                         </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* 通知设置 */}
+                  <div className="space-y-4">
+                    <div className="mb-6">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Bell className="w-5 h-5 text-gray-600" />
+                        <h2 className="text-xl font-light text-gray-900">通知设置</h2>
+                      </div>
+                      <p className="text-gray-600 text-sm font-light">
+                        管理您的邮件通知偏好
+                      </p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-1">邮件通知</h3>
+                            <p className="text-sm text-gray-600 font-light leading-relaxed">
+                              当有人在您的纪念页留言时，我们会通过邮件通知您
+                            </p>
+                            <div className="mt-2 text-xs text-gray-500">
+                              <p>• 新留言通知：收到温暖的留言时第一时间知晓</p>
+                              <p>• 隐私保护：您的邮箱地址不会被公开</p>
+                              <p>• 随时管理：可随时在此页面开启或关闭通知</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-sm font-light ${emailNotificationEnabled ? 'text-green-600' : 'text-gray-500'}`}>
+                            {emailNotificationEnabled ? '已开启' : '已关闭'}
+                          </span>
+                          <Button
+                            variant={emailNotificationEnabled ? "default" : "outline"}
+                            onClick={() => handleEmailNotificationChange(!emailNotificationEnabled)}
+                            className={`px-6 py-2 rounded-xl text-sm font-light ${
+                              emailNotificationEnabled 
+                                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {emailNotificationEnabled ? '关闭通知' : '开启通知'}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

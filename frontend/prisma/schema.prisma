@@ -31,6 +31,9 @@ model User {
   banReason         String?
   banExpiresAt      DateTime?
   
+  // 通知设置
+  emailNotificationEnabled Boolean @default(true)
+  
   // OAuth相关字段
   provider          String?  // 登录提供者: google, email, etc.
   providerId        String?  // 提供者的用户ID
@@ -89,6 +92,9 @@ model Memorial {
   candleCount     Int          @default(0)
   messageCount    Int          @default(0)
   likeCount       Int          @default(0)
+  shareCount      Int          @default(0)
+  linkCopyCount   Int          @default(0)
+  qrCodeViewCount Int          @default(0)
   
   // 设置
   allowMessages   Boolean      @default(true)

@@ -26,9 +26,19 @@ export function transformUser(dbUser: ApiUser): FrontendUser {
 }
 
 export class DatabaseAuthService {
-  // 获取当前用户（从JWT cookie）
+  private lastVerificationTime = 0
+  private verificationCacheTime = 30000 // 30秒缓存
+  private cachedUser: FrontendUser | null = null
+
+  // 获取当前用户（从JWT cookie，带缓存）
   async getCurrentUser(): Promise<FrontendUser | null> {
     if (typeof window === 'undefined') return null
+    
+    // 如果缓存还有效，直接返回缓存的用户
+    const now = Date.now()
+    if (this.cachedUser && (now - this.lastVerificationTime) < this.verificationCacheTime) {
+      return this.cachedUser
+    }
     
     try {
       const response = await fetch('/api/auth/verify', {
@@ -38,11 +48,16 @@ export class DatabaseAuthService {
       if (!response.ok) {
         // 如果JWT验证失败，回退到localStorage
         const userJson = localStorage.getItem('eternalmemory_current_user')
-        return userJson ? JSON.parse(userJson) : null
+        this.cachedUser = userJson ? JSON.parse(userJson) : null
+        this.lastVerificationTime = now
+        return this.cachedUser
       }
       
       const data = await response.json()
       const user = transformUser(data.user)
+      // 更新缓存
+      this.cachedUser = user
+      this.lastVerificationTime = now
       // 同步到localStorage
       this.setCurrentUser(user)
       return user
@@ -50,7 +65,9 @@ export class DatabaseAuthService {
       console.error('获取当前用户失败:', error)
       // 回退到localStorage
       const userJson = localStorage.getItem('eternalmemory_current_user')
-      return userJson ? JSON.parse(userJson) : null
+      this.cachedUser = userJson ? JSON.parse(userJson) : null
+      this.lastVerificationTime = now
+      return this.cachedUser
     }
   }
 
@@ -62,6 +79,12 @@ export class DatabaseAuthService {
     } else {
       localStorage.removeItem('eternalmemory_current_user')
     }
+  }
+
+  // 清除缓存
+  private clearCache(): void {
+    this.cachedUser = null
+    this.lastVerificationTime = 0
   }
 
   // 注册用户
@@ -81,6 +104,7 @@ export class DatabaseAuthService {
     }
 
     const user = transformUser(data.user)
+    this.clearCache() // 清除缓存
     this.setCurrentUser(user)
     return user
   }
@@ -102,6 +126,7 @@ export class DatabaseAuthService {
     }
 
     const user = transformUser(data.user)
+    this.clearCache() // 清除缓存
     this.setCurrentUser(user)
     return user
   }
@@ -118,7 +143,8 @@ export class DatabaseAuthService {
       console.error('登出API调用失败:', error)
     }
     
-    // 清除localStorage
+    // 清除缓存和localStorage
+    this.clearCache()
     this.setCurrentUser(null)
   }
 

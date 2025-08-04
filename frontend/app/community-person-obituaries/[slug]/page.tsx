@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, MessageCircleHeart, Share2, User, Loader2 } from "lucide-react"
+import { Heart, Flame, MessageCircleHeart, Share2, User, Loader2, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
+import { ShareModal } from "@/components/ui/share-modal"
+import { ExportModal } from "@/components/ui/export-modal"
+import { OptimizedAvatar, MemorialImageGrid } from "@/components/ui/optimized-image"
 
 interface Memorial {
   id: string
@@ -48,6 +51,9 @@ interface Memorial {
   images: Array<{
     id: string
     url: string
+    thumbnailUrl?: string
+    previewUrl?: string
+    placeholder?: string
     isMain: boolean
   }>
   messages: Array<{
@@ -76,6 +82,8 @@ export default function PersonMemorialPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [canLightCandle, setCanLightCandle] = useState(true)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
 
   // 检查今日是否可以点蜡烛
   const checkCandleStatus = async (memorialId: string) => {
@@ -158,11 +166,12 @@ export default function PersonMemorialPage() {
     return () => abortController.abort()
   }, [params.slug])
 
+  // 用户状态变化时重新检查点蜡烛状态（但要防止重复调用）
   useEffect(() => {
-    if (memorial) {
+    if (memorial && user !== undefined) { // 只有当用户状态确定时才检查
       checkCandleStatus(memorial.id)
     }
-  }, [user])
+  }, [user?.id]) // 只监听用户ID变化，而不是整个user对象
 
   // 点燃蜡烛
   const handleLightCandle = async () => {
@@ -246,9 +255,21 @@ export default function PersonMemorialPage() {
     }
   }
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
-    toast.success('链接已复制')
+  // 处理分享操作
+  const handleShare = async (action: 'share' | 'copyLink' | 'viewQR', platform?: string) => {
+    if (!memorial) return
+
+    try {
+      await fetch(`/api/memorial/${memorial.id}/share`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action, platform })
+      })
+    } catch (error) {
+      console.error('记录分享统计失败:', error)
+    }
   }
 
   // 获取主图片
@@ -260,7 +281,28 @@ export default function PersonMemorialPage() {
   // 格式化日期
   const formatDate = (dateString?: string) => {
     if (!dateString) return '未知'
-    return new Date(dateString).toLocaleDateString('zh-CN')
+    
+    try {
+      let date: Date
+      
+      // 处理时间戳格式（毫秒）
+      if (/^\d+$/.test(dateString)) {
+        date = new Date(parseInt(dateString))
+      } else {
+        date = new Date(dateString)
+      }
+      
+      // 检查日期是否有效
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date:', dateString)
+        return '未知'
+      }
+      
+      return date.toLocaleDateString('zh-CN')
+    } catch (error) {
+      console.error('Date formatting error:', error, dateString)
+      return '未知'
+    }
   }
 
   // 格式化年龄显示
@@ -327,14 +369,12 @@ export default function PersonMemorialPage() {
       {/* 极简头部 */}
       <main className="max-w-4xl mx-auto px-6 py-24 pt-32">
         <div className="text-center mb-24">
-          <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-8 overflow-hidden">
-            <Image
+          <div className="mx-auto mb-8">
+            <OptimizedAvatar
               src={getMainImage()}
               alt={memorial.subjectName}
-              width={96}
-              height={96}
-              className="w-full h-full object-cover"
-              priority
+              size={96}
+              fallbackText={memorial.subjectName.substring(0, 2)}
             />
           </div>
           <h1 className="text-6xl font-extralight text-gray-900 mb-6">{memorial.subjectName}</h1>
@@ -376,30 +416,11 @@ export default function PersonMemorialPage() {
               <div className="text-center mb-12">
                 <h2 className="text-2xl font-light text-gray-900">时光</h2>
               </div>
-              <div className="grid md:grid-cols-3 gap-8">
-                {memorial.images.slice(0, 6).map((image, index) => (
-                  <div key={image.id} className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    <Image
-                      src={image.url || "/placeholder.svg"}
-                      alt={`${memorial.subjectName}的回忆`}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                    />
-                  </div>
-                ))}
-                {memorial.images.length > 6 && (
-                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <span className="text-3xl font-light text-gray-500">+{memorial.images.length - 6}</span>
-                      <p className="text-sm text-gray-500 mt-2">更多照片</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <MemorialImageGrid
+                images={memorial.images}
+                memorialName={memorial.subjectName}
+                maxImages={6}
+              />
             </section>
           )}
 
@@ -470,7 +491,7 @@ export default function PersonMemorialPage() {
               >
                 {canLightCandle ? '点亮思念' : '今日已点亮'}
               </button>
-              <div>
+              <div className="flex justify-center gap-6">
                 <button 
                   onClick={() => {
                     const messageSection = document.getElementById('message-section');
@@ -479,6 +500,20 @@ export default function PersonMemorialPage() {
                   className="text-gray-600 hover:text-gray-900 transition-colors font-light"
                 >
                   写下寄语
+                </button>
+                <button 
+                  onClick={() => setShowShareModal(true)}
+                  className="text-gray-600 hover:text-gray-900 transition-colors font-light flex items-center gap-1"
+                >
+                  <Share2 className="w-4 h-4" />
+                  分享纪念
+                </button>
+                <button 
+                  onClick={() => setShowExportModal(true)}
+                  className="text-gray-600 hover:text-gray-900 transition-colors font-light flex items-center gap-1"
+                >
+                  <Download className="w-4 h-4" />
+                  导出数据
                 </button>
               </div>
             </div>
@@ -559,6 +594,26 @@ export default function PersonMemorialPage() {
       </main>
 
       <Footer />
+
+      {/* 分享弹窗 */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        memorialId={memorial.id}
+        memorialName={memorial.subjectName}
+        memorialType={memorial.type}
+        memorialSlug={memorial.slug}
+        onShare={handleShare}
+      />
+
+      {/* 导出弹窗 */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        memorialId={memorial.id}
+        memorialName={memorial.subjectName}
+        memorialType={memorial.type}
+      />
     </div>
   )
 }

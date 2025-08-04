@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendNewMessageNotification } from '@/lib/email'
 import { z } from 'zod'
 
 const createMessageSchema = z.object({
@@ -27,9 +28,19 @@ export async function POST(request: NextRequest) {
     // 验证输入数据
     const validatedData = createMessageSchema.parse(body)
 
-    // 验证纪念页是否存在
+    // 验证纪念页是否存在，并获取创建者信息
     const memorial = await prisma.memorial.findUnique({
-      where: { id: validatedData.memorialId }
+      where: { id: validatedData.memorialId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailNotificationEnabled: true
+          }
+        }
+      }
     })
 
     if (!memorial) {
@@ -98,6 +109,29 @@ export async function POST(request: NextRequest) {
         }
       }
     })
+
+    // 发送邮件通知给纪念页创建者
+    if (memorial.author && memorial.author.email && memorial.author.emailNotificationEnabled) {
+      // 检查留言作者是否为纪念页创建者本人（避免自己给自己发邮件）
+      const isOwnMessage = validatedData.userId === memorial.author.id
+      
+      if (!isOwnMessage) {
+        try {
+          await sendNewMessageNotification(
+            memorial.author.email,
+            memorial.author.name,
+            memorial.subjectName,
+            message.authorName || '匿名访客',
+            message.content,
+            memorial.slug,
+            memorial.type as 'PET' | 'HUMAN'
+          )
+        } catch (emailError) {
+          // 邮件发送失败不影响留言创建，仅记录错误
+          console.error('Failed to send email notification:', emailError)
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,

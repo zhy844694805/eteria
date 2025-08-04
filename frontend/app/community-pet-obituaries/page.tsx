@@ -7,6 +7,7 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 import MemorialCard from "@/components/memorial-card"
+import { CommunityGridSkeleton, EmptyState, ErrorState } from "@/components/loading-skeletons"
 
 interface Memorial {
   id: string
@@ -329,32 +330,18 @@ export default function CommunityPetObituariesPage() {
       {/* Header - 极简浮动导航 */}
       <Navigation currentPage="community" />
 
-      {/* Hero Section - 极简标题 */}
-      <main className="pt-32">
-        <section className="max-w-6xl mx-auto text-center px-6 pb-16">
-          <h1 className="text-4xl font-light text-slate-900 mb-4">纪念社区</h1>
-          <p className="text-slate-600">每一个生命都值得被纪念</p>
+      {/* Hero Section - 响应式标题 */}
+      <main className="pt-20 lg:pt-32">
+        <section className="max-w-6xl mx-auto text-center px-4 sm:px-6 pb-12 sm:pb-16">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-slate-900 mb-3 sm:mb-4">纪念社区</h1>
+          <p className="text-slate-600 text-sm sm:text-base">每一个生命都值得被纪念</p>
         </section>
 
-        {/* 筛选器 - 极简风格 */}
-        <section className="max-w-6xl mx-auto px-6 pb-12">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div className="flex flex-wrap gap-2">
-              {filterCategories.map((category, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleFilterClick(category.value)}
-                  className={`px-4 py-2 rounded-2xl text-sm transition-colors ${
-                    activeFilter === category.value
-                      ? "bg-slate-900 text-white"
-                      : "border border-slate-300 text-slate-600 hover:border-slate-400"
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-            <div className="relative">
+        {/* 筛选器 - 响应式设计 */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-8 sm:pb-12">
+          <div className="space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            {/* 搜索框 - 移动端优先 */}
+            <div className="relative order-2 sm:order-1">
               {isSearching ? (
                 <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 animate-spin" />
               ) : (
@@ -362,42 +349,68 @@ export default function CommunityPetObituariesPage() {
               )}
               <input 
                 placeholder="搜索宠物名字、品种、故事..." 
-                className="pl-10 pr-4 py-2 w-64 rounded-2xl border border-slate-300 focus:border-slate-400 focus:outline-none bg-white"
+                className="pl-10 pr-4 py-3 w-full sm:w-64 md:w-80 rounded-2xl border border-slate-300 focus:border-slate-400 focus:outline-none bg-white text-sm"
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
             </div>
+            
+            {/* 筛选器按钮 - 移动端优化 */}
+            <div className="order-1 sm:order-2">
+              <div className="flex flex-wrap gap-2 sm:gap-2">
+                {filterCategories.map((category, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleFilterClick(category.value)}
+                    className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl text-xs sm:text-sm transition-colors whitespace-nowrap ${
+                      activeFilter === category.value
+                        ? "bg-slate-900 text-white"
+                        : "border border-slate-300 text-slate-600 hover:border-slate-400"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 纪念网格 - 极简卡片 */}
-        <section className="max-w-6xl mx-auto px-6 pb-20">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-              <span className="ml-3 text-slate-600">加载中...</span>
-            </div>
+        {/* 纪念网格 - 响应式卡片 */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
+          {isLoading || isSearching ? (
+            <CommunityGridSkeleton />
           ) : error ? (
-            <div className="text-center py-16">
-              <p className="text-slate-600 mb-6">{error}</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className="bg-slate-900 text-white px-6 py-2 rounded-2xl hover:bg-slate-800 transition-colors"
-              >
-                重试
-              </button>
-            </div>
+            <ErrorState 
+              title="加载失败"
+              description={error}
+              onRetry={() => window.location.reload()}
+            />
           ) : filteredMemorials.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-slate-600 mb-6">{memorials.length === 0 ? '还没有纪念页面' : '没有找到匹配的纪念页'}</p>
-              <Link href="/create-obituary">
-                <button className="bg-slate-900 text-white px-6 py-2 rounded-2xl hover:bg-slate-800 transition-colors">
-                  创建第一个纪念
+            <EmptyState
+              icon={Search}
+              title={memorials.length === 0 ? '还没有纪念页面' : '没有找到匹配的纪念页'}
+              description={memorials.length === 0 ? '成为第一个创建纪念页的人，让爱永远传承' : '尝试调整搜索条件或筛选器'}
+              action={memorials.length === 0 ? (
+                <Link href="/create-obituary">
+                  <button className="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors">
+                    创建第一个纪念
+                  </button>
+                </Link>
+              ) : (
+                <button 
+                  onClick={() => {
+                    setSearchQuery('')
+                    setActiveFilter('all')
+                  }}
+                  className="border border-slate-300 text-slate-700 px-6 py-3 rounded-xl hover:border-slate-400 transition-colors"
+                >
+                  清除筛选条件
                 </button>
-              </Link>
-            </div>
+              )}
+            />
           ) : (
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredMemorials.map((memorial) => (
                 <MemorialCard
                   key={memorial.id}

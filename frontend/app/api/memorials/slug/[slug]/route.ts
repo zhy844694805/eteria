@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { cache, cacheKeys, CACHE_CONFIG, createCacheHeaders } from '@/lib/cache'
 
 // 通过slug获取纪念页详情
 export async function GET(
@@ -8,6 +9,19 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
+
+    // 检查缓存
+    const cacheKey = cacheKeys.memorialBySlug(slug)
+    const cached = cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(
+        { success: true, memorial: cached },
+        { 
+          status: 200,
+          headers: createCacheHeaders(CACHE_CONFIG.MEMORIAL_DETAIL)
+        }
+      )
+    }
 
     const memorial = await prisma.memorial.findUnique({
       where: { 
@@ -90,20 +104,28 @@ export async function GET(
       )
     }
 
-    // 增加浏览次数
-    await prisma.memorial.update({
+    // 增加浏览次数（异步进行，不阻塞响应）
+    prisma.memorial.update({
       where: { id: memorial.id },
       data: {
         viewCount: {
           increment: 1
         }
       }
+    }).catch(error => {
+      console.error('Failed to update view count:', error)
     })
 
-    return NextResponse.json({
-      success: true,
-      memorial
-    })
+    // 缓存结果
+    cache.set(cacheKey, memorial, CACHE_CONFIG.MEMORIAL_DETAIL)
+
+    return NextResponse.json(
+      { success: true, memorial },
+      { 
+        status: 200,
+        headers: createCacheHeaders(CACHE_CONFIG.MEMORIAL_DETAIL)
+      }
+    )
 
   } catch (error) {
     console.error('Get memorial by slug error:', error)

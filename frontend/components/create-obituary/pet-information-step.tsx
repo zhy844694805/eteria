@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePicker } from "@/components/ui/date-picker"
-import { Plus } from "lucide-react"
+import { Plus, Camera, X } from "lucide-react"
 
 interface PetInformationStepProps {
   formData: any
@@ -17,6 +17,8 @@ interface PetInformationStepProps {
 
 export function PetInformationStep({ formData, updateFormData, onNext }: PetInformationStepProps) {
   const [mainPhotoPreview, setMainPhotoPreview] = useState<string | null>(null)
+  const [additionalPhotos, setAdditionalPhotos] = useState<Array<{id: string, file: File, preview: string}>>([])
+  const [isDragOver, setIsDragOver] = useState(false)
 
   // 自动计算年龄
   const calculateAge = (birthDate: string, deathDate: string) => {
@@ -57,14 +59,106 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
     }
   }, [formData.birthDate, formData.passingDate])
 
+  const generateId = () => Math.random().toString(36).substr(2, 9)
+
+  const validateFile = (file: File): string | null => {
+    const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!acceptedTypes.includes(file.type)) {
+      return '不支持的文件类型。支持：JPG, PNG, GIF, WebP'
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return '文件大小超过限制（最大 5MB）'
+    }
+    return null
+  }
+
   const handleMainPhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      const error = validateFile(file)
+      if (error) {
+        alert(error)
+        return
+      }
+      
       updateFormData({ mainPhoto: file })
       const reader = new FileReader()
       reader.onload = (e) => setMainPhotoPreview(e.target?.result as string)
       reader.readAsDataURL(file)
     }
+  }
+
+  const handleAdditionalPhotosUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files) return
+
+    const newPhotos: Array<{id: string, file: File, preview: string}> = []
+    const errors: string[] = []
+
+    Array.from(files).forEach(file => {
+      if (additionalPhotos.length + newPhotos.length >= 9) {
+        errors.push('最多只能上传 9 张额外照片')
+        return
+      }
+
+      const error = validateFile(file)
+      if (error) {
+        errors.push(`${file.name}: ${error}`)
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const photo = {
+          id: generateId(),
+          file,
+          preview: e.target?.result as string
+        }
+        newPhotos.push(photo)
+        
+        if (newPhotos.length === Array.from(files).filter(f => !validateFile(f)).length) {
+          setAdditionalPhotos(prev => [...prev, ...newPhotos])
+          updateFormData({ additionalPhotos: [...(formData.additionalPhotos || []), ...newPhotos.map(p => p.file)] })
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+
+    if (errors.length > 0) {
+      alert(errors.join('\n'))
+    }
+  }
+
+  const removeAdditionalPhoto = (id: string) => {
+    const updatedPhotos = additionalPhotos.filter(photo => photo.id !== id)
+    setAdditionalPhotos(updatedPhotos)
+    updateFormData({ additionalPhotos: updatedPhotos.map(p => p.file) })
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    
+    const files = e.dataTransfer.files
+    if (files.length === 1 && !mainPhotoPreview) {
+      // 如果只有一个文件且没有主图，设为主图
+      const mockEvent = { target: { files } } as any
+      handleMainPhotoUpload(mockEvent)
+    } else {
+      // 否则作为额外照片
+      const mockEvent = { target: { files } } as any
+      handleAdditionalPhotosUpload(mockEvent)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
   }
 
   const canProceed =
@@ -76,15 +170,15 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
     formData.passingDate
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">创建免费宠物悼念页</h1>
-        <p className="text-gray-600">用永久存在的美丽纪念向您心爱的宠物致敬</p>
+    <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">创建免费宠物悼念页</h1>
+        <p className="text-gray-600 text-sm sm:text-base">用永久存在的美丽纪念向您心爱的宠物致敬</p>
       </div>
 
-      <div className="space-y-6">
-        {/* Pet Name and Type */}
-        <div className="grid md:grid-cols-2 gap-6">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Pet Name and Type - 响应式网格 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               宠物名字 <span className="text-red-500">*</span>
@@ -116,8 +210,8 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
           </div>
         </div>
 
-        {/* Breed, Color, Gender */}
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Breed, Color, Gender - 响应式网格 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">品种</label>
             <Select value={formData.breed} onValueChange={(value) => updateFormData({ breed: value })}>
@@ -286,8 +380,8 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
           </div>
         </div>
 
-        {/* Birth and Passing Dates */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Birth and Passing Dates - 响应式网格 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               出生日期 <span className="text-red-500">*</span>
@@ -313,43 +407,90 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
           </div>
         </div>
 
-        {/* Pet Photos */}
+        {/* Pet Photos - 移动端优化 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
             宠物照片 <span className="text-red-500">*</span>
-            <span className="text-gray-500 font-normal"> (需要主照片，最多10张)</span>
+            <span className="text-gray-500 font-normal text-xs sm:text-sm"> (需要主照片，最多10张)</span>
           </label>
 
-          {/* Main Photo Upload */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-4">
+          {/* Main Photo Upload - 改进的移动端界面 */}
+          <div 
+            className={`border-2 border-dashed rounded-xl p-4 sm:p-6 lg:p-8 text-center mb-4 transition-all duration-200 ${
+              isDragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+            }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
             {mainPhotoPreview ? (
               <div className="relative">
                 <img
-                  src={mainPhotoPreview || "/placeholder.svg"}
+                  src={mainPhotoPreview}
                   alt="主照片预览"
-                  className="max-h-48 mx-auto rounded-lg"
+                  className="max-h-32 sm:max-h-48 mx-auto rounded-xl shadow-sm"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 bg-transparent"
-                  onClick={() => document.getElementById("main-photo-input")?.click()}
-                >
-                  更换照片
-                </Button>
+                <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                  主图
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent text-xs sm:text-sm"
+                    onClick={() => document.getElementById("main-photo-input")?.click()}
+                  >
+                    更换照片
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent text-xs sm:text-sm"
+                    onClick={() => {
+                      setMainPhotoPreview(null)
+                      updateFormData({ mainPhoto: null })
+                    }}
+                  >
+                    删除
+                  </Button>
+                </div>
               </div>
             ) : (
               <div>
-                <Plus className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-2">上传您宠物的主照片</p>
-                <p className="text-sm text-gray-500 mb-4">PNG、JPG、GIF 最大 5MB（自动优化）</p>
-                <Button
-                  variant="outline"
-                  className="bg-purple-100 border-purple-300 text-purple-700 hover:bg-purple-200"
-                  onClick={() => document.getElementById("main-photo-input")?.click()}
-                >
-                  选择主照片
-                </Button>
+                <Plus className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                <p className="text-gray-600 mb-2 text-sm sm:text-base">上传您宠物的主照片</p>
+                <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
+                  支持 JPG、PNG、GIF、WebP，最大 5MB
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-teal-50 border-teal-300 text-teal-700 hover:bg-teal-100 text-xs sm:text-sm"
+                    onClick={() => document.getElementById("main-photo-input")?.click()}
+                  >
+                    <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                    选择照片
+                  </Button>
+                  
+                  {/* 移动端摄像头按钮 */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-teal-50 border-teal-300 text-teal-700 hover:bg-teal-100 text-xs sm:text-sm sm:hidden"
+                    onClick={() => {
+                      const input = document.getElementById("main-photo-input") as HTMLInputElement
+                      if (input) {
+                        input.setAttribute('capture', 'environment')
+                        input.click()
+                      }
+                    }}
+                  >
+                    <Camera className="w-3 h-3 mr-1" />
+                    拍照
+                  </Button>
+                </div>
               </div>
             )}
             <input
@@ -361,28 +502,70 @@ export function PetInformationStep({ formData, updateFormData, onNext }: PetInfo
             />
           </div>
 
-          {/* Additional Photos */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">额外照片 (0/9)</span>
-              <Button variant="outline" size="sm">
-                + 添加更多照片
-              </Button>
+          {/* Additional Photos Grid - 移动端优化 */}
+          {additionalPhotos.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">额外照片 ({additionalPhotos.length}/9)</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+                {additionalPhotos.map((photo, index) => (
+                  <div key={photo.id} className="relative group">
+                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
+                      <img
+                        src={photo.preview}
+                        alt={`额外照片 ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={() => removeAdditionalPhoto(photo.id)}
+                        className="absolute top-1 right-1 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                      >
+                        <X className="w-2 h-2 sm:w-3 sm:h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              <span>⚠️</span>
-              最多添加9张额外照片，为您宠物的悼念页创建美丽的照片廊
-            </p>
+          )}
+
+          {/* Add More Photos Button */}
+          {additionalPhotos.length < 9 && (
+            <div className="mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto text-xs sm:text-sm"
+                onClick={() => document.getElementById("additional-photos-input")?.click()}
+              >
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                添加更多照片 ({additionalPhotos.length}/9)
+              </Button>
+              <input
+                id="additional-photos-input"
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handleAdditionalPhotosUpload}
+              />
+            </div>
+          )}
+
+          {/* 使用提示 */}
+          <div className="text-xs text-gray-400 space-y-1">
+            <p>• 第一张图片将作为主图显示在纪念页面上</p>
+            <p>• 支持拖拽上传（桌面端）</p>
+            <p className="sm:hidden">• 点击"拍照"按钮可直接使用摄像头</p>
           </div>
         </div>
 
 
-        {/* Next Button */}
-        <div className="flex justify-end pt-6">
+        {/* Next Button - 移动端优化 */}
+        <div className="flex justify-end pt-4 sm:pt-6">
           <Button
             onClick={onNext}
             disabled={!canProceed}
-            className="bg-teal-400 hover:bg-teal-500 text-white px-8 py-2 rounded-full"
+            className="bg-teal-400 hover:bg-teal-500 text-white px-6 sm:px-8 py-2 sm:py-2 rounded-full text-sm sm:text-base w-full sm:w-auto"
           >
             下一步
           </Button>

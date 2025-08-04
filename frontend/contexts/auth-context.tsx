@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // 自动检测和更新用户偏好系统
+  // 自动检测和更新用户偏好系统（防止重复调用）
   const autoDetectAndSetPreferredSystem = async (pathname: string) => {
     if (!user || user.preferredSystem) return // 如果已经有偏好，不自动更新
     
@@ -111,7 +111,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       detectedSystem = 'human'
     }
     
+    // 只有检测到明确的系统偏好时才更新
     if (detectedSystem) {
+      // 防抖：检查上次更新时间，避免频繁调用
+      const lastUpdate = sessionStorage.getItem('lastPreferredSystemUpdate')
+      const now = Date.now()
+      if (lastUpdate && (now - parseInt(lastUpdate)) < 5000) { // 5秒内不重复更新
+        return
+      }
+      
+      sessionStorage.setItem('lastPreferredSystemUpdate', now.toString())
       await updatePreferredSystem(detectedSystem)
     }
   }

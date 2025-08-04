@@ -2,7 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { AuthProvider } from "@/contexts/auth-context"
-import { Toaster } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
+import { ErrorBoundary } from "@/components/error-boundary"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -22,10 +23,12 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className={inter.className}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-        <Toaster position="top-center" />
+        <ErrorBoundary>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+          <Toaster position="top-center" />
+        </ErrorBoundary>
       </body>
     </html>
   )
