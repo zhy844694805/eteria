@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分屏式表单原型 - 永念</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .info-panel {
+            background: linear-gradient(135deg, 
+                rgba(20, 184, 166, 0.1) 0%, 
+                rgba(6, 182, 212, 0.1) 50%, 
+                rgba(99, 102, 241, 0.1) 100%);
+        }
+        .form-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .input-clean {
+            border: 1px solid #f1f5f9;
+            background: rgba(248, 250, 252, 0.8);
+        }
+        .input-clean:focus {
+            outline: none;
+            border-color: rgb(20 184 166);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+        .step-indicator {
+            position: relative;
+        }
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            width: 40px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%);
+        }
+        .step-indicator:last-child::after {
+            display: none;
+        }
+        .feature-highlight {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- 左侧信息面板 -->
+        <div class="info-panel flex-1 lg:flex hidden flex-col justify-center p-12 relative overflow-hidden">
+            <!-- 背景装饰 -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-teal-200/20 to-cyan-200/20"></div>
+                <div class="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-gradient-to-tr from-purple-200/20 to-pink-200/20"></div>
+            </div>
+            
+            <div class="relative z-10 max-w-lg">
+                <!-- 标题区域 -->
+                <div class="mb-12">
+                    <h1 class="text-4xl font-extralight text-gray-800 mb-6 leading-tight">
+                        为珍爱的它<br>
+                        <span class="text-teal-600">创建永恒纪念</span>
+                    </h1>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        让美好的回忆永远传承，创建一个专属的纪念空间，记录那些珍贵的时光。
+                    </p>
+                </div>
+
+                <!-- 步骤指示 -->
+                <div class="mb-12">
+                    <h3 class="text-sm font-medium text-gray-700 mb-6 uppercase tracking-wide">创建流程</h3>
+                    <div class="space-y-6">
+                        <div class="step-indicator flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white text-sm font-medium mr-4">
+                                1
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">基本信息</h4>
+                                <p class="text-sm text-gray-600">填写宠物的基本资料</p>
+                            </div>
+                        </div>
+                        <div class="step-indicator flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 text-sm mr-4">
+                                2
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-400">生平故事</h4>
+                                <p class="text-sm text-gray-400">分享美好的回忆时光</p>
+                            </div>
+                        </div>
+                        <div class="step-indicator flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 text-sm mr-4">
+                                3
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-400">创建者信息</h4>
+                                <p class="text-sm text-gray-400">完善联系方式</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 特色功能 -->
+                <div class="space-y-4">
+                    <h3 class="text-sm font-medium text-gray-700 uppercase tracking-wide">特色功能</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="feature-highlight bg-white/60 rounded-xl p-4 text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-teal-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-600">永久保存</p>
+                        </div>
+                        <div class="bg-white/60 rounded-xl p-4 text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-cyan-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-600">在线分享</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧表单面板 -->
+        <div class="form-panel flex-1 flex flex-col">
+            <!-- 顶部导航 -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <h2 class="font-medium text-gray-800">基本信息</h2>
+                        <p class="text-sm text-gray-500">第 1 步，共 3 步</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-gray-100 rounded-full p-1">
+                    <div class="w-16 h-2 bg-teal-500 rounded-full"></div>
+                    <div class="w-16 h-2 bg-gray-200 rounded-full ml-1"></div>
+                    <div class="w-16 h-2 bg-gray-200 rounded-full ml-1"></div>
+                </div>
+            </div>
+
+            <!-- 表单内容 -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-md mx-auto">
+                    <form class="space-y-6">
+                        <!-- 宠物姓名 -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">宠物姓名 *</label>
+                            <input 
+                                type="text" 
+                                placeholder="输入宠物的名字"
+                                class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200"
+                            >
+                        </div>
+
+                        <!-- 宠物类型和品种 -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">类型 *</label>
+                                <select class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200">
+                                    <option value="">选择类型</option>
+                                    <option value="dog">狗狗</option>
+                                    <option value="cat">猫咪</option>
+                                    <option value="bird">鸟类</option>
+                                    <option value="rabbit">兔子</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">品种</label>
+                                <select class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200">
+                                    <option value="">选择品种</option>
+                                    <option value="golden">金毛</option>
+                                    <option value="husky">哈士奇</option>
+                                    <option value="poodle">贵宾犬</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 其他基本信息 -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">毛色</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="如：棕色、白色"
+                                    class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200"
+                                >
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">性别</label>
+                                <select class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200">
+                                    <option value="">选择性别</option>
+                                    <option value="male">男孩</option>
+                                    <option value="female">女孩</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 重要日期 -->
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-medium text-gray-700 border-b border-gray-100 pb-2">重要日期</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">出生日期</label>
+                                    <input 
+                                        type="date" 
+                                        class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200"
+                                    >
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">离开日期</label>
+                                    <input 
+                                        type="date" 
+                                        class="input-clean w-full px-4 py-3 rounded-xl transition-all duration-200"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 照片上传 -->
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-medium text-gray-700 border-b border-gray-100 pb-2">照片回忆</h3>
+                            <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-teal-300 hover:bg-teal-50/30 transition-all duration-200 cursor-pointer">
+                                <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"></path>
+                                </svg>
+                                <p class="text-gray-600 mb-1">上传照片</p>
+                                <p class="text-xs text-gray-500">支持拖拽上传，最多 10 张</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 底部操作栏 -->
+            <div class="border-t border-gray-100 p-6">
+                <div class="max-w-md mx-auto flex justify-between">
+                    <button type="button" class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200">
+                        保存草稿
+                    </button>
+                    <button type="button" class="px-8 py-3 bg-teal-500 text-white rounded-xl hover:bg-teal-600 font-medium transition-all duration-200 shadow-sm hover:shadow-lg">
+                        下一步：故事回忆
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端适配 -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div class="flex justify-center space-x-1">
+            <div class="w-8 h-1 bg-teal-500 rounded-full"></div>
+            <div class="w-8 h-1 bg-gray-200 rounded-full"></div>
+            <div class="w-8 h-1 bg-gray-200 rounded-full"></div>
+        </div>
+    </div>
+</body>
+</html>

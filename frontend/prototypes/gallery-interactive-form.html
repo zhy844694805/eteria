@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画廊式交互表单 - 永念</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+        }
+        .gallery-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .frame {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+            border: 8px solid;
+            border-image: linear-gradient(45deg, #d4af37, #ffd700, #d4af37) 1;
+            border-radius: 12px;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.4),
+                inset 0 2px 10px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #d4af37);
+            z-index: -1;
+            border-radius: 12px;
+        }
+        .frame::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: rgba(26, 26, 58, 0.9);
+            border-radius: 4px;
+            z-index: -1;
+        }
+        .gallery-spotlight {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+        .section-active {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 
+                0 25px 50px rgba(212, 175, 55, 0.3),
+                inset 0 2px 10px rgba(255,255,255,0.15);
+        }
+        .input-artistic {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .input-artistic:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+        .input-artistic::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .artwork-title {
+            font-family: 'Georgia', serif;
+            color: #d4af37;
+            text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+        .artwork-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+        }
+        .photo-canvas {
+            background: linear-gradient(145deg, #2d2d4d, #1d1d3d);
+            border: 4px dashed rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        .photo-canvas:hover {
+            border-color: #d4af37;
+            background: linear-gradient(145deg, #3d3d5d, #2d2d4d);
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+        .photo-canvas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s;
+        }
+        .photo-canvas:hover::before {
+            left: 100%;
+        }
+        .navigation-orb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #d4af37, #b8941f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .navigation-orb:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+        }
+        .navigation-orb::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: rotate 3s linear infinite;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .museum-label {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Georgia', serif;
+            font-size: 14px;
+            color: #d4af37;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .progress-constellation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        .constellation-star {
+            width: 16px;
+            height: 16px;
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        .constellation-star.active {
+            background: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            transform: scale(1.5);
+        }
+        .constellation-star::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent);
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+        }
+        .constellation-star:last-child::before {
+            display: none;
+        }
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #d4af37;
+            border-radius: 50%;
+            animation: float-particle 15s infinite linear;
+        }
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 聚光灯效果 -->
+    <div class="gallery-spotlight" id="spotlight"></div>
+    
+    <!-- 浮动粒子 -->
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="container mx-auto px-8 py-12">
+        <!-- 画廊标题 -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold artwork-title mb-6">生命的艺术展</h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                在这个专属画廊中，为您的珍爱伙伴创作一幅永恒的艺术作品
+            </p>
+        </div>
+
+        <!-- 进度星座 -->
+        <div class="progress-constellation">
+            <div class="constellation-star active" data-section="1"></div>
+            <div class="constellation-star" data-section="2"></div>
+            <div class="constellation-star" data-section="3"></div>
+            <div class="constellation-star" data-section="4"></div>
+        </div>
+
+        <div class="gallery-container max-w-6xl mx-auto">
+            <!-- 第一展厅：肖像画 -->
+            <div class="frame section-active mb-16 p-8" id="section-1">
+                <div class="artwork-title text-3xl mb-8 text-center">第一展厅：肖像画</div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-lg font-medium text-yellow-300 mb-3">主角姓名</label>
+                            <input 
+                                type="text" 
+                                placeholder="这幅肖像的主角叫..."
+                                class="input-artistic w-full"
+                            />
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-lg font-medium text-yellow-300 mb-3">生物类型</label>
+                                <select class="input-artistic w-full">
+                                    <option value="">选择类型</option>
+                                    <option value="dog">忠诚的犬类</option>
+                                    <option value="cat">优雅的猫科</option>
+                                    <option value="bird">自由的鸟类</option>
+                                    <option value="rabbit">温柔的兔科</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-lg font-medium text-yellow-300 mb-3">艺术风格</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="品种特征"
+                                    class="input-artistic w-full"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-lg font-medium text-yellow-300 mb-3">诞生时刻</label>
+                            <input 
+                                type="date" 
+                                class="input-artistic w-full"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-lg font-medium text-yellow-300 mb-3">艺术家笔记</label>
+                            <textarea 
+                                placeholder="描述这幅肖像的独特之处..."
+                                rows="4"
+                                class="input-artistic w-full resize-none"
+                            ></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="photo-canvas h-96 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-yellow-300 font-medium mb-2">肖像画作品</p>
+                            <p class="text-sm text-gray-400">点击上传主角照片</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="museum-label">
+                    展品编号：001 | 肖像画系列
+                </div>
+            </div>
+
+            <!-- 第二展厅：风景画 -->
+            <div class="frame mb-16 p-8 opacity-60" id="section-2">
+                <div class="artwork-title text-3xl mb-8 text-center">第二展厅：风景画</div>
+                
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0h-2m9-5a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-xl text-gray-400">完成肖像画后解锁</p>
+                    <p class="text-sm text-gray-500 mt-2">记录生活的美好场景</p>
+                </div>
+                
+                <div class="museum-label">
+                    展品编号：002 | 风景画系列
+                </div>
+            </div>
+
+            <!-- 第三展厅：抽象画 -->
+            <div class="frame mb-16 p-8 opacity-40" id="section-3">
+                <div class="artwork-title text-3xl mb-8 text-center">第三展厅：抽象画</div>
+                
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-xl text-gray-500">继续创作解锁</p>
+                    <p class="text-sm text-gray-600 mt-2">表达内心的情感世界</p>
+                </div>
+                
+                <div class="museum-label">
+                    展品编号：003 | 抽象画系列
+                </div>
+            </div>
+
+            <!-- 第四展厅：纪念画 -->
+            <div class="frame mb-16 p-8 opacity-20" id="section-4">
+                <div class="artwork-title text-3xl mb-8 text-center">第四展厅：纪念画</div>
+                
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-xl text-gray-600">最终创作</p>
+                    <p class="text-sm text-gray-700 mt-2">永恒的纪念作品</p>
+                </div>
+                
+                <div class="museum-label">
+                    展品编号：004 | 纪念画系列
+                </div>
+            </div>
+        </div>
+
+        <!-- 画廊导航 -->
+        <div class="flex justify-center items-center space-x-8 mt-16">
+            <button class="navigation-orb" onclick="previousSection()">
+                <svg class="w-6 h-6 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            
+            <div class="text-center">
+                <p class="text-yellow-300 font-medium">画廊导航</p>
+                <p class="text-sm text-gray-400">第 <span id="current-section">1</span> 展厅 / 共 4 展厅</p>
+            </div>
+            
+            <button class="navigation-orb" onclick="nextSection()">
+                <svg class="w-6 h-6 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 画廊信息 -->
+        <div class="text-center mt-16 pb-8">
+            <div class="max-w-md mx-auto bg-black/40 backdrop-blur-lg border border-yellow-600/30 rounded-lg p-6">
+                <h3 class="text-yellow-300 font-medium mb-2">永念艺术画廊</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    每一幅作品都是独一无二的生命印记，在这里永远珍藏那些美好的回忆。
+                </p>
+                <button class="mt-4 px-6 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white rounded-full hover:from-yellow-500 hover:to-yellow-400 transition-all duration-300">
+                    返回首页
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 4;
+
+        // 初始化粒子效果
+        function initParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 聚光灯跟随鼠标
+        function initSpotlight() {
+            const spotlight = document.getElementById('spotlight');
+            
+            document.addEventListener('mousemove', (e) => {
+                spotlight.style.left = (e.clientX - 100) + 'px';
+                spotlight.style.top = (e.clientY - 100) + 'px';
+            });
+        }
+
+        function nextSection() {
+            if (currentSection >= totalSections) return;
+            
+            // 验证当前展厅的输入
+            const currentFrame = document.getElementById(`section-${currentSection}`);
+            const inputs = currentFrame.querySelectorAll('input, select, textarea');
+            let hasEmptyFields = false;
+            
+            inputs.forEach(input => {
+                if (input.value.trim() === '') {
+                    hasEmptyFields = true;
+                }
+            });
+            
+            if (hasEmptyFields) {
+                alert('请完成当前展厅的创作后再进入下一展厅');
+                return;
+            }
+            
+            // 移除当前展厅的活跃状态
+            currentFrame.classList.remove('section-active');
+            currentFrame.classList.add('opacity-60');
+            
+            // 激活下一展厅
+            currentSection++;
+            const nextFrame = document.getElementById(`section-${currentSection}`);
+            nextFrame.classList.remove('opacity-60', 'opacity-40', 'opacity-20');
+            nextFrame.classList.add('section-active');
+            
+            // 滚动到新展厅
+            nextFrame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            updateProgress();
+        }
+
+        function previousSection() {
+            if (currentSection <= 1) return;
+            
+            // 移除当前展厅的活跃状态
+            const currentFrame = document.getElementById(`section-${currentSection}`);
+            currentFrame.classList.remove('section-active');
+            
+            // 激活上一展厅
+            currentSection--;
+            const prevFrame = document.getElementById(`section-${currentSection}`);
+            prevFrame.classList.remove('opacity-60');
+            prevFrame.classList.add('section-active');
+            
+            // 滚动到展厅
+            prevFrame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            // 更新星座进度
+            const stars = document.querySelectorAll('.constellation-star');
+            stars.forEach((star, index) => {
+                if (index < currentSection) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            
+            // 更新当前展厅显示
+            document.getElementById('current-section').textContent = currentSection;
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticles();
+            initSpotlight();
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

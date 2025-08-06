@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简卡片表单 - 永念</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+        }
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .input-minimal {
+            border: 1px solid #e5e7eb;
+            background: white;
+            font-size: 16px;
+            padding: 16px;
+        }
+        .input-minimal:focus {
+            outline: none;
+            border-color: #000;
+        }
+        .input-minimal::placeholder {
+            color: #9ca3af;
+        }
+        .progress-bar {
+            height: 2px;
+            background: #f3f4f6;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #000;
+            width: 33.33%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 进度条 -->
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-6 py-12">
+        <!-- 当前卡片 -->
+        <div class="card p-8 mb-8">
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs text-gray-500">1 / 3</span>
+                    <span class="text-xs text-gray-500">基本信息</span>
+                </div>
+                <h1 class="text-xl font-normal text-gray-900">告诉我们关于它</h1>
+            </div>
+
+            <div class="space-y-6">
+                <input 
+                    type="text" 
+                    placeholder="它的名字"
+                    class="input-minimal w-full"
+                />
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <select class="input-minimal">
+                        <option value="">动物类型</option>
+                        <option value="dog">狗</option>
+                        <option value="cat">猫</option>
+                        <option value="bird">鸟</option>
+                        <option value="rabbit">兔</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        placeholder="品种"
+                        class="input-minimal"
+                    />
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-2">出生日期</label>
+                        <input 
+                            type="date" 
+                            class="input-minimal w-full"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-2">离开日期</label>
+                        <input 
+                            type="date" 
+                            class="input-minimal w-full"
+                        />
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="border border-dashed border-gray-300 p-8 text-center">
+                        <div class="text-gray-400 mb-2">
+                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-500">添加照片</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览下一张卡片 -->
+        <div class="card p-8 opacity-30 transform scale-95 -mt-4">
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs text-gray-500">2 / 3</span>
+                    <span class="text-xs text-gray-500">生活故事</span>
+                </div>
+                <h1 class="text-xl font-normal text-gray-500">分享回忆</h1>
+            </div>
+            <div class="space-y-4">
+                <div class="h-4 bg-gray-100 w-full"></div>
+                <div class="h-4 bg-gray-100 w-3/4"></div>
+                <div class="h-4 bg-gray-100 w-1/2"></div>
+            </div>
+        </div>
+
+        <!-- 再下一张卡片预览 -->
+        <div class="card p-8 opacity-20 transform scale-90 -mt-4">
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs text-gray-500">3 / 3</span>
+                    <span class="text-xs text-gray-500">创建者信息</span>
+                </div>
+                <h1 class="text-xl font-normal text-gray-500">完成创建</h1>
+            </div>
+            <div class="space-y-4">
+                <div class="h-4 bg-gray-100 w-2/3"></div>
+                <div class="h-4 bg-gray-100 w-1/2"></div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="flex justify-between items-center mt-12">
+            <button class="text-gray-500 text-sm hover:text-gray-700 transition-colors">
+                ← 返回
+            </button>
+            <button class="bg-black text-white px-8 py-3 text-sm hover:bg-gray-800 transition-colors">
+                下一步
+            </button>
+        </div>
+    </div>
+</body>
+</html>

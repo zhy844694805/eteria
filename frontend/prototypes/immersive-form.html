@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沉浸式纪念表单 - 永念</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+        }
+        
+        .question-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .question-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .question-container.exit {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        
+        .input-immersive {
+            border: none;
+            border-bottom: 2px solid #e5e7eb;
+            background: transparent;
+            outline: none;
+            font-size: 24px;
+            padding: 16px 0;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-immersive:focus {
+            border-bottom-color: #000;
+        }
+        
+        .input-immersive::placeholder {
+            color: #9ca3af;
+            font-weight: 300;
+        }
+        
+        .option-grid {
+            display: grid;
+            gap: 16px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .option-1-col { grid-template-columns: 1fr; }
+        .option-2-col { grid-template-columns: repeat(2, 1fr); }
+        .option-3-col { grid-template-columns: repeat(3, 1fr); }
+        
+        .option-button {
+            border: 1px solid #e5e7eb;
+            background: white;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        
+        .option-button:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .option-button.selected {
+            border-color: #000;
+            background: #000;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .progress-indicator {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+        
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .progress-dot.active {
+            background: #000;
+            transform: scale(1.2);
+        }
+        
+        .continue-button {
+            margin-top: 40px;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .continue-button.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .continue-button:hover {
+            background: #374151;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .skip-button {
+            margin-top: 16px;
+            background: transparent;
+            color: #6b7280;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skip-button:hover {
+            color: #374151;
+        }
+        
+        .question-text {
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 48px;
+            line-height: 1.2;
+            max-width: 800px;
+        }
+        
+        .question-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+        
+        .textarea-immersive {
+            border: 1px solid #e5e7eb;
+            background: white;
+            outline: none;
+            font-size: 18px;
+            padding: 24px;
+            width: 100%;
+            max-width: 600px;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .textarea-immersive:focus {
+            border-color: #000;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+        }
+        
+        .completion-screen {
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .brand-text {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .question-text {
+                font-size: 24px;
+                margin-bottom: 32px;
+            }
+            
+            .input-immersive {
+                font-size: 20px;
+            }
+            
+            .option-3-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .option-button {
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen">
+    <!-- 进度指示器 -->
+    <div class="progress-indicator">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+    
+    <!-- 品牌标识 -->
+    <div class="brand-text">永念</div>
+
+    <!-- 问题容器们 -->
+    
+    <!-- 问题 1: 宠物名字 -->
+    <div class="question-container active" id="question-0">
+        <h1 class="question-text">它叫什么名字？</h1>
+        <input 
+            type="text" 
+            placeholder="输入名字..."
+            class="input-immersive"
+            data-field="petName"
+            autocomplete="off"
+        />
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+    </div>
+
+    <!-- 问题 2: 动物类型 -->
+    <div class="question-container" id="question-1">
+        <h1 class="question-text">它是什么动物？</h1>
+        <div class="option-grid option-2-col">
+            <button class="option-button" data-value="dog" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐕</div>
+                <div>狗狗</div>
+            </button>
+            <button class="option-button" data-value="cat" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐱</div>
+                <div>猫咪</div>
+            </button>
+            <button class="option-button" data-value="bird" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐦</div>
+                <div>鸟儿</div>
+            </button>
+            <button class="option-button" data-value="rabbit" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐰</div>
+                <div>兔子</div>
+            </button>
+            <button class="option-button" data-value="hamster" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐹</div>
+                <div>仓鼠</div>
+            </button>
+            <button class="option-button" data-value="other" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">🐾</div>
+                <div>其他</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 问题 3: 品种 -->
+    <div class="question-container" id="question-2">
+        <h1 class="question-text">它是什么品种？</h1>
+        <div class="question-subtitle">如果不确定可以简单描述</div>
+        <input 
+            type="text" 
+            placeholder="例如：金毛、英短、混种..."
+            class="input-immersive"
+            data-field="breed"
+            autocomplete="off"
+        />
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+        <button class="skip-button" onclick="skipQuestion()">跳过</button>
+    </div>
+
+    <!-- 问题 4: 颜色 -->
+    <div class="question-container" id="question-3">
+        <h1 class="question-text">它是什么颜色的？</h1>
+        <div class="option-grid option-3-col">
+            <button class="option-button" data-value="black" onclick="selectOption(this)">黑色</button>
+            <button class="option-button" data-value="white" onclick="selectOption(this)">白色</button>
+            <button class="option-button" data-value="brown" onclick="selectOption(this)">棕色</button>
+            <button class="option-button" data-value="gray" onclick="selectOption(this)">灰色</button>
+            <button class="option-button" data-value="black-white" onclick="selectOption(this)">黑白相间</button>
+            <button class="option-button" data-value="multicolor" onclick="selectOption(this)">多种颜色</button>
+        </div>
+    </div>
+
+    <!-- 问题 5: 性别 -->
+    <div class="question-container" id="question-4">
+        <h1 class="question-text">它是男孩还是女孩？</h1>
+        <div class="option-grid option-2-col">
+            <button class="option-button" data-value="male" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">♂</div>
+                <div>男孩</div>
+            </button>
+            <button class="option-button" data-value="female" onclick="selectOption(this)">
+                <div class="text-2xl mb-2">♀</div>
+                <div>女孩</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 问题 6: 出生日期 -->
+    <div class="question-container" id="question-5">
+        <h1 class="question-text">它什么时候出生？</h1>
+        <div class="question-subtitle">大概时间就可以</div>
+        <input 
+            type="date" 
+            class="input-immersive"
+            data-field="birthDate"
+        />
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+    </div>
+
+    <!-- 问题 7: 离开日期 -->
+    <div class="question-container" id="question-6">
+        <h1 class="question-text">它什么时候离开的？</h1>
+        <input 
+            type="date" 
+            class="input-immersive"
+            data-field="passingDate"
+        />
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+    </div>
+
+    <!-- 问题 8: 性格特点 -->
+    <div class="question-container" id="question-7">
+        <h1 class="question-text">它有什么性格特点？</h1>
+        <div class="question-subtitle">可以选择多个</div>
+        <div class="option-grid option-3-col">
+            <button class="option-button multiple-choice" data-value="playful" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">🎾</div>
+                <div>顽皮活泼</div>
+            </button>
+            <button class="option-button multiple-choice" data-value="loyal" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">❤️</div>
+                <div>忠诚可靠</div>
+            </button>
+            <button class="option-button multiple-choice" data-value="gentle" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">🕊️</div>
+                <div>温柔安静</div>
+            </button>
+            <button class="option-button multiple-choice" data-value="energetic" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">⚡</div>
+                <div>精力充沛</div>
+            </button>
+            <button class="option-button multiple-choice" data-value="calm" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">😌</div>
+                <div>冷静沉着</div>
+            </button>
+            <button class="option-button multiple-choice" data-value="friendly" onclick="toggleMultiple(this)">
+                <div class="text-xl mb-1">😊</div>
+                <div>友好亲人</div>
+            </button>
+        </div>
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+    </div>
+
+    <!-- 问题 9: 特别回忆 -->
+    <div class="question-container" id="question-8">
+        <h1 class="question-text">分享一个特别的回忆</h1>
+        <div class="question-subtitle">可以是一个故事、习惯或特别的时刻</div>
+        <textarea 
+            placeholder="写下你们之间最珍贵的回忆..."
+            class="textarea-immersive"
+            data-field="specialMemory"
+        ></textarea>
+        <button class="continue-button" onclick="nextQuestion()">继续</button>
+        <button class="skip-button" onclick="skipQuestion()">跳过</button>
+    </div>
+
+    <!-- 问题 10: 创建者姓名 -->
+    <div class="question-container" id="question-9">
+        <h1 class="question-text">最后，告诉我你的名字</h1>
+        <div class="question-subtitle">这样我就知道是谁创建了这个纪念页面</div>
+        <input 
+            type="text" 
+            placeholder="你的名字..."
+            class="input-immersive"
+            data-field="creatorName"
+            autocomplete="off"
+        />
+        <button class="continue-button" onclick="completeForm()">创建纪念页面</button>
+    </div>
+
+    <!-- 完成页面 -->
+    <div class="question-container" id="completion">
+        <div class="completion-screen">
+            <h1 class="question-text">纪念页面创建完成</h1>
+            <div class="question-subtitle">感谢你分享这些珍贵的回忆</div>
+            <div class="mt-8">
+                <button class="continue-button show" onclick="viewMemorial()">查看纪念页面</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let answers = {};
+        let isTransitioning = false;
+
+        function updateProgress() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                if (index <= currentQuestion) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function showContinueButton() {
+            setTimeout(() => {
+                const button = document.querySelector(`#question-${currentQuestion} .continue-button`);
+                if (button) {
+                    button.classList.add('show');
+                }
+            }, 300);
+        }
+
+        function nextQuestion() {
+            if (isTransitioning) return;
+            
+            // 验证当前问题的输入
+            const currentContainer = document.getElementById(`question-${currentQuestion}`);
+            const input = currentContainer.querySelector('input, textarea');
+            
+            if (input && input.hasAttribute('data-field')) {
+                const value = input.value.trim();
+                if (!value) {
+                    input.focus();
+                    input.style.borderBottomColor = '#ef4444';
+                    setTimeout(() => {
+                        input.style.borderBottomColor = '#e5e7eb';
+                    }, 1000);
+                    return;
+                }
+                answers[input.getAttribute('data-field')] = value;
+            }
+            
+            // 检查多选题
+            const multipleSelected = currentContainer.querySelectorAll('.multiple-choice.selected');
+            if (multipleSelected.length > 0) {
+                const values = Array.from(multipleSelected).map(btn => btn.dataset.value);
+                answers.personality = values;
+            }
+            
+            transitionToNext();
+        }
+
+        function selectOption(button) {
+            if (isTransitioning) return;
+            
+            // 清除同组其他选项的选中状态
+            const container = button.closest('.question-container');
+            const otherButtons = container.querySelectorAll('.option-button:not(.multiple-choice)');
+            otherButtons.forEach(btn => btn.classList.remove('selected'));
+            
+            // 选中当前选项
+            button.classList.add('selected');
+            
+            // 保存答案
+            const questionId = container.id.split('-')[1];
+            const fieldMap = {
+                '1': 'petType',
+                '3': 'color', 
+                '4': 'gender'
+            };
+            
+            if (fieldMap[questionId]) {
+                answers[fieldMap[questionId]] = button.dataset.value;
+            }
+            
+            // 延迟自动进入下一题
+            setTimeout(() => {
+                transitionToNext();
+            }, 800);
+        }
+
+        function toggleMultiple(button) {
+            button.classList.toggle('selected');
+            showContinueButton();
+        }
+
+        function skipQuestion() {
+            if (isTransitioning) return;
+            transitionToNext();
+        }
+
+        function transitionToNext() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            // 隐藏当前问题
+            const current = document.getElementById(`question-${currentQuestion}`);
+            current.classList.add('exit');
+            
+            setTimeout(() => {
+                current.classList.remove('active', 'exit');
+                currentQuestion++;
+                updateProgress();
+                
+                // 显示下一个问题
+                const next = document.getElementById(`question-${currentQuestion}`) || document.getElementById('completion');
+                if (next) {
+                    next.classList.add('active');
+                    
+                    // 自动聚焦输入框
+                    setTimeout(() => {
+                        const input = next.querySelector('input, textarea');
+                        if (input && input.type !== 'date') {
+                            input.focus();
+                        }
+                        
+                        // 显示继续按钮
+                        showContinueButton();
+                        isTransitioning = false;
+                    }, 200);
+                } else {
+                    isTransitioning = false;
+                }
+            }, 600);
+        }
+
+        function completeForm() {
+            // 保存创建者姓名
+            const nameInput = document.querySelector('#question-9 input');
+            if (nameInput && nameInput.value.trim()) {
+                answers.creatorName = nameInput.value.trim();
+            } else {
+                nameInput.focus();
+                nameInput.style.borderBottomColor = '#ef4444';
+                return;
+            }
+            
+            console.log('收集到的表单数据：', answers);
+            transitionToNext();
+        }
+
+        function viewMemorial() {
+            alert('表单数据已收集完成！\n\n详细信息请查看浏览器控制台。');
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const current = document.getElementById(`question-${currentQuestion}`);
+                if (current && current.classList.contains('active')) {
+                    const continueBtn = current.querySelector('.continue-button');
+                    if (continueBtn && !continueBtn.classList.contains('show')) {
+                        showContinueButton();
+                    } else if (continueBtn) {
+                        if (currentQuestion === 9) {
+                            completeForm();
+                        } else {
+                            nextQuestion();
+                        }
+                    }
+                }
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showContinueButton();
+            
+            // 自动聚焦第一个输入框
+            const firstInput = document.querySelector('#question-0 input');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 500);
+            }
+        });
+    </script>
+</body>
+</html>
