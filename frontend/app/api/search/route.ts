@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
             contains: q
           }
         },
-        // 搜索地点
+        // 搜索祖籍
         {
           location: {
             contains: q

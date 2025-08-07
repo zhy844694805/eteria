@@ -100,7 +100,7 @@ function buildPersonPrompt(data: z.infer<typeof generatePersonObituarySchema>): 
   }
   
   if (location) {
-    prompt += `\n- 居住地：${location}`
+    prompt += `\n- 祖籍：${location}`
   }
 
   if (age) {

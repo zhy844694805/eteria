@@ -307,12 +307,12 @@ export default function PersonMemorialPage() {
 
   // 格式化年龄显示
   const formatAge = (age?: number, birthDate?: string, deathDate?: string) => {
-    if (age) return `${age}年`
+    if (age) return `${age}岁`
     if (birthDate && deathDate) {
       const birth = new Date(birthDate)
       const death = new Date(deathDate)
       const years = death.getFullYear() - birth.getFullYear()
-      return `${years}年`
+      return `${years}岁`
     }
     return ''
   }
@@ -470,7 +470,7 @@ export default function PersonMemorialPage() {
               )}
               {memorial.location && (
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-500 font-light">地点</span>
+                  <span className="text-gray-500 font-light">祖籍</span>
                   <span className="text-gray-900 font-light">{memorial.location}</span>
                 </div>
               )}

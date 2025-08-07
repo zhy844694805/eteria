@@ -514,11 +514,11 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-700 font-medium">地点</Label>
+                    <Label className="text-slate-700 font-medium">祖籍</Label>
                     <Input
                       value={memorial.location || ''}
                       onChange={(e) => updateField('location', e.target.value)}
-                      placeholder="请输入地点"
+                      placeholder="请输入祖籍"
                       className="mt-2"
                     />
                   </div>

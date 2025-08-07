@@ -101,23 +101,21 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
       {
         id: 'location',
         type: 'text',
-        question: `${answers.personName}生活在哪里？`,
-        subtitle: '家乡或者生活的城市',
-        placeholder: '如：北京、上海、广州...',
+        question: `${answers.personName}的祖籍是哪里？`,
+        subtitle: '祖祖辈辈生活的地方',
+        placeholder: '如：山东济南、江苏南京、广东广州...',
         required: false
       },
       {
         id: 'birthDate',
         type: 'date',
         question: `${answers.personName}的出生日期是？`,
-        subtitle: '大概日期即可',
         required: true
       },
       {
         id: 'passingDate',
         type: 'date',
         question: `${answers.personName}的去世日期是？`,
-        subtitle: '永远怀念的日子',
         required: true
       },
       {

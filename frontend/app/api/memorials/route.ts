@@ -121,7 +121,9 @@ export async function POST(request: NextRequest) {
         creatorPhone: validatedData.creatorPhone,
         authorId: finalAuthorId,
         isPublic: true,
-        status: 'PUBLISHED'
+        status: 'PUBLISHED',
+        allowCandles: true,
+        allowMessages: true
       },
       include: {
         author: {

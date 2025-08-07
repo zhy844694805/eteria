@@ -417,7 +417,7 @@ function generateMemorialHTML(data: any): string {
         ` : ''}
         ${memorial.location ? `
         <div class="info-item">
-          <span class="info-label">地点</span>
+          <span class="info-label">祖籍</span>
           <span class="info-value">${memorial.location}</span>
         </div>
         ` : ''}
