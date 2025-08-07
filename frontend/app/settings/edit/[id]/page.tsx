@@ -411,9 +411,22 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                         <SelectItem value="white">白色</SelectItem>
                         <SelectItem value="brown">棕色</SelectItem>
                         <SelectItem value="gray">灰色</SelectItem>
-                        <SelectItem value="black-white">黑白色</SelectItem>
-                        <SelectItem value="brown-white">棕白色</SelectItem>
-                        <SelectItem value="multicolor">多色</SelectItem>
+                        <SelectItem value="golden">金色</SelectItem>
+                        <SelectItem value="yellow">黄色</SelectItem>
+                        <SelectItem value="orange">橙色</SelectItem>
+                        <SelectItem value="red">红色</SelectItem>
+                        <SelectItem value="cream">奶油色</SelectItem>
+                        <SelectItem value="tan">棕褐色</SelectItem>
+                        <SelectItem value="silver">银色</SelectItem>
+                        <SelectItem value="blue">蓝色</SelectItem>
+                        <SelectItem value="chocolate">巧克力色</SelectItem>
+                        <SelectItem value="caramel">焦糖色</SelectItem>
+                        <SelectItem value="black-white">黑白相间</SelectItem>
+                        <SelectItem value="brown-white">棕白相间</SelectItem>
+                        <SelectItem value="gray-white">灰白相间</SelectItem>
+                        <SelectItem value="tabby">虎斑色</SelectItem>
+                        <SelectItem value="tricolor">三色</SelectItem>
+                        <SelectItem value="multicolor">多种颜色</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -430,6 +443,39 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                     </Select>
                   </div>
                 </div>
+                
+                {/* 宠物的性格特征和最爱活动编辑 */}
+                {memorial.type === 'PET' && (
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-light text-slate-900 mb-4">性格特征与爱好</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label className="text-slate-700 font-medium">性格特征</Label>
+                        <Input
+                          value={memorial.personalityTraits || ''}
+                          onChange={(e) => updateField('personalityTraits', e.target.value)}
+                          placeholder="如：温柔安静、顽皮活泼"
+                          className="mt-2"
+                        />
+                        <p className="text-sm text-slate-500 mt-1">
+                          多个特征请用逗号分隔
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700 font-medium">最爱活动</Label>
+                        <Input
+                          value={memorial.favoriteThings || ''}
+                          onChange={(e) => updateField('favoriteThings', e.target.value)}
+                          placeholder="如：呼噜声、晒太阳"
+                          className="mt-2"
+                        />
+                        <p className="text-sm text-slate-500 mt-1">
+                          多个活动请用逗号分隔
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

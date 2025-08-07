@@ -87,15 +87,15 @@ function buildPrompt(data: z.infer<typeof generateObituarySchema>): string {
 - 类型：${getAnimalNameInChinese(petType)}`
 
   if (breed) {
-    prompt += `\n- 品种：${breed}`
+    prompt += `\n- 品种：${getBreedInChinese(breed)}`
   }
   
   if (color) {
-    prompt += `\n- 颜色：${color}`
+    prompt += `\n- 颜色：${getColorInChinese(color)}`
   }
   
   if (gender) {
-    prompt += `\n- 性别：${gender === 'male' ? '男孩' : '女孩'}`
+    prompt += `\n- 性别：${gender === 'male' ? '男孩' : gender === 'female' ? '女孩' : gender}`
   }
   
   if (birthDate) {
@@ -143,6 +143,129 @@ function getAnimalNameInChinese(petType: string): string {
     'other': '宠物'
   }
   return animalNames[petType] || petType
+}
+
+// 翻译品种名称
+function getBreedInChinese(breed: string): string {
+  const breedTranslations: Record<string, string> = {
+    // 狗类品种
+    'labrador': '拉布拉多',
+    'golden-retriever': '金毛寻回犬',
+    'german-shepherd': '德国牧羊犬',
+    'bulldog': '斗牛犬',
+    'poodle': '贵宾犬',
+    'husky': '哈士奇',
+    'chihuahua': '吉娃娃',
+    'shiba': '柴犬',
+    'shiba-inu': '柴犬',
+    'corgi': '柯基',
+    'beagle': '比格犬',
+    'border-collie': '边境牧羊犬',
+    'rottweiler': '罗威纳',
+    'yorkshire-terrier': '约克夏梗',
+    'dachshund': '腊肠犬',
+    'boxer': '拳师犬',
+    'australian-shepherd': '澳洲牧羊犬',
+    'siberian-husky': '西伯利亚雪橇犬',
+    'great-dane': '大丹犬',
+    'pomeranian': '博美',
+    'shih-tzu': '西施犬',
+    'boston-terrier': '波士顿梗',
+    'bernese-mountain-dog': '伯恩山犬',
+    'french-bulldog': '法国斗牛犬',
+    'cocker-spaniel': '可卡犬',
+    'maltese': '马尔济斯',
+    'samoyed': '萨摩耶',
+    
+    // 猫类品种
+    'persian': '波斯猫',
+    'maine-coon': '缅因猫',
+    'siamese': '暹罗猫',
+    'ragdoll': '布偶猫',
+    'british-shorthair': '英国短毛猫',
+    'american-shorthair': '美国短毛猫',
+    'scottish-fold': '苏格兰折耳猫',
+    'russian-blue': '俄罗斯蓝猫',
+    'bengal': '孟加拉猫',
+    'abyssinian': '阿比西尼亚猫',
+    'birman': '伯曼猫',
+    'exotic-shorthair': '异国短毛猫',
+    'norwegian-forest': '挪威森林猫',
+    'sphynx': '斯芬克斯猫',
+    'oriental-shorthair': '东方短毛猫',
+    'devon-rex': '德文卷毛猫',
+    'turkish-angora': '土耳其安哥拉猫',
+    'munchkin': '曼基康猫',
+    'domestic-shorthair': '家养短毛猫',
+    'domestic-longhair': '家养长毛猫',
+    
+    // 鸟类品种
+    'canary': '金丝雀',
+    'budgerigar': '虎皮鹦鹉',
+    'cockatiel': '玄凤鹦鹉',
+    'lovebird': '爱情鸟',
+    'macaw': '金刚鹦鹉',
+    'african-grey': '非洲灰鹦鹉',
+    'cockatoo': '凤头鹦鹉',
+    'conure': '锥尾鹦鹉',
+    'finch': '雀',
+    'parakeet': '长尾小鹦鹉',
+    
+    // 兔子品种
+    'holland-lop': '荷兰垂耳兔',
+    'netherland-dwarf': '荷兰侏儒兔',
+    'lionhead': '狮子头兔',
+    'angora': '安哥拉兔',
+    'mini-rex': '迷你雷克斯兔',
+    'flemish-giant': '佛兰德巨兔',
+    
+    // 仓鼠品种
+    'golden': '金丝熊',
+    'dwarf': '侏儒仓鼠',
+    'chinese': '中国仓鼠',
+    'roborovski': '罗伯罗夫斯基仓鼠',
+    
+    // 豚鼠品种
+    'american': '美国豚鼠',
+    'peruvian': '秘鲁豚鼠',
+    'abyssinian': '阿比西尼亚豚鼠',
+    'skinny': '无毛豚鼠',
+    
+    // 通用
+    'mixed': '混种',
+    'unknown': '不确定',
+    'other': '其他'
+  }
+  
+  return breedTranslations[breed] || breed
+}
+
+// 翻译颜色
+function getColorInChinese(color: string): string {
+  const colorTranslations: Record<string, string> = {
+    'black': '黑色',
+    'white': '白色',
+    'brown': '棕色',
+    'gray': '灰色',
+    'golden': '金色',
+    'yellow': '黄色',
+    'orange': '橙色',
+    'red': '红色',
+    'cream': '奶油色',
+    'tan': '棕褐色',
+    'silver': '银色',
+    'blue': '蓝色',
+    'chocolate': '巧克力色',
+    'caramel': '焦糖色',
+    'black-white': '黑白相间',
+    'brown-white': '棕白相间',
+    'gray-white': '灰白相间',
+    'tabby': '虎斑色',
+    'tricolor': '三色',
+    'multicolor': '多种颜色'
+  }
+  
+  return colorTranslations[color] || color
 }
 
 async function callOpenAIAPI(prompt: string): Promise<string> {

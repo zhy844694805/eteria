@@ -179,14 +179,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           type: 'multiple',
           question: `${answers.petName}有什么性格特点？`,
           subtitle: '可以选择多个，这有助于AI生成更个性化的内容',
-          options: [
-            { value: 'Playful', label: '顽皮活泼', emoji: '🎾' },
-            { value: 'Loyal', label: '忠诚可靠', emoji: '❤️' },
-            { value: 'Gentle', label: '温柔安静', emoji: '🕊️' },
-            { value: 'Energetic', label: '精力充沛', emoji: '⚡' },
-            { value: 'Calm', label: '冷静沉着', emoji: '😌' },
-            { value: 'Friendly', label: '友好亲人', emoji: '😊' }
-          ],
+          options: getPersonalityOptions(answers.petType),
           required: false
         },
         {
@@ -351,94 +344,198 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
     }
   }
 
+  function getPersonalityOptions(petType: string) {
+    switch (petType) {
+      case 'dog':
+        return [
+          { value: '忠诚可靠', label: '忠诚可靠', emoji: '❤️' },
+          { value: '顽皮活泼', label: '顽皮活泼', emoji: '🎾' },
+          { value: '温柔友善', label: '温柔友善', emoji: '🤗' },
+          { value: '精力充沛', label: '精力充沛', emoji: '⚡' },
+          { value: '聪明机警', label: '聪明机警', emoji: '🧠' },
+          { value: '保护意识强', label: '保护意识强', emoji: '🛡️' },
+          { value: '社交能力强', label: '社交能力强', emoji: '👥' },
+          { value: '温顺听话', label: '温顺听话', emoji: '😇' },
+          { value: '勇敢无畏', label: '勇敢无畏', emoji: '🦁' },
+          { value: '粘人撒娇', label: '粘人撒娇', emoji: '🥰' }
+        ]
+      case 'cat':
+        return [
+          { value: '独立自主', label: '独立自主', emoji: '😎' },
+          { value: '优雅高贵', label: '优雅高贵', emoji: '👑' },
+          { value: '温柔安静', label: '温柔安静', emoji: '🕊️' },
+          { value: '好奇心强', label: '好奇心强', emoji: '🔍' },
+          { value: '慵懒惬意', label: '慵懒惬意', emoji: '😴' },
+          { value: '机敏敏捷', label: '机敏敏捷', emoji: '⚡' },
+          { value: '亲人粘腻', label: '亲人粘腻', emoji: '💕' },
+          { value: '神秘莫测', label: '神秘莫测', emoji: '🌙' },
+          { value: '爱撒娇', label: '爱撒娇', emoji: '😻' },
+          { value: '警觉谨慎', label: '警觉谨慎', emoji: '👁️' }
+        ]
+      case 'bird':
+        return [
+          { value: '活泼好动', label: '活泼好动', emoji: '🎵' },
+          { value: '聪明学舌', label: '聪明学舌', emoji: '🗣️' },
+          { value: '社交活跃', label: '社交活跃', emoji: '👥' },
+          { value: '好奇探索', label: '好奇探索', emoji: '🔍' },
+          { value: '温顺亲人', label: '温顺亲人', emoji: '🤗' },
+          { value: '机警敏感', label: '机警敏感', emoji: '👁️' },
+          { value: '爱表演', label: '爱表演', emoji: '🎭' },
+          { value: '喜欢互动', label: '喜欢互动', emoji: '🤝' },
+          { value: '情绪丰富', label: '情绪丰富', emoji: '🎭' },
+          { value: '忠诚专一', label: '忠诚专一', emoji: '💖' }
+        ]
+      case 'rabbit':
+        return [
+          { value: '温顺可爱', label: '温顺可爱', emoji: '🥺' },
+          { value: '胆小谨慎', label: '胆小谨慎', emoji: '😳' },
+          { value: '活泼跳跃', label: '活泼跳跃', emoji: '🦘' },
+          { value: '好奇心强', label: '好奇心强', emoji: '🔍' },
+          { value: '爱干净', label: '爱干净', emoji: '✨' },
+          { value: '安静文雅', label: '安静文雅', emoji: '🌸' },
+          { value: '聪明机灵', label: '聪明机灵', emoji: '🧠' },
+          { value: '喜欢探索', label: '喜欢探索', emoji: '🗺️' },
+          { value: '温和友善', label: '温和友善', emoji: '😊' },
+          { value: '敏感细腻', label: '敏感细腻', emoji: '💝' }
+        ]
+      case 'hamster':
+        return [
+          { value: '小巧可爱', label: '小巧可爱', emoji: '🥰' },
+          { value: '好奇活泼', label: '好奇活泼', emoji: '🔍' },
+          { value: '勤劳储藏', label: '勤劳储藏', emoji: '🥜' },
+          { value: '夜行活跃', label: '夜行活跃', emoji: '🌙' },
+          { value: '警觉机敏', label: '警觉机敏', emoji: '👀' },
+          { value: '爱运动', label: '爱运动', emoji: '🏃' },
+          { value: '独立自主', label: '独立自主', emoji: '😎' },
+          { value: '温顺乖巧', label: '温顺乖巧', emoji: '😇' },
+          { value: '爱探索', label: '爱探索', emoji: '🧭' },
+          { value: '萌萌哒', label: '萌萌哒', emoji: '🥺' }
+        ]
+      case 'guinea-pig':
+        return [
+          { value: '温顺友善', label: '温顺友善', emoji: '😊' },
+          { value: '社交活跃', label: '社交活跃', emoji: '👥' },
+          { value: '好奇心强', label: '好奇心强', emoji: '🔍' },
+          { value: '爱交流', label: '爱交流', emoji: '🗣️' },
+          { value: '群居合作', label: '群居合作', emoji: '🤝' },
+          { value: '温和安静', label: '温和安静', emoji: '🕊️' },
+          { value: '聪明可训', label: '聪明可训', emoji: '🎓' },
+          { value: '活泼可爱', label: '活泼可爱', emoji: '🥰' },
+          { value: '喜欢互动', label: '喜欢互动', emoji: '🤗' },
+          { value: '敏感细心', label: '敏感细心', emoji: '💝' }
+        ]
+      default:
+        return [
+          { value: '温顺可爱', label: '温顺可爱', emoji: '🥰' },
+          { value: '活泼好动', label: '活泼好动', emoji: '⚡' },
+          { value: '聪明机灵', label: '聪明机灵', emoji: '🧠' },
+          { value: '温和友善', label: '温和友善', emoji: '😊' },
+          { value: '好奇心强', label: '好奇心强', emoji: '🔍' },
+          { value: '忠诚可靠', label: '忠诚可靠', emoji: '❤️' }
+        ]
+    }
+  }
+
   function getFavoriteActivityOptions(petType: string) {
     switch (petType) {
       case 'dog':
         return [
-          { value: 'walking', label: '散步', emoji: '🚶' },
-          { value: 'playing-fetch', label: '捡球游戏', emoji: '🎾' },
-          { value: 'swimming', label: '游泳', emoji: '🏊' },
-          { value: 'running', label: '跑步', emoji: '🏃' },
-          { value: 'sleeping', label: '睡觉', emoji: '😴' },
-          { value: 'eating-treats', label: '吃零食', emoji: '🦴' },
-          { value: 'playing-with-toys', label: '玩玩具', emoji: '🧸' },
-          { value: 'greeting-visitors', label: '迎接客人', emoji: '👋' },
-          { value: 'car-rides', label: '坐车兜风', emoji: '🚗' },
-          { value: 'digging', label: '挖土', emoji: '⛏️' }
+          { value: '散步遛弯', label: '散步遛弯', emoji: '🚶' },
+          { value: '捡球游戏', label: '捡球游戏', emoji: '🎾' },
+          { value: '游泳戏水', label: '游泳戏水', emoji: '🏊' },
+          { value: '奔跑撒欢', label: '奔跑撒欢', emoji: '🏃' },
+          { value: '晒太阳睡觉', label: '晒太阳睡觉', emoji: '😴' },
+          { value: '吃美味零食', label: '吃美味零食', emoji: '🦴' },
+          { value: '撕咬玩具', label: '撕咬玩具', emoji: '🧸' },
+          { value: '迎接主人回家', label: '迎接主人回家', emoji: '🏠' },
+          { value: '坐车兜风', label: '坐车兜风', emoji: '🚗' },
+          { value: '挖土刨坑', label: '挖土刨坑', emoji: '⛏️' },
+          { value: '看门守家', label: '看门守家', emoji: '🏡' },
+          { value: '和其他狗玩耍', label: '和其他狗玩耍', emoji: '🐕' }
         ]
       case 'cat':
         return [
-          { value: 'sunbathing', label: '晒太阳', emoji: '☀️' },
-          { value: 'sleeping', label: '睡觉', emoji: '😴' },
-          { value: 'playing-with-string', label: '玩毛线', emoji: '🧶' },
-          { value: 'hunting-toys', label: '捕猎玩具', emoji: '🐭' },
-          { value: 'climbing', label: '爬高', emoji: '🧗' },
-          { value: 'scratching', label: '抓挠', emoji: '✋' },
-          { value: 'watching-birds', label: '观鸟', emoji: '🐦' },
-          { value: 'purring', label: '呼噜声', emoji: '😺' },
-          { value: 'hiding-in-boxes', label: '躲纸箱', emoji: '📦' },
-          { value: 'eating', label: '吃饭', emoji: '🍽️' }
+          { value: '晒太阳小憩', label: '晒太阳小憩', emoji: '☀️' },
+          { value: '长时间睡觉', label: '长时间睡觉', emoji: '😴' },
+          { value: '玩毛线球', label: '玩毛线球', emoji: '🧶' },
+          { value: '捕猎小玩具', label: '捕猎小玩具', emoji: '🐭' },
+          { value: '攀爬高处', label: '攀爬高处', emoji: '🧗' },
+          { value: '磨爪子', label: '磨爪子', emoji: '✋' },
+          { value: '趴窗台看鸟', label: '趴窗台看鸟', emoji: '🪟' },
+          { value: '发出呼噜声', label: '发出呼噜声', emoji: '😸' },
+          { value: '钻纸箱', label: '钻纸箱', emoji: '📦' },
+          { value: '舔毛理毛', label: '舔毛理毛', emoji: '✨' },
+          { value: '蹭主人撒娇', label: '蹭主人撒娇', emoji: '😻' },
+          { value: '追逐光点', label: '追逐光点', emoji: '🔦' }
         ]
       case 'bird':
         return [
-          { value: 'singing', label: '唱歌', emoji: '🎵' },
-          { value: 'flying-around', label: '飞行', emoji: '🕊️' },
-          { value: 'playing-with-mirrors', label: '照镜子', emoji: '🪞' },
-          { value: 'eating-seeds', label: '吃种子', emoji: '🌿' },
-          { value: 'bathing', label: '洗澡', emoji: '🛁' },
-          { value: 'climbing-cage', label: '攀爬', emoji: '🧗' },
-          { value: 'talking', label: '学说话', emoji: '💬' },
-          { value: 'playing-with-toys', label: '玩玩具', emoji: '🧸' },
-          { value: 'preening', label: '整理羽毛', emoji: '🪶' },
-          { value: 'socializing', label: '社交', emoji: '👥' }
+          { value: '唱歌鸣叫', label: '唱歌鸣叫', emoji: '🎵' },
+          { value: '在笼中飞翔', label: '在笼中飞翔', emoji: '🕊️' },
+          { value: '对镜子说话', label: '对镜子说话', emoji: '🪞' },
+          { value: '啄食种子', label: '啄食种子', emoji: '🌿' },
+          { value: '水中洗澡', label: '水中洗澡', emoji: '🛁' },
+          { value: '攀爬杠架', label: '攀爬杠架', emoji: '🧗' },
+          { value: '模仿人说话', label: '模仿人说话', emoji: '💬' },
+          { value: '玩小玩具', label: '玩小玩具', emoji: '🧸' },
+          { value: '整理羽毛', label: '整理羽毛', emoji: '🪶' },
+          { value: '与主人互动', label: '与主人互动', emoji: '👥' },
+          { value: '站在肩膀上', label: '站在肩膀上', emoji: '🦜' },
+          { value: '啄食果蔬', label: '啄食果蔬', emoji: '🍎' }
         ]
       case 'rabbit':
         return [
-          { value: 'hopping', label: '跳跃', emoji: '🐰' },
-          { value: 'eating-hay', label: '吃草', emoji: '🌾' },
-          { value: 'digging', label: '挖洞', emoji: '⛏️' },
-          { value: 'playing-with-toys', label: '玩玩具', emoji: '🧸' },
-          { value: 'hiding', label: '躲藏', emoji: '🏠' },
-          { value: 'grooming', label: '理毛', emoji: '✨' },
-          { value: 'exploring', label: '探索', emoji: '🔍' },
-          { value: 'sleeping', label: '睡觉', emoji: '😴' },
-          { value: 'running', label: '奔跑', emoji: '💨' },
-          { value: 'eating-vegetables', label: '吃蔬菜', emoji: '🥕' }
+          { value: '蹦蹦跳跳', label: '蹦蹦跳跳', emoji: '🐰' },
+          { value: '吃干草', label: '吃干草', emoji: '🌾' },
+          { value: '挖洞做窝', label: '挖洞做窝', emoji: '⛏️' },
+          { value: '啃咬玩具', label: '啃咬玩具', emoji: '🧸' },
+          { value: '躲在角落', label: '躲在角落', emoji: '🏠' },
+          { value: '舔毛清洁', label: '舔毛清洁', emoji: '✨' },
+          { value: '好奇探索', label: '好奇探索', emoji: '🔍' },
+          { value: '蜷缩睡觉', label: '蜷缩睡觉', emoji: '😴' },
+          { value: '快速奔跑', label: '快速奔跑', emoji: '💨' },
+          { value: '吃胡萝卜', label: '吃胡萝卜', emoji: '🥕' },
+          { value: '磨牙咀嚼', label: '磨牙咀嚼', emoji: '🦷' },
+          { value: '竖耳警觉', label: '竖耳警觉', emoji: '👂' }
         ]
       case 'hamster':
         return [
-          { value: 'running-wheel', label: '跑轮子', emoji: '⚪' },
-          { value: 'storing-food', label: '囤食物', emoji: '🥜' },
-          { value: 'sleeping', label: '睡觉', emoji: '😴' },
-          { value: 'climbing', label: '爬管道', emoji: '🔄' },
-          { value: 'digging-bedding', label: '挖垫料', emoji: '🏠' },
-          { value: 'eating', label: '吃东西', emoji: '🍽️' },
-          { value: 'exploring', label: '探索', emoji: '🔍' },
-          { value: 'playing-with-toys', label: '玩玩具', emoji: '🧸' },
-          { value: 'washing-face', label: '洗脸', emoji: '🧼' },
-          { value: 'hiding', label: '躲藏', emoji: '🏡' }
+          { value: '跑转轮', label: '跑转轮', emoji: '⚪' },
+          { value: '在颊囊囤食', label: '在颊囊囤食', emoji: '🥜' },
+          { value: '窝里酣睡', label: '窝里酣睡', emoji: '😴' },
+          { value: '爬管道隧道', label: '爬管道隧道', emoji: '🔄' },
+          { value: '刨挖垫料', label: '刨挖垫料', emoji: '🏠' },
+          { value: '啃食瓜子', label: '啃食瓜子', emoji: '🌻' },
+          { value: '四处探索', label: '四处探索', emoji: '🔍' },
+          { value: '玩滚球', label: '玩滚球', emoji: '⚽' },
+          { value: '用小爪洗脸', label: '用小爪洗脸', emoji: '🧼' },
+          { value: '钻进小屋', label: '钻进小屋', emoji: '🏡' },
+          { value: '站立观察', label: '站立观察', emoji: '👀' },
+          { value: '啃磨牙棒', label: '啃磨牙棒', emoji: '🦷' }
         ]
       case 'guinea-pig':
         return [
-          { value: 'eating-vegetables', label: '吃蔬菜', emoji: '🥬' },
-          { value: 'running-around', label: '跑圈', emoji: '🔄' },
-          { value: 'hiding-in-tunnels', label: '钻隧道', emoji: '🏠' },
-          { value: 'socializing', label: '群体生活', emoji: '👥' },
-          { value: 'making-sounds', label: '发声交流', emoji: '🗣️' },
-          { value: 'sleeping-together', label: '一起睡觉', emoji: '😴' },
-          { value: 'exploring', label: '探索环境', emoji: '🔍' },
-          { value: 'eating-hay', label: '吃草', emoji: '🌾' },
-          { value: 'playing', label: '玩耍', emoji: '🎾' },
-          { value: 'grooming-each-other', label: '互相理毛', emoji: '✨' }
+          { value: '吃新鲜蔬菜', label: '吃新鲜蔬菜', emoji: '🥬' },
+          { value: '在笼中跑圈', label: '在笼中跑圈', emoji: '🔄' },
+          { value: '钻小隧道', label: '钻小隧道', emoji: '🏠' },
+          { value: '和同伴聊天', label: '和同伴聊天', emoji: '👥' },
+          { value: '咕咕叫', label: '咕咕叫', emoji: '🗣️' },
+          { value: '抱团睡觉', label: '抱团睡觉', emoji: '😴' },
+          { value: '好奇探索', label: '好奇探索', emoji: '🔍' },
+          { value: '啃食干草', label: '啃食干草', emoji: '🌾' },
+          { value: '追逐游戏', label: '追逐游戏', emoji: '🎾' },
+          { value: '互相舔毛', label: '互相舔毛', emoji: '✨' },
+          { value: '竖立耳朵听声', label: '竖立耳朵听声', emoji: '👂' },
+          { value: '抢食物', label: '抢食物', emoji: '🍽️' }
         ]
       default:
         return [
-          { value: 'playing', label: '玩耍', emoji: '🎾' },
-          { value: 'sleeping', label: '睡觉', emoji: '😴' },
-          { value: 'eating', label: '吃饭', emoji: '🍽️' },
-          { value: 'exploring', label: '探索', emoji: '🔍' },
-          { value: 'resting', label: '休息', emoji: '😌' },
-          { value: 'socializing', label: '社交', emoji: '👥' }
+          { value: '自由玩耍', label: '自由玩耍', emoji: '🎾' },
+          { value: '安静休息', label: '安静休息', emoji: '😴' },
+          { value: '享用美食', label: '享用美食', emoji: '🍽️' },
+          { value: '好奇探索', label: '好奇探索', emoji: '🔍' },
+          { value: '晒太阳', label: '晒太阳', emoji: '☀️' },
+          { value: '与主人互动', label: '与主人互动', emoji: '👥' }
         ]
     }
   }

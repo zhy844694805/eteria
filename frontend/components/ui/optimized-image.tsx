@@ -77,10 +77,18 @@ export function OptimizedImage({
 
     const loadImage = async () => {
       try {
-        // 如果没有优化版本，直接加载原图并标记为已加载
+        // 如果没有优化版本，直接加载原图
         if (!hasOptimizedVersions) {
-          setIsLoaded(true)
-          onLoad?.()
+          const mainImg = new window.Image()
+          mainImg.onload = () => {
+            setIsLoaded(true)
+            onLoad?.()
+          }
+          mainImg.onerror = () => {
+            setHasError(true)
+            onError?.()
+          }
+          mainImg.src = src
           return
         }
 
@@ -248,10 +256,27 @@ export function MemorialImageGrid({
   const displayImages = images.slice(0, maxImages)
   const remainingCount = images.length - maxImages
 
+  // 根据图片数量决定网格布局
+  const getGridClass = () => {
+    const totalItems = displayImages.length + (remainingCount > 0 ? 1 : 0)
+    
+    if (totalItems === 1) {
+      return "flex justify-center" // 单张图片居中
+    } else if (totalItems === 2) {
+      return "grid grid-cols-1 md:grid-cols-2 gap-8 justify-center" // 两张图片
+    } else {
+      return "grid md:grid-cols-3 gap-8" // 三张及以上图片
+    }
+  }
+
   return (
-    <div className={cn("grid md:grid-cols-3 gap-8", className)}>
+    <div className={cn(getGridClass(), className)}>
       {displayImages.map((image, index) => (
-        <div key={image.id} className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div key={image.id} className={cn(
+          "aspect-square bg-gray-100 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300",
+          // 单张图片时限制最大宽度并居中
+          displayImages.length === 1 && remainingCount === 0 && "max-w-md mx-auto"
+        )}>
           <OptimizedImage
             src={image.url}
             alt={`${memorialName}的回忆 ${index + 1}`}

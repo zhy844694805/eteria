@@ -424,9 +424,22 @@ export default function PetMemorialPage() {
       'white': '白色',
       'brown': '棕色',
       'gray': '灰色',
-      'black-white': '黑白色',
-      'brown-white': '棕白色',
-      'multicolor': '多色'
+      'golden': '金色',
+      'yellow': '黄色',
+      'orange': '橙色',
+      'red': '红色',
+      'cream': '奶油色',
+      'tan': '棕褐色',
+      'silver': '银色',
+      'blue': '蓝色',
+      'chocolate': '巧克力色',
+      'caramel': '焦糖色',
+      'black-white': '黑白相间',
+      'brown-white': '棕白相间',
+      'gray-white': '灰白相间',
+      'tabby': '虎斑色',
+      'tricolor': '三色',
+      'multicolor': '多种颜色'
     }
     
     return colorTranslations[color] || color
@@ -447,6 +460,95 @@ export default function PetMemorialPage() {
     }
     
     return typeTranslations[type] || type
+  }
+
+  // 翻译性格特征（支持新旧格式）
+  const translatePersonalityTraits = (traits?: string) => {
+    if (!traits) return ''
+    
+    const personalityTranslations: { [key: string]: string } = {
+      // 旧格式（英文）
+      'Playful': '顽皮活泼',
+      'Loyal': '忠诚可靠',
+      'Gentle': '温柔安静',
+      'Energetic': '精力充沛',
+      'Calm': '冷静沉着',
+      'Friendly': '友好亲人',
+      'Aggressive': '好斗',
+      'Shy': '害羞',
+      'Curious': '好奇',
+      'Protective': '保护性强',
+      'Independent': '独立',
+      'Affectionate': '亲切'
+      // 新格式已经是中文，不需要翻译
+    }
+    
+    // 处理逗号分隔的多个特征
+    return traits.split(',').map(trait => {
+      const trimmedTrait = trait.trim()
+      return personalityTranslations[trimmedTrait] || trimmedTrait
+    }).join('、')
+  }
+
+  // 翻译喜欢的活动（支持新旧格式）
+  const translateFavoriteActivities = (activities?: string) => {
+    if (!activities) return ''
+    
+    const activityTranslations: { [key: string]: string } = {
+      // 旧格式（英文key）- 保持向后兼容
+      'walking': '散步',
+      'playing-fetch': '捡球游戏',
+      'swimming': '游泳',
+      'running': '跑步',
+      'sleeping': '睡觉',
+      'eating-treats': '吃零食',
+      'playing-with-toys': '玩玩具',
+      'greeting-visitors': '迎接客人',
+      'car-rides': '坐车兜风',
+      'digging': '挖土',
+      'sunbathing': '晒太阳',
+      'playing-with-string': '玩毛线',
+      'hunting-toys': '捕猎玩具',
+      'climbing': '爬高',
+      'scratching': '抓挠',
+      'watching-birds': '观鸟',
+      'purring': '呼噜声',
+      'hiding-in-boxes': '躲纸箱',
+      'eating': '吃饭',
+      'singing': '唱歌',
+      'flying-around': '飞行',
+      'playing-with-mirrors': '照镜子',
+      'eating-seeds': '吃种子',
+      'bathing': '洗澡',
+      'climbing-cage': '攀爬',
+      'talking': '学说话',
+      'preening': '整理羽毛',
+      'socializing': '社交',
+      'hopping': '跳跃',
+      'eating-hay': '吃草',
+      'hiding': '躲藏',
+      'grooming': '理毛',
+      'exploring': '探索',
+      'eating-vegetables': '吃蔬菜',
+      'running-wheel': '跑轮子',
+      'storing-food': '囤食物',
+      'digging-bedding': '挖垫料',
+      'washing-face': '洗脸',
+      'running-around': '跑圈',
+      'hiding-in-tunnels': '钻隧道',
+      'making-sounds': '发声交流',
+      'sleeping-together': '一起睡觉',
+      'grooming-each-other': '互相理毛',
+      'playing': '玩耍',
+      'resting': '休息'
+      // 新格式已经是中文，不需要翻译
+    }
+    
+    // 处理逗号分隔的多个活动
+    return activities.split(',').map(activity => {
+      const trimmedActivity = activity.trim()
+      return activityTranslations[trimmedActivity] || trimmedActivity
+    }).join('、')
   }
 
   // 计算年龄（如果数据库中没有年龄信息）
@@ -621,13 +723,13 @@ export default function PetMemorialPage() {
               {memorial.personalityTraits && (
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-500 font-light">性格</span>
-                  <span className="text-gray-900 font-light">{memorial.personalityTraits}</span>
+                  <span className="text-gray-900 font-light">{translatePersonalityTraits(memorial.personalityTraits)}</span>
                 </div>
               )}
               {memorial.favoriteThings && (
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-500 font-light">最爱</span>
-                  <span className="text-gray-900 font-light">{memorial.favoriteThings}</span>
+                  <span className="text-gray-900 font-light">{translateFavoriteActivities(memorial.favoriteThings)}</span>
                 </div>
               )}
             </div>
