@@ -48,6 +48,125 @@ export default function HomePage() {
 
     fetchRecentMemorials()
   }, [])
+
+  // 翻译宠物类型
+  const translatePetType = (type?: string) => {
+    if (!type) return '宠物'
+    
+    const typeTranslations: { [key: string]: string } = {
+      'dog': '狗',
+      'cat': '猫',
+      'bird': '鸟',
+      'rabbit': '兔子',
+      'hamster': '仓鼠',
+      'guinea-pig': '豚鼠',
+      'other': '其他'
+    }
+    
+    return typeTranslations[type.toLowerCase()] || type
+  }
+
+  // 翻译品种名称
+  const translateBreed = (breed?: string) => {
+    if (!breed) return '未知'
+    
+    const breedTranslations: { [key: string]: string } = {
+      // 狗类品种
+      'labrador': '拉布拉多',
+      'golden-retriever': '金毛寻回犬',
+      'german-shepherd': '德国牧羊犬',
+      'bulldog': '斗牛犬',
+      'poodle': '贵宾犬',
+      'husky': '哈士奇',
+      'chihuahua': '吉娃娃',
+      'shiba-inu': '柴犬',
+      'corgi': '柯基',
+      'beagle': '比格犬',
+      'border-collie': '边境牧羊犬',
+      'rottweiler': '罗威纳',
+      'yorkshire-terrier': '约克夏梗',
+      'dachshund': '腊肠犬',
+      'boxer': '拳师犬',
+      'australian-shepherd': '澳洲牧羊犬',
+      'siberian-husky': '西伯利亚雪橇犬',
+      'great-dane': '大丹犬',
+      'pomeranian': '博美',
+      'shih-tzu': '西施犬',
+      'boston-terrier': '波士顿梗',
+      'bernese-mountain-dog': '伯恩山犬',
+      'french-bulldog': '法国斗牛犬',
+      'cocker-spaniel': '可卡犬',
+      'maltese': '马尔济斯',
+      'mixed-breed-dog': '混种犬',
+      'other-dog': '其他犬种',
+      
+      // 猫类品种
+      'persian': '波斯猫',
+      'maine-coon': '缅因猫',
+      'siamese': '暹罗猫',
+      'ragdoll': '布偶猫',
+      'british-shorthair': '英国短毛猫',
+      'american-shorthair': '美国短毛猫',
+      'scottish-fold': '苏格兰折耳猫',
+      'russian-blue': '俄罗斯蓝猫',
+      'bengal': '孟加拉猫',
+      'abyssinian': '阿比西尼亚猫',
+      'birman': '伯曼猫',
+      'exotic-shorthair': '异国短毛猫',
+      'norwegian-forest': '挪威森林猫',
+      'sphynx': '斯芬克斯猫',
+      'oriental-shorthair': '东方短毛猫',
+      'devon-rex': '德文卷毛猫',
+      'turkish-angora': '土耳其安哥拉猫',
+      'munchkin': '曼基康猫',
+      'domestic-shorthair': '家养短毛猫',
+      'domestic-longhair': '家养长毛猫',
+      'mixed-breed-cat': '混种猫',
+      'other-cat': '其他猫种',
+      
+      // 鸟类品种
+      'canary': '金丝雀',
+      'budgerigar': '虎皮鹦鹉',
+      'cockatiel': '玄凤鹦鹉',
+      'lovebird': '爱情鸟',
+      'macaw': '金刚鹦鹉',
+      'african-grey': '非洲灰鹦鹉',
+      'cockatoo': '凤头鹦鹉',
+      'conure': '锥尾鹦鹉',
+      'finch': '雀',
+      'parakeet': '长尾小鹦鹉',
+      'other-bird': '其他鸟类',
+      
+      // 兔子品种
+      'holland-lop': '荷兰垂耳兔',
+      'mini-rex': '迷你雷克斯兔',
+      'netherland-dwarf': '荷兰侏儒兔',
+      'lionhead': '狮子头兔',
+      'flemish-giant': '佛兰德巨兔',
+      'angora': '安哥拉兔',
+      'rex': '雷克斯兔',
+      'dutch': '荷兰兔',
+      'english-lop': '英国垂耳兔',
+      'mini-lop': '迷你垂耳兔',
+      'other-rabbit': '其他兔种',
+      
+      // 仓鼠品种
+      'syrian': '叙利亚仓鼠',
+      'dwarf-hamster': '侏儒仓鼠',
+      'chinese': '中国仓鼠',
+      'roborovski': '罗伯罗夫斯基仓鼠',
+      'other-hamster': '其他仓鼠',
+      
+      // 豚鼠品种
+      'american-guinea-pig': '美国豚鼠',
+      'peruvian-guinea-pig': '秘鲁豚鼠',
+      'abyssinian-guinea-pig': '阿比西尼亚豚鼠',
+      'silkie-guinea-pig': '丝毛豚鼠',
+      'other-guinea-pig': '其他豚鼠'
+    }
+    
+    return breedTranslations[breed.toLowerCase()] || breed
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       {/* Header - 极简浮动导航 */}
@@ -176,7 +295,7 @@ export default function HomePage() {
                     <div className="p-6">
                       <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
                       <p className="text-slate-500 text-sm mb-3">
-                        {memorial.breed ? `${memorial.subjectType || '宠物'} • ${memorial.breed}` : (memorial.subjectType || '宠物')}
+                        {memorial.breed ? `${translatePetType(memorial.subjectType)} • ${translateBreed(memorial.breed)}` : translatePetType(memorial.subjectType)}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-1">

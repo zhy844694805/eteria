@@ -181,7 +181,7 @@ export function PersonInformationStep({ formData, updateFormData, onNext }: Pers
               </Button>
             </div>
             <p className="text-sm text-gray-500 flex items-center gap-2">
-              <span>⚠️</span>
+              <span>警告</span>
               最多添加9张额外照片，为纪念页面创建美丽的照片廊
             </p>
           </div>

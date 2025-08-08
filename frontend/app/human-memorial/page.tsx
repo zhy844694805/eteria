@@ -50,6 +50,24 @@ export default function HomePage() {
     fetchRecentMemorials()
   }, [])
 
+  // 翻译关系
+  const translateRelationship = (relationship?: string) => {
+    if (!relationship) return ''
+    
+    const relationshipTranslations: { [key: string]: string } = {
+      'parent': '父母',
+      'spouse': '配偶',
+      'child': '子女',
+      'sibling': '兄弟姐妹',
+      'relative': '亲戚',
+      'friend': '朋友',
+      'colleague': '同事',
+      'other': '其他'
+    }
+    
+    return relationshipTranslations[relationship] || relationship
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       {/* Header - 极简浮动导航 */}
@@ -178,7 +196,7 @@ export default function HomePage() {
                     <div className="p-6">
                       <h3 className="text-lg font-medium text-slate-900 mb-2">{memorial.subjectName}</h3>
                       <p className="text-slate-500 text-sm mb-3">
-                        {memorial.relationship ? `${memorial.relationship}` : ''}
+                        {translateRelationship(memorial.relationship)}
                         {memorial.age ? ` • 享年${memorial.age}岁` : ''}
                         {memorial.occupation ? ` • ${memorial.occupation}` : ''}
                       </p>

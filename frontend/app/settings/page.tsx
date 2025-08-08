@@ -76,6 +76,23 @@ function SettingsForm() {
   // 通知设置状态
   const [emailNotificationEnabled, setEmailNotificationEnabled] = useState(true)
 
+  // 翻译宠物类型
+  const translatePetType = (type?: string) => {
+    if (!type) return '宠物'
+    
+    const typeTranslations: { [key: string]: string } = {
+      'dog': '狗',
+      'cat': '猫',
+      'bird': '鸟',
+      'rabbit': '兔子',
+      'hamster': '仓鼠',
+      'guinea-pig': '豚鼠',
+      'other': '其他'
+    }
+    
+    return typeTranslations[type.toLowerCase()] || type
+  }
+
   // 如果用户未登录，重定向到登录页
   useEffect(() => {
     if (!user) {
@@ -590,7 +607,7 @@ function SettingsForm() {
                             </div>
                           </div>
                           {memorial.subjectType && (
-                            <p className="text-sm text-gray-500 font-light mb-4">{memorial.subjectType}</p>
+                            <p className="text-sm text-gray-500 font-light mb-4">{memorial.type === 'PET' ? translatePetType(memorial.subjectType) : memorial.subjectType}</p>
                           )}
                           <div className="flex justify-between text-sm text-gray-500">
                             <span className="font-light">浏览 {memorial.viewCount}</span>

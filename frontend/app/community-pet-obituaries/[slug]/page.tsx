@@ -128,7 +128,8 @@ export default function PetMemorialPage() {
         setLoading(true)
         setError(null)
 
-        const response = await fetch(`/api/memorials/slug/${params.slug}`, {
+        const encodedSlug = encodeURIComponent(params.slug)
+        const response = await fetch(`/api/memorials/slug/${encodedSlug}`, {
           signal: abortController.signal
         })
         

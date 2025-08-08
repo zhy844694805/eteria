@@ -79,14 +79,14 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
         question: `${answers.personName}与您是什么关系？`,
         subtitle: '这有助于我们理解您的情感',
         options: [
-          { value: 'parent', label: '父母', emoji: '👨‍👩‍👧‍👦' },
-          { value: 'spouse', label: '配偶', emoji: '💑' },
-          { value: 'child', label: '子女', emoji: '👶' },
-          { value: 'sibling', label: '兄弟姐妹', emoji: '👫' },
-          { value: 'relative', label: '亲戚', emoji: '👪' },
-          { value: 'friend', label: '朋友', emoji: '🤝' },
-          { value: 'colleague', label: '同事', emoji: '💼' },
-          { value: 'other', label: '其他', emoji: '❤️' }
+          { value: 'parent', label: '父母', emoji: '家庭' },
+          { value: 'spouse', label: '配偶', emoji: '配偶' },
+          { value: 'child', label: '子女', emoji: '子女' },
+          { value: 'sibling', label: '兄弟姐妹', emoji: '兄妹' },
+          { value: 'relative', label: '亲戚', emoji: '亲戚' },
+          { value: 'friend', label: '朋友', emoji: '朋友' },
+          { value: 'colleague', label: '同事', emoji: '事业' },
+          { value: 'other', label: '其他', emoji: '其他' }
         ],
         required: true
       },
@@ -134,13 +134,13 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           { 
             value: 'ai-generated', 
             label: 'AI智能生成', 
-            emoji: '🤖',
+            emoji: '智能',
             description: '根据您提供的信息，AI将为您创作温馨感人的纪念文案'
           },
           { 
             value: 'self-written', 
             label: '自己编写', 
-            emoji: '✍️',
+            emoji: '故事',
             description: '您可以亲自撰写纪念文案，表达最真挚的情感'
           }
         ],
@@ -157,16 +157,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `请描述${answers.personName}的性格特点`,
           subtitle: '选择最符合的性格特征，可多选',
           options: [
-            { value: '慈祥温和', label: '慈祥温和', emoji: '😊' },
-            { value: '坚韧不拔', label: '坚韧不拔', emoji: '💪' },
-            { value: '幽默风趣', label: '幽默风趣', emoji: '😄' },
-            { value: '温柔体贴', label: '温柔体贴', emoji: '🤗' },
-            { value: '睿智博学', label: '睿智博学', emoji: '🤓' },
-            { value: '乐观向上', label: '乐观向上', emoji: '☀️' },
-            { value: '勤劳朴实', label: '勤劳朴实', emoji: '🌾' },
-            { value: '善良正直', label: '善良正直', emoji: '❤️' },
-            { value: '严谨认真', label: '严谨认真', emoji: '📚' },
-            { value: '热情开朗', label: '热情开朗', emoji: '🌟' }
+            { value: '慈祥温和', label: '慈祥温和', emoji: '温和' },
+            { value: '坚韧不拔', label: '坚韧不拔', emoji: '坚韧' },
+            { value: '幽默风趣', label: '幽默风趣', emoji: '幽默' },
+            { value: '温柔体贴', label: '温柔体贴', emoji: '体贴' },
+            { value: '睿智博学', label: '睿智博学', emoji: '博学' },
+            { value: '乐观向上', label: '乐观向上', emoji: '阳光' },
+            { value: '勤劳朴实', label: '勤劳朴实', emoji: '朴实' },
+            { value: '善良正直', label: '善良正直', emoji: '其他' },
+            { value: '严谨认真', label: '严谨认真', emoji: '认真' },
+            { value: '热情开朗', label: '热情开朗', emoji: '开朗' }
           ],
           required: false
         },
@@ -176,16 +176,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `${answers.personName}有哪些值得骄傲的成就？`,
           subtitle: '选择TA在人生中的重要成就，可多选',
           options: [
-            { value: '家庭美满', label: '家庭美满', emoji: '👨‍👩‍👧‍👦' },
-            { value: '事业有成', label: '事业有成', emoji: '💼' },
-            { value: '教育子女', label: '教育子女', emoji: '🎓' },
-            { value: '帮助他人', label: '帮助他人', emoji: '🤝' },
-            { value: '社区贡献', label: '社区贡献', emoji: '🏘️' },
-            { value: '专业成就', label: '专业成就', emoji: '🏆' },
-            { value: '艺术创作', label: '艺术创作', emoji: '🎨' },
-            { value: '学术研究', label: '学术研究', emoji: '📖' },
-            { value: '慈善公益', label: '慈善公益', emoji: '💝' },
-            { value: '技艺传承', label: '技艺传承', emoji: '🛠️' }
+            { value: '家庭美满', label: '家庭美满', emoji: '家庭' },
+            { value: '事业有成', label: '事业有成', emoji: '事业' },
+            { value: '教育子女', label: '教育子女', emoji: '教育' },
+            { value: '帮助他人', label: '帮助他人', emoji: '朋友' },
+            { value: '社区贡献', label: '社区贡献', emoji: '社区' },
+            { value: '专业成就', label: '专业成就', emoji: '成就' },
+            { value: '艺术创作', label: '艺术创作', emoji: '艺术' },
+            { value: '学术研究', label: '学术研究', emoji: '研究' },
+            { value: '慈善公益', label: '慈善公益', emoji: '公益' },
+            { value: '技艺传承', label: '技艺传承', emoji: '技艺' }
           ],
           required: false
         },
@@ -195,16 +195,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `${answers.personName}平时喜欢做什么？`,
           subtitle: '选择TA的兴趣爱好，可多选',
           options: [
-            { value: '阅读写作', label: '阅读写作', emoji: '📚' },
-            { value: '音乐艺术', label: '音乐艺术', emoji: '🎵' },
-            { value: '运动健身', label: '运动健身', emoji: '🏃‍♂️' },
-            { value: '园艺种植', label: '园艺种植', emoji: '🌱' },
-            { value: '烹饪美食', label: '烹饪美食', emoji: '🍳' },
-            { value: '旅行探索', label: '旅行探索', emoji: '🗺️' },
-            { value: '摄影记录', label: '摄影记录', emoji: '📸' },
-            { value: '手工制作', label: '手工制作', emoji: '🎨' },
-            { value: '棋牌游戏', label: '棋牌游戏', emoji: '♟️' },
-            { value: '社交聚会', label: '社交聚会', emoji: '🎉' }
+            { value: '阅读写作', label: '阅读写作', emoji: '认真' },
+            { value: '音乐艺术', label: '音乐艺术', emoji: '音乐' },
+            { value: '运动健身', label: '运动健身', emoji: '运动' },
+            { value: '园艺种植', label: '园艺种植', emoji: '园艺' },
+            { value: '烹饪美食', label: '烹饪美食', emoji: '烹饪' },
+            { value: '旅行探索', label: '旅行探索', emoji: '旅行' },
+            { value: '摄影记录', label: '摄影记录', emoji: '摄影' },
+            { value: '手工制作', label: '手工制作', emoji: '艺术' },
+            { value: '棋牌游戏', label: '棋牌游戏', emoji: '棋牌' },
+            { value: '社交聚会', label: '社交聚会', emoji: '聚会' }
           ],
           required: false
         },
@@ -793,7 +793,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                   htmlFor="photo-upload"
                   className="border-2 border-dashed border-gray-300 bg-white p-12 text-center cursor-pointer transition-all duration-300 hover:border-gray-400 hover:bg-gray-50 block"
                 >
-                  <div className="text-4xl mb-4">📸</div>
+                  <div className="text-4xl mb-4">照片</div>
                   <div className="text-lg mb-2 text-gray-600">点击上传照片</div>
                   <div className="text-sm text-gray-400">支持 PNG、JPG、GIF，单张最大 5MB，最多 10 张</div>
                 </label>
@@ -869,7 +869,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                         </>
                       ) : (
                         <>
-                          <div className="text-lg">🤖</div>
+                          <div className="text-lg">智能</div>
                           <span>AI智能生成纪念文案</span>
                         </>
                       )}

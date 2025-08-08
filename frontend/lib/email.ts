@@ -61,7 +61,7 @@ export const sendVerificationEmail = async (
         <body>
           <div class="container">
             <div class="header">
-              <h1>🕊️ 永念 | EternalMemory</h1>
+              <h1> 永念 | EternalMemory</h1>
             </div>
             <div class="content">
               <h2>欢迎加入永念大家庭！</h2>
@@ -151,7 +151,7 @@ export const sendPasswordResetEmail = async (
         <body>
           <div class="container">
             <div class="header">
-              <h1>🕊️ 永念 | EternalMemory</h1>
+              <h1> 永念 | EternalMemory</h1>
             </div>
             <div class="content">
               <h2>密码重置请求</h2>
@@ -254,7 +254,7 @@ export const sendNewMessageNotification = async (
         <body>
           <div class="container">
             <div class="header">
-              <h1>🕊️ 永念 | EternalMemory</h1>
+              <h1> 永念 | EternalMemory</h1>
             </div>
             <div class="content">
               <h2>💌 新留言通知</h2>

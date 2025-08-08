@@ -8,7 +8,8 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params
+    const { slug: rawSlug } = await params
+    const slug = decodeURIComponent(rawSlug)
 
     // 检查缓存
     const cacheKey = cacheKeys.memorialBySlug(slug)

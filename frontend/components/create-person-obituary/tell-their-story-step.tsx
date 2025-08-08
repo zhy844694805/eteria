@@ -16,9 +16,9 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
   const [showAIGenerated, setShowAIGenerated] = useState(false)
 
   const personalityTraits = [
-    { emoji: "❤️", label: "慈爱" },
+    { emoji: "心", label: "慈爱" },
     { emoji: "😊", label: "温和" },
-    { emoji: "🧠", label: "智慧" },
+    { emoji: "智慧", label: "智慧" },
     { emoji: "🤗", label: "关怀" },
     { emoji: "🦸", label: "勇敢" },
     { emoji: "😌", label: "平静" },
@@ -26,23 +26,23 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
     { emoji: "💪", label: "坚强" },
     { emoji: "🤣", label: "幽默" },
     { emoji: "🔍", label: "细心" },
-    { emoji: "🎯", label: "专注" },
-    { emoji: "🛡️", label: "保护" },
+    { emoji: "专注", label: "专注" },
+    { emoji: "保护", label: "保护" },
     { emoji: "💕", label: "深情" },
-    { emoji: "🎨", label: "创意" },
+    { emoji: "创意", label: "创意" },
     { emoji: "🌟", label: "闪耀" },
   ]
 
   const hobbies = [
     { emoji: "📚", label: "阅读" },
-    { emoji: "🎨", label: "绘画" },
+    { emoji: "创意", label: "绘画" },
     { emoji: "🎵", label: "音乐" },
     { emoji: "🚶", label: "散步" },
     { emoji: "🍳", label: "烹饪" },
     { emoji: "🌱", label: "园艺" },
-    { emoji: "✈️", label: "旅行" },
-    { emoji: "🎭", label: "戏剧" },
-    { emoji: "🏃", label: "运动" },
+    { emoji: "旅行", label: "旅行" },
+    { emoji: "戏剧", label: "戏剧" },
+    { emoji: "运动", label: "运动" },
     { emoji: "🧶", label: "手工" },
   ]
 

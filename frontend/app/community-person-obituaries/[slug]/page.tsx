@@ -124,8 +124,9 @@ export default function PersonMemorialPage() {
       try {
         setLoading(true)
         setError(null)
-
-        const response = await fetch(`/api/memorials/slug/${params.slug}`, {
+        
+        const encodedSlug = encodeURIComponent(params.slug)
+        const response = await fetch(`/api/memorials/slug/${encodedSlug}`, {
           signal: abortController.signal
         })
         
@@ -307,12 +308,12 @@ export default function PersonMemorialPage() {
 
   // 格式化年龄显示
   const formatAge = (age?: number, birthDate?: string, deathDate?: string) => {
-    if (age) return `${age}岁`
+    if (age) return `享年${age}岁`
     if (birthDate && deathDate) {
       const birth = new Date(birthDate)
       const death = new Date(deathDate)
       const years = death.getFullYear() - birth.getFullYear()
-      return `${years}岁`
+      return `享年${years}岁`
     }
     return ''
   }

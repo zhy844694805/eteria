@@ -129,12 +129,12 @@ export default function CommunityPersonObituariesPage() {
   }, [memorials, activeFilter, searchQuery])
 
   const formatAge = (birthDate: string | null, deathDate: string | null, age?: number) => {
-    if (age) return `${age}年`
+    if (age) return `享年${age}岁`
     if (birthDate && deathDate) {
       const birth = new Date(birthDate)
       const death = new Date(deathDate)
       const years = death.getFullYear() - birth.getFullYear()
-      return `${years}年`
+      return `享年${years}岁`
     }
     return ''
   }

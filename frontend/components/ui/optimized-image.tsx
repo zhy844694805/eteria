@@ -38,7 +38,7 @@ export function OptimizedImage({
   onError
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isInView, setIsInView] = useState(priority) // 如果是priority，立即加载
+  const [isInView, setIsInView] = useState(true) // 暂时设为true以避免懒加载问题
   const [hasError, setHasError] = useState(false)
   // 对于没有优化字段的现有数据，直接使用原图
   const [currentSrc, setCurrentSrc] = useState(src)
@@ -71,76 +71,7 @@ export function OptimizedImage({
     return () => observer.disconnect()
   }, [priority, isInView])
 
-  // 渐进式加载：占位符 -> 缩略图 -> 原图（仅当有优化版本时）
-  useEffect(() => {
-    if (!isInView) return
-
-    const loadImage = async () => {
-      try {
-        // 如果没有优化版本，直接加载原图
-        if (!hasOptimizedVersions) {
-          const mainImg = new window.Image()
-          mainImg.onload = () => {
-            setIsLoaded(true)
-            onLoad?.()
-          }
-          mainImg.onerror = () => {
-            setHasError(true)
-            onError?.()
-          }
-          mainImg.src = src
-          return
-        }
-
-        // 设置初始显示图片
-        if (placeholder && currentSrc === src) {
-          setCurrentSrc(placeholder)
-        }
-
-        // 如果有预览图，加载预览图
-        if (previewUrl && currentSrc === placeholder) {
-          const previewImg = new window.Image()
-          previewImg.onload = () => {
-            setCurrentSrc(previewUrl)
-          }
-          previewImg.onerror = () => {
-            console.log('Preview failed, loading main image')
-          }
-          previewImg.src = previewUrl
-        }
-
-        // 如果有缩略图且当前显示的是占位符，先加载缩略图
-        if (thumbnailUrl && (currentSrc === placeholder || currentSrc === previewUrl)) {
-          const thumbnailImg = new window.Image()
-          thumbnailImg.onload = () => {
-            setCurrentSrc(thumbnailUrl)
-          }
-          thumbnailImg.onerror = () => {
-            console.log('Thumbnail failed, loading main image')
-          }
-          thumbnailImg.src = thumbnailUrl
-        }
-
-        // 最后加载原图
-        const mainImg = new window.Image()
-        mainImg.onload = () => {
-          setCurrentSrc(src)
-          setIsLoaded(true)
-          onLoad?.()
-        }
-        mainImg.onerror = () => {
-          setHasError(true)
-          onError?.()
-        }
-        mainImg.src = src
-      } catch (error) {
-        setHasError(true)
-        onError?.()
-      }
-    }
-
-    loadImage()
-  }, [isInView, src, thumbnailUrl, previewUrl, placeholder, currentSrc, hasOptimizedVersions, onLoad, onError])
+  // 简化的图片加载逻辑 - 移除，直接让img标签处理加载
 
   const handleLoad = () => {
     setIsLoaded(true)
@@ -205,19 +136,30 @@ export function OptimizedImage({
       {/* 实际图片 */}
       {(isInView || priority) && (
         fill ? (
-          <Image
-            src={currentSrc}
-            fill
-            {...imageProps}
-            priority={priority}
+          <img
+            src={src}
+            alt={alt}
+            className={cn(
+              "transition-opacity duration-300 object-cover w-full h-full opacity-100",
+              className
+            )}
+            onLoad={handleLoad}
+            onError={handleError}
+            style={style}
           />
         ) : (
-          <Image
-            src={currentSrc}
+          <img
+            src={src}
+            alt={alt}
             width={width || 300}
             height={height || 300}
-            {...imageProps}
-            priority={priority}
+            className={cn(
+              "transition-opacity duration-300 opacity-100",
+              className
+            )}
+            onLoad={handleLoad}
+            onError={handleError}
+            style={style}
           />
         )
       )}
@@ -340,13 +282,12 @@ export function OptimizedAvatar({
       className={cn("rounded-full overflow-hidden mx-auto", className)}
       style={{ width: size, height: size }}
     >
-      <OptimizedImage
+      <img
         src={src}
         alt={alt}
         width={size}
         height={size}
         className="object-cover w-full h-full"
-        priority
         onError={() => setHasError(true)}
       />
     </div>

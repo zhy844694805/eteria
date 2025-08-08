@@ -17,11 +17,11 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
 
   const personalityTraits = [
     { emoji: "🎾", label: "Playful" },
-    { emoji: "❤️", label: "Loyal" },
-    { emoji: "🎯", label: "Independent" },
+    { emoji: "心", label: "Loyal" },
+    { emoji: "专注", label: "Independent" },
     { emoji: "🤗", label: "Cuddly" },
-    { emoji: "🛡️", label: "Protective" },
-    { emoji: "🕊️", label: "Gentle" },
+    { emoji: "保护", label: "Protective" },
+    { emoji: "温柔", label: "Gentle" },
     { emoji: "⚡", label: "Energetic" },
     { emoji: "😌", label: "Calm" },
     { emoji: "😈", label: "Mischievous" },
@@ -29,7 +29,7 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
     { emoji: "🤫", label: "Reserved" },
     { emoji: "🦸", label: "Brave" },
     { emoji: "🔍", label: "Curious" },
-    { emoji: "🧠", label: "Intelligent" },
+    { emoji: "智慧", label: "Intelligent" },
     { emoji: "💕", label: "Affectionate" },
   ]
 
@@ -38,12 +38,12 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
     { emoji: "🎾", label: "Playing fetch" },
     { emoji: "🏊", label: "Swimming" },
     { emoji: "🚗", label: "Car rides" },
-    { emoji: "👥", label: "Making new friends" },
+    { emoji: "社交", label: "Making new friends" },
     { emoji: "🤗", label: "Belly rubs" },
     { emoji: "🐕", label: "Playing with other pets" },
     { emoji: "🥾", label: "Hiking" },
     { emoji: "😴", label: "Cuddling" },
-    { emoji: "🐿️", label: "Chasing squirrels" },
+    { emoji: "追逐", label: "Chasing squirrels" },
   ]
 
   const handleWritingMethodSelect = (method: string) => {
