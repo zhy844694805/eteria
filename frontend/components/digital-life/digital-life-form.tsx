@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { toast } from 'sonner'
+import { Users, Lock } from 'lucide-react'
 
 interface AudioFile {
   file: File
@@ -24,6 +25,11 @@ interface Memorial {
   subjectName: string
   type: 'PET' | 'HUMAN'
   slug: string
+  age?: string | null
+  images: Array<{
+    url: string
+    thumbnailUrl: string | null
+  }>
 }
 
 interface DigitalLifeConversation {
@@ -37,7 +43,6 @@ interface DigitalLifeConversation {
 interface FormData {
   selectedMemorial: string
   voiceModelName: string
-  voiceModelDescription: string
   uploadedAudios: AudioFile[]
   chatRecords: ChatRecord[]
   allowPublicUse: boolean
@@ -52,7 +57,6 @@ export function DigitalLifeForm() {
   const [answers, setAnswers] = useState<FormData>({
     selectedMemorial: '',
     voiceModelName: '',
-    voiceModelDescription: '',
     uploadedAudios: [],
     chatRecords: [],
     allowPublicUse: false
@@ -124,18 +128,13 @@ export function DigitalLifeForm() {
         options: userMemorials.map(memorial => ({
           value: memorial.id,
           label: memorial.subjectName,
-          emoji: '👤',
-          description: memorial.title
+          emoji: memorial.images.length > 0 ? null : '👤',
+          imageUrl: memorial.images.length > 0 ? memorial.images[0].thumbnailUrl || memorial.images[0].url : null,
+          description: memorial.title === memorial.subjectName 
+            ? (memorial.type === 'HUMAN' && memorial.age ? `${memorial.age}岁` : `${memorial.type === 'HUMAN' ? '人类' : '宠物'}纪念页`)
+            : memorial.title
         })),
         required: true
-      },
-      {
-        id: 'voiceModelDescription',
-        type: 'textarea',
-        question: `描述${selectedMemorialName}声音的特点`,
-        subtitle: '这将帮助更好地训练语音模型（可选）',
-        placeholder: '描述声音的特点，比如：温柔、慈祥、幽默...',
-        required: false
       },
       {
         id: 'allowPublicUse',
@@ -143,8 +142,8 @@ export function DigitalLifeForm() {
         question: '是否允许其他用户使用这个语音模型？',
         subtitle: '在纪念页面中，其他访客可以使用此声音',
         options: [
-          { value: 'true', label: '允许', emoji: '🤝', description: '其他用户可以在纪念页面中使用此声音' },
-          { value: 'false', label: '仅限自己', emoji: '🔒', description: '只有您可以使用此语音模型' }
+          { value: 'true', label: '允许', icon: Users, description: '其他用户可以在纪念页面中使用此声音' },
+          { value: 'false', label: '仅限自己', icon: Lock, description: '只有您可以使用此语音模型' }
         ],
         required: true
       },
@@ -860,9 +859,21 @@ ${chatContext}
                       }`}
                       onClick={() => selectOption(option.value, currentQuestionData.id)}
                     >
-                      {'emoji' in option && option.emoji && (
+                      {('imageUrl' in option && (option as any).imageUrl) ? (
+                        <div className="w-12 h-12 mx-auto mb-2 rounded-full overflow-hidden bg-gray-100">
+                          <img 
+                            src={(option as any).imageUrl} 
+                            alt={option.label}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : ('icon' in option && (option as any).icon) ? (
+                        <div className="w-8 h-8 mx-auto mb-2 text-gray-600">
+                          {React.createElement((option as any).icon, { className: "w-full h-full" })}
+                        </div>
+                      ) : ('emoji' in option && option.emoji && (
                         <div className="text-2xl mb-2 text-center">{option.emoji}</div>
-                      )}
+                      ))}
                       <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
                         {option.label}
                       </div>

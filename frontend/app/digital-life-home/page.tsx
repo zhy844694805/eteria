@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import Link from 'next/link'
 
 interface VoiceModel {
@@ -88,9 +90,10 @@ export default function DigitalLifeHomePage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navigation currentPage="digital-life" />
       <div className="max-w-5xl mx-auto px-6">
         {/* 主要部分 */}
-        <section className="min-h-screen flex flex-col justify-center items-center text-center py-20">
+        <section className="min-h-screen flex flex-col justify-center items-center text-center py-20 pt-32">
           <div className="text-7xl mb-12 opacity-60">🕊️</div>
           <h1 className="text-6xl font-extralight mb-8 text-gray-900 tracking-tight leading-none">
             数字生命
@@ -247,6 +250,7 @@ export default function DigitalLifeHomePage() {
           </div>
         </footer>
       </div>
+      <Footer />
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useEffect, useState } from "react"
 
 interface NavigationProps {
-  currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate"
+  currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "digital-life" | "pricing" | "donate"
 }
 
 export function Navigation({ currentPage }: NavigationProps) {
@@ -27,8 +27,11 @@ export function Navigation({ currentPage }: NavigationProps) {
                                 pathname.startsWith('/community-person-obituaries') ||
                                 pathname.startsWith('/voice-cloning')
   
+  // 检查是否在数字生命系统中
+  const isDigitalLifeSystem = pathname.startsWith('/digital-life')
+  
   // 检查是否在任何纪念系统中
-  const isInMemorialSystem = isPetMemorialSystem || isHumanMemorialSystem
+  const isInMemorialSystem = isPetMemorialSystem || isHumanMemorialSystem || isDigitalLifeSystem
   
   // 检查是否在总首页
   const isMainHomepage = pathname === '/'
@@ -151,6 +154,77 @@ export function Navigation({ currentPage }: NavigationProps) {
             <Link
               href="/digital-life-home"
               className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              数字生命
+            </Link>
+            
+            {/* 用户状态管理 - 始终显示 */}
+            <div className="w-px h-4 bg-slate-300"></div>
+            <Link
+              href="/"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              主页
+            </Link>
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 text-xs text-slate-600">
+                  <User className="w-3 h-3" />
+                  <span>{user.name}</span>
+                </div>
+                <Link href="/settings">
+                  <button className="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <Settings className="w-4 h-4 text-slate-600" />
+                  </button>
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="text-slate-500 hover:text-slate-700 transition-colors text-xs"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <button className="border border-slate-300 text-slate-700 px-4 py-2 rounded-full text-xs hover:border-slate-400 transition-colors">
+                    登录
+                  </button>
+                </Link>
+                <Link href="/register">
+                  <button className="bg-slate-800 text-white px-4 py-2 rounded-full text-xs hover:bg-slate-900 transition-colors">
+                    注册
+                  </button>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* 数字生命系统导航 */}
+        {isDigitalLifeSystem && (
+          <div className="flex items-center space-x-6 text-sm">
+            <Link
+              href="/human-memorial"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              逝者纪念
+            </Link>
+            <Link
+              href="/create-person-obituary"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              创建
+            </Link>
+            <Link
+              href="/community-person-obituaries"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              社区
+            </Link>
+            <Link
+              href="/digital-life-home"
+              className="text-slate-600 hover:text-slate-900 transition-colors font-medium"
             >
               数字生命
             </Link>

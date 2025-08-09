@@ -49,7 +49,18 @@ export async function GET(request: NextRequest) {
         subjectName: true,
         type: true,
         slug: true,
-        createdAt: true
+        age: true,
+        createdAt: true,
+        images: {
+          where: {
+            isMain: true
+          },
+          select: {
+            url: true,
+            thumbnailUrl: true
+          },
+          take: 1
+        }
       },
       orderBy: {
         createdAt: 'desc'
