@@ -1,38 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth-db'
+import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+// 获取token的通用函数
+function getToken(request: NextRequest): string | null {
+  // 优先从Authorization头获取
+  const authHeader = request.headers.get('Authorization')
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7)
+  }
+  
+  // 从cookie中获取token作为备选
+  return request.cookies.get('token')?.value || null
+}
+
 // 获取单个语音模型详情
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const voiceModel = await prisma.voiceModel.findUnique({
+    const { id } = await params
+    
+    const token = getToken(request)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: '未找到认证令牌' },
+        { status: 401 }
+      )
+    }
+
+    // 验证JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
+    
+    if (!decoded || !decoded.userId) {
+      return NextResponse.json(
+        { error: '无效的认证令牌' },
+        { status: 401 }
+      )
+    }
+
+    // 获取语音模型 - 只返回创建者自己的模型
+    const voiceModel = await prisma.voiceModel.findFirst({
       where: {
-        id: params.id
+        id: id,
+        creatorId: decoded.userId
       },
       include: {
         memorial: {
           select: {
-            id: true,
             subjectName: true,
             title: true,
             slug: true
-          }
-        },
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        _count: {
-          select: {
-            syntheses: true
           }
         }
       }
@@ -40,39 +62,34 @@ export async function GET(
 
     if (!voiceModel) {
       return NextResponse.json(
-        { error: '语音模型不存在' },
+        { error: '语音模型不存在或您没有访问权限' },
         { status: 404 }
       )
     }
 
-    // 如果模型不是公开的，需要验证权限
-    if (!voiceModel.isPublic) {
-      const authHeader = request.headers.get('authorization')
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return NextResponse.json(
-          { error: '需要身份验证' },
-          { status: 401 }
-        )
-      }
-
-      const token = authHeader.substring(7)
-      const decoded = verifyToken(token)
-      
-      if (!decoded || decoded.userId !== voiceModel.creatorId) {
-        return NextResponse.json(
-          { error: '无权限访问此语音模型' },
-          { status: 403 }
-        )
-      }
-    }
-
     return NextResponse.json({
       success: true,
-      voiceModel
+      voiceModel: {
+        id: voiceModel.id,
+        name: voiceModel.name,
+        description: voiceModel.description,
+        status: voiceModel.status,
+        sampleCount: voiceModel.sampleCount,
+        createdAt: voiceModel.createdAt,
+        memorial: voiceModel.memorial
+      }
     })
 
   } catch (error: any) {
     console.error('获取语音模型失败:', error)
+    
+    if (error instanceof jwt.JsonWebTokenError) {
+      return NextResponse.json(
+        { error: 'Token无效或已过期' },
+        { status: 401 }
+      )
+    }
+    
     return NextResponse.json(
       { error: '服务器内部错误' },
       { status: 500 }

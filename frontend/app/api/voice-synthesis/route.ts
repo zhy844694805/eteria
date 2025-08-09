@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
 const prisma = new PrismaClient()
+
+// 获取token的通用函数
+function getToken(request: NextRequest): string | null {
+  // 优先从Authorization头获取
+  const authHeader = request.headers.get('Authorization')
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7)
+  }
+  
+  // 从cookie中获取token作为备选
+  return request.cookies.get('token')?.value || null
+}
 
 interface VoiceSynthesisRequest {
   text: string
@@ -42,13 +55,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 验证语音模型
+    // 获取当前用户信息（如果有的话）
+    let currentUserId: string | null = null
+    const token = getToken(request)
+    
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
+        currentUserId = decoded.userId
+      } catch (error) {
+        // token无效但不阻止请求，某些public模型可以不登录使用
+        console.log('Token验证失败，但继续处理请求')
+      }
+    }
+
+    // 验证语音模型 - 允许创建者使用自己的模型，或使用public模型
     const voiceModel = await prisma.voiceModel.findFirst({
       where: {
         id: voiceModelId,
         status: 'READY',
-        isPublic: true,
-        allowPublicUse: true
+        OR: [
+          { creatorId: currentUserId }, // 创建者可以使用自己的模型
+          { isPublic: true, allowPublicUse: true } // 或使用public模型
+        ]
       },
       include: {
         memorial: {
@@ -61,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     if (!voiceModel) {
       return NextResponse.json(
-        { error: '语音模型不存在或不可用' },
+        { error: '语音模型不存在或您没有使用权限' },
         { status: 404 }
       )
     }

@@ -149,7 +149,7 @@ export function Navigation({ currentPage }: NavigationProps) {
               社区
             </Link>
             <Link
-              href="/digital-life"
+              href="/digital-life-home"
               className="text-slate-600 hover:text-slate-900 transition-colors"
             >
               数字生命

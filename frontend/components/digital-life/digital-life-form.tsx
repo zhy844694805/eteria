@@ -70,6 +70,7 @@ export function DigitalLifeForm() {
   // 临时输入状态
   const [manualChatInput, setManualChatInput] = useState('')
   const [userMemorials, setUserMemorials] = useState<Memorial[]>([])
+  const [isLoadingMemorials, setIsLoadingMemorials] = useState(false)
   
   // 数字生命对话状态
   const [isCreatingModel, setIsCreatingModel] = useState(false)
@@ -86,10 +87,12 @@ export function DigitalLifeForm() {
   }, [user])
 
   const fetchUserMemorials = async () => {
+    setIsLoadingMemorials(true)
     try {
       const response = await fetch('/api/memorials/user', {
+        credentials: 'include', // 包含cookies进行认证
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         }
       })
       
@@ -97,9 +100,14 @@ export function DigitalLifeForm() {
         const data = await response.json()
         const humanMemorials = data.memorials.filter((m: Memorial) => m.type === 'HUMAN')
         setUserMemorials(humanMemorials)
+      } else {
+        const errorData = await response.json()
+        console.error('获取纪念页面失败:', errorData.error || '未知错误')
       }
     } catch (error) {
       console.error('获取纪念页面失败:', error)
+    } finally {
+      setIsLoadingMemorials(false)
     }
   }
 
@@ -107,7 +115,7 @@ export function DigitalLifeForm() {
   const getQuestions = () => {
     const selectedMemorialName = userMemorials.find(m => m.id === answers.selectedMemorial)?.subjectName || '逝者'
     
-    return [
+    const questionList = [
       {
         id: 'selectedMemorial',
         type: 'options',
@@ -116,17 +124,9 @@ export function DigitalLifeForm() {
         options: userMemorials.map(memorial => ({
           value: memorial.id,
           label: memorial.subjectName,
-          emoji: '💭',
+          emoji: '👤',
           description: memorial.title
         })),
-        required: true
-      },
-      {
-        id: 'voiceModelName',
-        type: 'text',
-        question: `为${selectedMemorialName}的声音起个名字`,
-        subtitle: '例如：妈妈的温柔声音、爸爸的慈祥嗓音',
-        placeholder: '输入语音模型名称...',
         required: true
       },
       {
@@ -170,10 +170,20 @@ export function DigitalLifeForm() {
         required: false
       }
     ]
+    
+    console.log('生成的问题列表:', questionList)
+    console.log('问题总数:', questionList.length)
+    questionList.forEach((q, index) => {
+      console.log(`问题${index}: ${q.question} (类型: ${q.type})`)
+    })
+    return questionList
   }
 
   const questions = getQuestions()
   const currentQuestionData = questions[currentQuestion]
+  
+  // 添加调试信息
+  console.log('当前状态 - 问题索引:', currentQuestion, '问题总数:', questions.length, 'isCreatingModel:', isCreatingModel, 'createdVoiceModelId:', createdVoiceModelId)
 
   // 处理输入变化
   function handleInputChange(value: string, fieldId: string) {
@@ -199,18 +209,31 @@ export function DigitalLifeForm() {
 
   // 过渡到下一题
   function transitionToNext() {
+    console.log('=== transitionToNext 开始执行 ===')
+    console.log('当前问题:', currentQuestion, '总问题数:', questions.length)
+    
     setIsTransitioning(true)
     setShowContinueButton(false)
     
     setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
+      console.log('判断逻辑：currentQuestion =', currentQuestion, 'questions.length - 1 =', questions.length - 1)
+      console.log('判断逻辑：questions.length - 2 =', questions.length - 2)
+      
+      // 问题5是conversation对话界面，问题4是最后一个用户输入问题
+      // 所以当currentQuestion = 4时，应该创建数字生命然后跳转到问题5
+      if (currentQuestion < questions.length - 2) {
+        console.log('还有下一题，切换到问题', currentQuestion + 1)
         setCurrentQuestion(prev => prev + 1)
-      } else {
-        // 最后一个问题，创建数字生命
+        setShowContinueButton(true)
+        setIsTransitioning(false)
+      } else if (currentQuestion === questions.length - 2) {
+        console.log('完成最后一个输入问题，开始创建数字生命')
+        // 完成最后一个输入问题，创建数字生命并跳转到对话界面
+        setIsTransitioning(false) // 先结束转换状态
         createDigitalLife()
+      } else {
+        console.log('已经在对话界面，不应该再调用transitionToNext')
       }
-      setShowContinueButton(true)
-      setIsTransitioning(false)
     }, 600)
   }
 
@@ -454,62 +477,53 @@ export function DigitalLifeForm() {
 
   // 创建数字生命
   const createDigitalLife = async () => {
+    console.log('=== createDigitalLife 函数开始执行 ===')
+    
     if (!user) {
+      console.log('用户未登录，终止创建')
       toast.error('请先登录')
       return
     }
     
+    console.log('用户已登录，开始创建数字生命...')
+    console.log('当前用户:', user)
+    console.log('设置 isCreatingModel = true')
     setIsCreatingModel(true)
     
     try {
-      // 转换音频文件为base64
-      const audioDataList = await Promise.all(
-        answers.uploadedAudios.map(async (audio) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onload = () => {
-              const base64 = (reader.result as string).split(',')[1]
-              resolve(base64)
-            }
-            reader.onerror = reject
-            reader.readAsDataURL(audio.file)
-          })
-        })
-      )
+      console.log('进入 try 块')
+      // 暂时跳过语音模型创建，直接进入文字对话模式
+      console.log('语音服务暂未部署，启用纯文字对话模式')
       
-      const response = await fetch('/api/voice-models', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          name: answers.voiceModelName.trim(),
-          description: answers.voiceModelDescription.trim(),
-          memorialId: answers.selectedMemorial,
-          allowPublicUse: answers.allowPublicUse,
-          audioDataList,
-          audioFileNames: answers.uploadedAudios.map(audio => audio.file.name)
-        })
-      })
+      console.log('开始延迟 1 秒...')
+      // 模拟创建过程的短暂延迟
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('延迟完成')
       
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || '创建语音模型失败')
-      }
+      console.log('设置语音模型ID为 text-only-mode')
+      // 设置一个模拟的语音模型ID，表示进入对话模式但没有语音功能
+      setCreatedVoiceModelId('text-only-mode')
       
-      const result = await response.json()
-      setCreatedVoiceModelId(result.voiceModel.id)
-      toast.success('数字生命创建成功！现在可以开始对话了')
+      console.log('显示成功提示')
+      toast.success('数字生命创建成功！现在可以开始文字对话了')
       
+      console.log('当前问题数量:', questions.length)
+      console.log('准备设置当前问题为:', questions.length - 1)
       // 进入对话模式
       setCurrentQuestion(questions.length - 1)
+      console.log('设置问题完成')
+      
+      // 强制等待状态更新完成
+      await new Promise(resolve => setTimeout(resolve, 100))
+      console.log('状态更新完成，createdVoiceModelId:', 'text-only-mode')
       
     } catch (error: any) {
       console.error('创建数字生命失败:', error)
       toast.error(error.message || '创建数字生命失败')
     } finally {
+      console.log('进入 finally 块，设置 isCreatingModel = false')
       setIsCreatingModel(false)
+      console.log('=== createDigitalLife 函数执行完成 ===')
     }
   }
 
@@ -534,8 +548,8 @@ export function DigitalLifeForm() {
         .map(record => record.content)
         .join('\n')
 
-      // 调用LLM API生成回复
-      const llmResponse = await fetch('/api/ai/generate-person-obituary', {
+      // 调用数字生命对话API生成回复
+      const llmResponse = await fetch('/api/ai/digital-life-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -560,12 +574,13 @@ ${chatContext}
       const llmData = await llmResponse.json()
       const aiResponse = llmData.text || llmData.content || '抱歉，我现在无法回复。'
 
-      // 如果有语音模型，生成语音
+      // 语音功能暂时禁用（等待语音服务部署）
       let audioUrl: string | undefined
-      if (createdVoiceModelId) {
+      if (createdVoiceModelId && createdVoiceModelId !== 'text-only-mode') {
         try {
           const voiceResponse = await fetch('/api/voice-synthesis', {
             method: 'POST',
+            credentials: 'include', // 使用cookie认证
             headers: {
               'Content-Type': 'application/json',
             },
@@ -586,6 +601,8 @@ ${chatContext}
         } catch (voiceError) {
           console.error('语音合成失败:', voiceError)
         }
+      } else {
+        console.log('纯文字模式，跳过语音合成')
       }
 
       // 添加对话记录
@@ -745,11 +762,11 @@ ${chatContext}
 
       {/* 进度指示器 */}
       <div className="fixed top-5 left-1/2 transform -translate-x-1/2 flex gap-2 z-50">
-        {Array.from({ length: 10 }, (_, i) => (
+        {Array.from({ length: 8 }, (_, i) => (
           <div
             key={i}
             className={`w-2 h-2 rounded-full transition-all duration-400 ${
-              i <= (currentQuestion / questions.length) * 10 ? 'bg-black' : 'bg-black/20'
+              i <= (currentQuestion / questions.length) * 8 ? 'bg-black' : 'bg-black/20'
             }`}
           />
         ))}
@@ -812,32 +829,53 @@ ${chatContext}
 
           {/* 选项按钮 */}
           {currentQuestionData.type === 'options' && (
-            <div className={`grid gap-4 max-w-2xl w-full ${
-              currentQuestionData.options!.length <= 2 ? 'grid-cols-1' : 
-              currentQuestionData.options!.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'
-            }`}>
-              {currentQuestionData.options!.map((option) => (
-                <button
-                  key={option.value}
-                  className={`border border-gray-200 bg-white p-5 text-center cursor-pointer transition-all duration-300 text-lg hover:border-gray-400 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg ${
-                    'description' in option ? 'text-left' : ''
-                  }`}
-                  onClick={() => selectOption(option.value, currentQuestionData.id)}
-                >
-                  {'emoji' in option && option.emoji && (
-                    <div className="text-2xl mb-2 text-center">{option.emoji}</div>
-                  )}
-                  <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
-                    {option.label}
-                  </div>
-                  {'description' in option && (
-                    <div className="text-sm text-gray-500 mt-1 leading-relaxed">
-                      {(option as any).description}
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
+            <>
+              {currentQuestionData.id === 'selectedMemorial' && isLoadingMemorials ? (
+                <div className="text-center">
+                  <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-black rounded-full mx-auto mb-4"></div>
+                  <p className="text-gray-600">正在加载纪念馆...</p>
+                </div>
+              ) : currentQuestionData.id === 'selectedMemorial' && userMemorials.length === 0 ? (
+                <div className="text-center max-w-lg">
+                  <div className="text-4xl mb-4">👤</div>
+                  <p className="text-lg text-gray-600 mb-4">您还没有创建任何人类纪念馆</p>
+                  <p className="text-sm text-gray-500 mb-6">数字生命功能需要先创建一个人类纪念馆</p>
+                  <button
+                    onClick={() => router.push('/create-person-obituary')}
+                    className="bg-purple-600 text-white border-none py-3 px-6 text-base cursor-pointer transition-all duration-300 hover:bg-purple-700"
+                  >
+                    创建人类纪念馆
+                  </button>
+                </div>
+              ) : (
+                <div className={`grid gap-4 max-w-2xl w-full ${
+                  currentQuestionData.options!.length <= 2 ? 'grid-cols-1' : 
+                  currentQuestionData.options!.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'
+                }`}>
+                  {currentQuestionData.options!.map((option) => (
+                    <button
+                      key={option.value}
+                      className={`border border-gray-200 bg-white p-5 text-center cursor-pointer transition-all duration-300 text-lg hover:border-gray-400 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg ${
+                        'description' in option ? 'text-left' : ''
+                      }`}
+                      onClick={() => selectOption(option.value, currentQuestionData.id)}
+                    >
+                      {'emoji' in option && option.emoji && (
+                        <div className="text-2xl mb-2 text-center">{option.emoji}</div>
+                      )}
+                      <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
+                        {option.label}
+                      </div>
+                      {'description' in option && (
+                        <div className="text-sm text-gray-500 mt-1 leading-relaxed">
+                          {(option as any).description}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {/* 音频上传 */}
@@ -989,10 +1027,21 @@ ${chatContext}
           {/* 对话界面 */}
           {currentQuestionData.type === 'conversation' && (
             <div className="w-full max-w-2xl">
+              {(() => {
+                console.log('对话界面渲染 - currentQuestionData.type:', currentQuestionData.type)
+                console.log('对话界面渲染 - createdVoiceModelId:', createdVoiceModelId)
+                console.log('对话界面渲染 - isCreatingModel:', isCreatingModel)
+                return null
+              })()}
               {!createdVoiceModelId ? (
                 <div className="text-center">
                   <div className="text-lg text-gray-600 mb-4">正在创建数字生命...</div>
-                  <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-black rounded-full mx-auto"></div>
+                  <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-black rounded-full mx-auto mb-4"></div>
+                  {isCreatingModel && (
+                    <div className="text-sm text-gray-500">
+                      请等待语音模型创建完成，这可能需要几分钟时间
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
@@ -1003,6 +1052,11 @@ ${chatContext}
                         <div className="text-4xl mb-4">💖</div>
                         <p className="text-gray-500">开始与数字生命对话吧</p>
                         <p className="text-sm text-gray-400 mt-2">基于逝者的聊天记录，AI将模拟真实的对话体验</p>
+                        {createdVoiceModelId === 'text-only-mode' && (
+                          <p className="text-xs text-orange-500 mt-3 bg-orange-50 px-3 py-1 rounded-full inline-block">
+                            当前为纯文字模式，语音功能待后续开放
+                          </p>
+                        )}
                       </div>
                     ) : (
                       digitalLifeConversations.map((conversation) => (
@@ -1018,7 +1072,7 @@ ${chatContext}
                             <div className="max-w-xs bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm">
                               {conversation.aiResponse}
                               <div className="flex items-center gap-2 mt-2">
-                                {conversation.audioUrl && (
+                                {conversation.audioUrl && createdVoiceModelId !== 'text-only-mode' && (
                                   <button
                                     onClick={() => toggleAudio(conversation.audioUrl!, `conversation-${conversation.id}`)}
                                     className="text-xs text-gray-500 hover:text-gray-700"
