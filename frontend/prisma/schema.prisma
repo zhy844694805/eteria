@@ -49,6 +49,8 @@ model User {
   likes             Like[]
   adminLogs         AdminLog[] @relation("AdminLogs")
   contentReviews    ContentReview[] @relation("ContentReviews")
+  voiceModels       VoiceModel[]
+  voiceSyntheses    VoiceSynthesis[]
 
   @@unique([provider, providerId]) // 确保同一提供者的用户ID唯一
   @@map("users")
@@ -117,6 +119,7 @@ model Memorial {
   candles         Candle[]
   likes           Like[]
   tags            MemorialTag[]
+  voiceModels     VoiceModel[]
 
   @@map("memorials")
 }
@@ -288,6 +291,80 @@ model ContentReview {
   @@map("content_reviews")
 }
 
+// 语音模型表
+model VoiceModel {
+  id               String          @id @default(cuid())
+  name             String          // 语音模型名称
+  description      String?         // 模型描述
+  
+  // 训练数据
+  sampleAudioPaths String          // JSON数组，存储训练音频文件路径
+  sampleCount      Int             @default(0) // 训练样本数量
+  modelPath        String?         // 训练后的模型文件路径
+  
+  // 状态和设置
+  status           VoiceModelStatus @default(TRAINING)
+  isPublic         Boolean         @default(false) // 是否公开给其他用户使用
+  allowPublicUse   Boolean         @default(false) // 是否允许公共使用
+  maxUsagePerDay   Int             @default(10)    // 每日最大使用次数
+  
+  // 质量指标
+  quality          Float?          // 模型质量评分 (0-1)
+  accuracy         Float?          // 准确率
+  similarity       Float?          // 相似度
+  
+  // 统计信息
+  usageCount       Int             @default(0)     // 总使用次数
+  todayUsageCount  Int             @default(0)     // 今日使用次数
+  lastUsedAt       DateTime?       // 最后使用时间
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  
+  // 外键
+  creatorId        String
+  creator          User            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  memorialId       String?         // 关联的纪念页面
+  memorial         Memorial?       @relation(fields: [memorialId], references: [id], onDelete: SetNull)
+  
+  // 关联关系
+  syntheses        VoiceSynthesis[]
+
+  @@map("voice_models")
+}
+
+// 语音合成记录表
+model VoiceSynthesis {
+  id           String      @id @default(cuid())
+  text         String      // 合成的文本内容
+  audioUrl     String      // 生成的音频文件URL
+  duration     Float?      // 音频时长（秒）
+  fileSize     Int?        // 文件大小（字节）
+  
+  // 合成参数
+  emotion      String?     // 情感参数
+  speed        Float?      // 语速
+  pitch        Float?      // 音调
+  volume       Float?      // 音量
+  
+  // 使用信息
+  isPublic     Boolean     @default(false) // 是否公开展示
+  ipAddress    String?     // 使用者IP
+  userAgent    String?     // 用户代理
+  
+  createdAt    DateTime    @default(now())
+  
+  // 外键
+  voiceModelId String
+  voiceModel   VoiceModel  @relation(fields: [voiceModelId], references: [id], onDelete: Cascade)
+  
+  userId       String?     // 使用者（可能是匿名）
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("voice_syntheses")
+}
+
 // 枚举类型
 enum PreferredSystem {
   PET
@@ -330,4 +407,11 @@ enum ReviewStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum VoiceModelStatus {
+  TRAINING     // 正在训练
+  READY        // 训练完成，可用
+  FAILED       // 训练失败
+  INACTIVE     // 暂时不可用
 }

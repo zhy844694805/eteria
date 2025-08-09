@@ -24,7 +24,8 @@ export function Navigation({ currentPage }: NavigationProps) {
   // 检查是否在逗者纪念系统中
   const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
                                 pathname.startsWith('/create-person-obituary') || 
-                                pathname.startsWith('/community-person-obituaries')
+                                pathname.startsWith('/community-person-obituaries') ||
+                                pathname.startsWith('/voice-cloning')
   
   // 检查是否在任何纪念系统中
   const isInMemorialSystem = isPetMemorialSystem || isHumanMemorialSystem
@@ -146,6 +147,12 @@ export function Navigation({ currentPage }: NavigationProps) {
               className="text-slate-600 hover:text-slate-900 transition-colors"
             >
               社区
+            </Link>
+            <Link
+              href="/digital-life"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              数字生命
             </Link>
             
             {/* 用户状态管理 - 始终显示 */}
