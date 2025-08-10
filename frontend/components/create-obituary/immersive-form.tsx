@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
+import { CircleDot, Circle } from 'lucide-react'
 
 interface ImmersiveFormProps {
   initialData?: any
@@ -47,6 +48,10 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
     creatorName: user?.name || ""
   })
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number; index: number } | null>(null)
+  const [swipeStart, setSwipeStart] = useState<{ x: number; y: number; time: number } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -123,8 +128,8 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
         type: 'options',
         question: `${answers.petName}是男孩还是女孩？`,
         options: [
-          { value: 'male', label: '男孩', emoji: '♂️' },
-          { value: 'female', label: '女孩', emoji: '♀️' }
+          { value: 'male', label: '男孩', icon: CircleDot },
+          { value: 'female', label: '女孩', icon: Circle }
         ],
         required: true
       },
@@ -883,6 +888,154 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
     })
   }
 
+  // 拖拽处理函数
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    setDragOverIndex(index)
+  }
+
+  const handleDragEnd = () => {
+    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+      setAnswers(prev => {
+        const photos = [...prev.photos]
+        const draggedPhoto = photos[draggedIndex]
+        photos.splice(draggedIndex, 1)
+        photos.splice(dragOverIndex, 0, draggedPhoto)
+        return { ...prev, photos }
+      })
+    }
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+  }
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null)
+  }
+
+  // 表单页面滑动手势处理
+  const handleFormTouchStart = (e: React.TouchEvent) => {
+    // 只有在表单主容器上才处理滑动手势，避免与照片拖拽冲突
+    if (!e.currentTarget.classList.contains('form-swipe-container')) return
+    
+    const touch = e.touches[0]
+    setSwipeStart({
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    })
+  }
+
+  const handleFormTouchMove = (e: React.TouchEvent) => {
+    if (!swipeStart || !e.currentTarget.classList.contains('form-swipe-container')) return
+    
+    const touch = e.touches[0]
+    const deltaX = touch.clientX - swipeStart.x
+    const deltaY = touch.clientY - swipeStart.y
+    
+    // 如果垂直滑动距离大于水平，则认为是滚动行为，不处理
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return
+    
+    // 如果水平滑动距离足够大，则阻止默认滚动行为
+    if (Math.abs(deltaX) > 50) {
+      e.preventDefault()
+    }
+  }
+
+  const handleFormTouchEnd = (e: React.TouchEvent) => {
+    if (!swipeStart || !e.currentTarget.classList.contains('form-swipe-container')) return
+    
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - swipeStart.x
+    const deltaY = touch.clientY - swipeStart.y
+    const deltaTime = Date.now() - swipeStart.time
+    
+    // 重置滑动状态
+    setSwipeStart(null)
+    
+    // 滑动手势检测条件：
+    // 1. 水平滑动距离大于50px
+    // 2. 垂直滑动距离小于100px（避免与滚动冲突）
+    // 3. 滑动时间小于500ms（快速滑动）
+    // 4. 不在转换状态中
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 100 && deltaTime < 500 && !isTransitioning) {
+      if (deltaX > 0 && currentQuestion > 0) {
+        // 向右滑动，返回上一题
+        previousQuestion()
+      } else if (deltaX < 0 && currentQuestion < questions.length - 1) {
+        // 向左滑动，进入下一题（需要验证当前题目）
+        const question = questions[currentQuestion]
+        if (!question) return
+        
+        // 检查当前问题是否可以继续
+        let canProceed = true
+        
+        if (question.required) {
+          const currentValue = answers[question.id as keyof FormData]
+          if (!currentValue || 
+              (typeof currentValue === 'string' && !currentValue.trim()) ||
+              (Array.isArray(currentValue) && currentValue.length === 0)) {
+            canProceed = false
+          }
+        }
+        
+        if (canProceed) {
+          nextQuestion()
+        }
+      }
+    }
+  }
+
+  // 触摸事件处理
+  const handleTouchStart = (e: React.TouchEvent, index: number) => {
+    const touch = e.touches[0]
+    setTouchStart({
+      x: touch.clientX,
+      y: touch.clientY,
+      index: index
+    })
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return
+    
+    const touch = e.touches[0]
+    const deltaX = Math.abs(touch.clientX - touchStart.x)
+    const deltaY = Math.abs(touch.clientY - touchStart.y)
+    
+    // 如果移动距离超过阈值，开始拖拽
+    if (deltaX > 20 || deltaY > 20) {
+      setDraggedIndex(touchStart.index)
+      e.preventDefault() // 防止页面滚动
+    }
+    
+    // 找到当前触摸位置下的元素
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY)
+    const photoElement = elementBelow?.closest('[data-photo-index]')
+    if (photoElement) {
+      const index = parseInt(photoElement.getAttribute('data-photo-index') || '0')
+      setDragOverIndex(index)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+      setAnswers(prev => {
+        const photos = [...prev.photos]
+        const draggedPhoto = photos[draggedIndex]
+        photos.splice(draggedIndex, 1)
+        photos.splice(dragOverIndex, 0, draggedPhoto)
+        return { ...prev, photos }
+      })
+    }
+    setTouchStart(null)
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+  }
+
   async function generateAIContent() {
     if (isGenerating) return
     
@@ -988,10 +1141,10 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
 
   // 渲染导航按钮组
   const renderNavigationButtons = () => (
-    <div className="flex gap-4 mt-10 items-center justify-center">
+    <div className="flex gap-3 sm:gap-4 mt-8 sm:mt-10 items-center justify-center">
       {currentQuestion > 0 && (
         <button
-          className={`bg-transparent text-gray-600 border border-gray-300 py-3 px-6 text-base cursor-pointer transition-all duration-300 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg ${
+          className={`bg-transparent text-gray-600 border border-gray-300 py-3 sm:py-3 px-5 sm:px-6 text-sm sm:text-base cursor-pointer transition-all duration-300 hover:bg-gray-50 touch-manipulation min-h-[44px] ${
             showContinueButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
           }`}
           onClick={previousQuestion}
@@ -1000,7 +1153,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
         </button>
       )}
       <button
-        className={`bg-black text-white border-none py-3 px-8 text-base cursor-pointer transition-all duration-300 hover:bg-gray-800 hover:-translate-y-1 hover:shadow-lg ${
+        className={`bg-black text-white border-none py-3 sm:py-3 px-6 sm:px-8 text-sm sm:text-base cursor-pointer transition-all duration-300 hover:bg-gray-800 touch-manipulation min-h-[44px] ${
           showContinueButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
         }`}
         onClick={nextQuestion}
@@ -1016,7 +1169,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
       {currentQuestion > 0 && !isTransitioning && (
         <button
           onClick={previousQuestion}
-          className="fixed top-5 left-5 w-10 h-10 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-300 hover:shadow-lg z-50 group"
+          className="fixed top-4 left-4 sm:top-5 sm:left-5 w-11 h-11 sm:w-10 sm:h-10 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-300 hover:shadow-lg z-50 group touch-manipulation"
           title="返回上一步 (ESC)"
         >
           <svg 
@@ -1031,11 +1184,11 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
       )}
 
       {/* 进度指示器 */}
-      <div className="fixed top-5 left-1/2 transform -translate-x-1/2 flex gap-2 z-50">
+      <div className="fixed top-4 sm:top-5 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2 z-50">
         {Array.from({ length: 10 }, (_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all duration-400 ${
+            className={`w-2 h-2 sm:w-2 sm:h-2 rounded-full transition-all duration-400 ${
               i <= (currentQuestion / questions.length) * 10 ? 'bg-black' : 'bg-black/20'
             }`}
           />
@@ -1043,26 +1196,36 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
       </div>
       
       {/* 键盘提示和品牌标识 */}
-      <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 text-center">
+      <div className="fixed bottom-6 sm:bottom-10 left-1/2 transform -translate-x-1/2 text-center">
         <div className="text-xs text-gray-300 mb-2 font-light">
-          {currentQuestion > 0 && '← ESC 返回'} {currentQuestion < questions.length - 1 && '回车 继续 →'}
+          <span className="sm:hidden">
+            {currentQuestion > 0 && '← 滑动返回'} {currentQuestion < questions.length - 1 && '滑动继续 →'}
+          </span>
+          <span className="hidden sm:block">
+            {currentQuestion > 0 && '← ESC 返回'} {currentQuestion < questions.length - 1 && '回车 继续 →'}
+          </span>
         </div>
-        <div className="text-sm text-gray-400 font-light">
+        <div className="text-xs sm:text-sm text-gray-400 font-light">
           永念
         </div>
       </div>
 
       {/* 当前问题 */}
       {currentQuestion < questions.length && (
-        <div className={`absolute inset-0 flex flex-col items-center justify-center px-6 transition-all duration-600 ease-out ${
-          isTransitioning ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'
-        }`}>
-          <h1 className="text-2xl md:text-4xl font-light text-gray-900 text-center mb-8 md:mb-12 leading-tight max-w-4xl">
+        <div 
+          className={`absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 transition-all duration-600 ease-out form-swipe-container ${
+            isTransitioning ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'
+          }`}
+          onTouchStart={handleFormTouchStart}
+          onTouchMove={handleFormTouchMove}
+          onTouchEnd={handleFormTouchEnd}
+        >
+          <h1 className="text-xl sm:text-2xl md:text-4xl font-light text-gray-900 text-center mb-6 sm:mb-8 md:mb-12 leading-tight max-w-4xl">
             {currentQuestionData.question}
           </h1>
           
           {currentQuestionData.subtitle && (
-            <div className="text-base text-gray-500 text-center mb-8 font-light">
+            <div className="text-sm sm:text-base text-gray-500 text-center mb-6 sm:mb-8 font-light">
               {currentQuestionData.subtitle}
             </div>
           )}
@@ -1073,7 +1236,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
               <input
                 type="text"
                 placeholder={currentQuestionData.placeholder}
-                className="border-0 border-b-2 border-gray-200 bg-transparent outline-none text-xl md:text-2xl py-4 text-center w-full max-w-lg transition-all duration-300 focus:border-black"
+                className="border-0 border-b-2 border-gray-200 bg-transparent outline-none text-lg sm:text-xl md:text-2xl py-3 sm:py-4 text-center w-full max-w-lg transition-all duration-300 focus:border-black touch-manipulation"
                 value={answers[currentQuestionData.id as keyof FormData] as string || ''}
                 onChange={(e) => handleInputChange(e.target.value, currentQuestionData.id)}
                 autoComplete="off"
@@ -1088,7 +1251,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
             <>
               <input
                 type="date"
-                className="border-0 border-b-2 border-gray-200 bg-transparent outline-none text-xl md:text-2xl py-4 text-center w-full max-w-lg transition-all duration-300 focus:border-black"
+                className="border-0 border-b-2 border-gray-200 bg-transparent outline-none text-lg sm:text-xl md:text-2xl py-3 sm:py-4 text-center w-full max-w-lg transition-all duration-300 focus:border-black touch-manipulation"
                 value={answers[currentQuestionData.id as keyof FormData] as string || ''}
                 onChange={(e) => handleInputChange(e.target.value, currentQuestionData.id)}
               />
@@ -1098,26 +1261,30 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
 
           {/* 选项按钮 */}
           {currentQuestionData.type === 'options' && (
-            <div className={`grid gap-4 max-w-2xl w-full ${
+            <div className={`grid gap-3 sm:gap-4 max-w-2xl w-full ${
               currentQuestionData.options!.length <= 2 ? 'grid-cols-1' : 
-              currentQuestionData.options!.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'
+              currentQuestionData.options!.length <= 4 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3'
             }`}>
               {currentQuestionData.options!.map((option) => (
                 <button
                   key={option.value}
-                  className={`border border-gray-200 bg-white p-5 text-center cursor-pointer transition-all duration-300 text-lg hover:border-gray-400 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg ${
+                  className={`border border-gray-200 bg-white p-4 sm:p-5 text-center cursor-pointer transition-all duration-300 text-base sm:text-lg hover:border-gray-400 hover:bg-gray-50 touch-manipulation min-h-[60px] sm:min-h-[auto] ${
                     'description' in option ? 'text-left' : ''
                   }`}
                   onClick={() => selectOption(option.value, currentQuestionData.id)}
                 >
-                  {'emoji' in option && option.emoji && (
-                    <div className="text-2xl mb-2 text-center">{option.emoji}</div>
-                  )}
-                  <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
+                  {('icon' in option && (option as any).icon) ? (
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-gray-600">
+                      {React.createElement((option as any).icon, { className: "w-full h-full" })}
+                    </div>
+                  ) : ('emoji' in option && option.emoji && (
+                    <div className="text-xl sm:text-2xl mb-2 text-center">{option.emoji}</div>
+                  ))}
+                  <div className={`text-sm sm:text-base ${'description' in option ? 'font-medium mb-1 sm:mb-2' : ''}`}>
                     {option.label}
                   </div>
                   {'description' in option && (
-                    <div className="text-sm text-gray-500 mt-1 leading-relaxed">
+                    <div className="text-xs sm:text-sm text-gray-500 mt-1 leading-relaxed">
                       {(option as any).description}
                     </div>
                   )}
@@ -1129,23 +1296,27 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           {/* 多选按钮 */}
           {currentQuestionData.type === 'multiple' && (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-2xl w-full">
                 {currentQuestionData.options!.map((option) => {
                   const isSelected = (answers[currentQuestionData.id as keyof FormData] as string[] || []).includes(option.value)
                   return (
                     <button
                       key={option.value}
-                      className={`border p-5 text-center cursor-pointer transition-all duration-300 text-lg hover:-translate-y-1 hover:shadow-lg ${
+                      className={`border p-4 sm:p-5 text-center cursor-pointer transition-all duration-300 text-base sm:text-lg touch-manipulation min-h-[60px] ${
                         isSelected 
                           ? 'border-black bg-black text-white' 
                           : 'border-gray-200 bg-white hover:border-gray-400 hover:bg-gray-50'
                       }`}
                       onClick={() => toggleMultiple(option.value, currentQuestionData.id)}
                     >
-                      {'emoji' in option && option.emoji && (
-                        <div className="text-xl mb-1">{option.emoji}</div>
-                      )}
-                      <div>{option.label}</div>
+                      {('icon' in option && (option as any).icon) ? (
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-gray-600">
+                          {React.createElement((option as any).icon, { className: "w-full h-full" })}
+                        </div>
+                      ) : ('emoji' in option && option.emoji && (
+                        <div className="text-lg sm:text-xl mb-1">{option.emoji}</div>
+                      ))}
+                      <div className="text-sm sm:text-base">{option.label}</div>
                     </button>
                   )
                 })}
@@ -1160,7 +1331,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
               <div className="w-full max-w-2xl">
                 <textarea
                   placeholder={currentQuestionData.placeholder}
-                  className="border border-gray-200 bg-white outline-none text-lg p-6 w-full min-h-32 resize-y transition-all duration-300 focus:border-black focus:shadow-sm"
+                  className="border border-gray-200 bg-white outline-none text-base sm:text-lg p-4 sm:p-6 w-full min-h-32 resize-y transition-all duration-300 focus:border-black focus:shadow-sm touch-manipulation"
                   value={answers[currentQuestionData.id as keyof FormData] as string || ''}
                   onChange={(e) => handleInputChange(e.target.value, currentQuestionData.id)}
                   rows={4}
@@ -1174,7 +1345,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                       type="button"
                       onClick={generateAIContent}
                       disabled={isGenerating}
-                      className={`flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg transition-all duration-300 hover:bg-blue-600 hover:-translate-y-1 hover:shadow-lg ${
+                      className={`flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg transition-all duration-300 hover:bg-blue-600 text-sm sm:text-base touch-manipulation min-h-[44px] ${
                         isGenerating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                       }`}
                     >
@@ -1225,26 +1396,46 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                 {/* 上传区域 */}
                 <label
                   htmlFor="photosInput"
-                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 mb-6"
+                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 mb-6 touch-manipulation min-h-[120px] sm:min-h-[auto]"
                 >
-                  <div className="text-4xl mb-4">📷</div>
-                  <div className="text-lg text-gray-600 mb-2">点击选择照片</div>
-                  <div className="text-sm text-gray-500">第一张将作为主图，最多10张，支持 JPG、PNG、GIF 格式</div>
+                  <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">📷</div>
+                  <div className="text-base sm:text-lg text-gray-600 mb-2">点击选择照片</div>
+                  <div className="text-xs sm:text-sm text-gray-500">第一张将作为主图，最多10张<br className="sm:hidden" /><span className="sm:inline"> · </span>支持 JPG、PNG、GIF 格式<br className="sm:hidden" /><span className="sm:inline"> · </span>可拖拽重新排序</div>
                 </label>
 
                 {/* 照片预览网格 */}
                 {answers.photos.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
                     {answers.photos.map((photo, index) => (
-                      <div key={index} className="relative group">
+                      <div 
+                        key={index} 
+                        className={`relative group cursor-move transition-all duration-200 ${
+                          draggedIndex === index ? 'opacity-50 transform scale-105 z-10' : ''
+                        } ${
+                          dragOverIndex === index ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+                        }`}
+                        data-photo-index={index}
+                        draggable
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDragEnd={handleDragEnd}
+                        onDragLeave={handleDragLeave}
+                        onTouchStart={(e) => handleTouchStart(e, index)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                      >
                         <img
                           src={URL.createObjectURL(photo)}
                           alt={`照片 ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
+                          className="w-full h-24 sm:h-32 object-cover rounded-lg pointer-events-none"
                         />
+                        {/* 拖拽指示器 */}
+                        <div className="absolute top-1 right-1 text-white text-opacity-70 text-sm">
+                          ⋮⋮
+                        </div>
                         {/* 主图标识 */}
                         {index === 0 && (
-                          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                          <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-blue-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                             主图
                           </div>
                         )}
@@ -1253,7 +1444,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                           <button
                             type="button"
                             onClick={() => movePhotoToFirst(index)}
-                            className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600 transition-colors opacity-0 group-hover:opacity-100"
+                            className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-blue-500 text-white text-xs px-1.5 sm:px-2 py-1 sm:py-1 rounded hover:bg-blue-600 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-w-[44px] min-h-[32px] sm:min-h-[auto]"
                           >
                             设为主图
                           </button>
@@ -1262,7 +1453,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                         <button
                           type="button"
                           onClick={() => removePhoto(index)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                          className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-red-500 text-white rounded-full w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center hover:bg-red-600 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-w-[32px] min-h-[32px]"
                         >
                           ×
                         </button>
@@ -1277,7 +1468,7 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
 
           {!currentQuestionData.required && currentQuestionData.type !== 'textarea' && currentQuestionData.type !== 'multiple' && currentQuestionData.type !== 'photo' && currentQuestionData.type !== 'photos' && (
             <button
-              className="mt-4 bg-transparent text-gray-500 border-none text-sm cursor-pointer transition-all duration-300 hover:text-gray-700"
+              className="mt-3 sm:mt-4 bg-transparent text-gray-500 border-none text-sm cursor-pointer transition-all duration-300 hover:text-gray-700 touch-manipulation min-h-[44px]"
               onClick={skipQuestion}
             >
               跳过

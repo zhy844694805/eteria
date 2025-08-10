@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Image from "next/image"
 import { Heart, Flame, Search, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 import MemorialCard from "@/components/memorial-card"
@@ -215,7 +215,7 @@ export default function CommunityPersonObituariesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       {/* Header - 极简浮动导航 */}
-      <Navigation currentPage="community" />
+      <ResponsiveNavigation currentPage="community" />
 
       {/* Hero Section - 响应式标题 */}
       <main className="pt-20 lg:pt-32">

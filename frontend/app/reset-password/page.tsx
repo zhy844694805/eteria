@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Navigation } from '@/components/navigation'
+import { ResponsiveNavigation } from '@/components/responsive-navigation'
 import { Footer } from '@/components/footer'
 import { CheckCircle, XCircle, Lock, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
@@ -218,7 +218,7 @@ function ResetPasswordForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      <Navigation currentPage="home" />
+      <ResponsiveNavigation currentPage="home" />
       
       <section className="px-4 py-16">
         <div className="max-w-md mx-auto">

@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { migrationService } from '@/lib/migration-service'
-import { Navigation } from '@/components/navigation'
+import { ResponsiveNavigation } from '@/components/responsive-navigation'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -331,7 +331,7 @@ function SettingsForm() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Navigation />
+      <ResponsiveNavigation />
 
       {/* Settings Content */}
       <section className="px-4 py-8 pt-32">

@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
+import { Users, Heart, Baby, UserPlus, Users2, Handshake, Briefcase, User } from 'lucide-react'
 
 interface ImmersiveFormProps {
   initialData?: any
@@ -79,14 +80,14 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
         question: `${answers.personName}与您是什么关系？`,
         subtitle: '这有助于我们理解您的情感',
         options: [
-          { value: 'parent', label: '父母', emoji: '👨‍👩‍👧‍👦' },
-          { value: 'spouse', label: '配偶', emoji: '💑' },
-          { value: 'child', label: '子女', emoji: '👶' },
-          { value: 'sibling', label: '兄弟姐妹', emoji: '👫' },
-          { value: 'relative', label: '亲戚', emoji: '👪' },
-          { value: 'friend', label: '朋友', emoji: '🤝' },
-          { value: 'colleague', label: '同事', emoji: '💼' },
-          { value: 'other', label: '其他', emoji: '👤' }
+          { value: 'parent', label: '父母', icon: Users },
+          { value: 'spouse', label: '配偶', icon: Heart },
+          { value: 'child', label: '子女', icon: Baby },
+          { value: 'sibling', label: '兄弟姐妹', icon: UserPlus },
+          { value: 'relative', label: '亲戚', icon: Users2 },
+          { value: 'friend', label: '朋友', icon: Handshake },
+          { value: 'colleague', label: '同事', icon: Briefcase },
+          { value: 'other', label: '其他', icon: User }
         ],
         required: true
       },
@@ -732,9 +733,13 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                   }`}
                   onClick={() => selectOption(option.value, currentQuestionData.id)}
                 >
-                  {'emoji' in option && option.emoji && (
+                  {('icon' in option && (option as any).icon) ? (
+                    <div className="w-8 h-8 mx-auto mb-2 text-gray-600">
+                      {React.createElement((option as any).icon, { className: "w-full h-full" })}
+                    </div>
+                  ) : ('emoji' in option && option.emoji && (
                     <div className="text-2xl mb-2 text-center">{option.emoji}</div>
-                  )}
+                  ))}
                   <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
                     {option.label}
                   </div>
@@ -764,9 +769,13 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                       }`}
                       onClick={() => toggleMultiple(option.value, currentQuestionData.id)}
                     >
-                      {'emoji' in option && option.emoji && (
+                      {('icon' in option && (option as any).icon) ? (
+                        <div className="w-6 h-6 mx-auto mb-1 text-gray-600">
+                          {React.createElement((option as any).icon, { className: "w-full h-full" })}
+                        </div>
+                      ) : ('emoji' in option && option.emoji && (
                         <div className="text-xl mb-1">{option.emoji}</div>
-                      )}
+                      ))}
                       <div>{option.label}</div>
                     </button>
                   )

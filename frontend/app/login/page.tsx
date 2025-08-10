@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Navigation } from '@/components/navigation'
+import { ResponsiveNavigation } from '@/components/responsive-navigation'
 import { Footer } from '@/components/footer'
 import { Heart, Mail, Lock, AlertCircle } from 'lucide-react'
 import { GoogleLoginButton } from '@/components/google-login-button'
@@ -100,7 +100,7 @@ function LoginWithParams() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       {/* Header - 极简浮动导航 */}
-      <Navigation currentPage="home" />
+      <ResponsiveNavigation currentPage="home" />
 
       {/* Login Form - 极简设计 */}
       <main className="pt-32">

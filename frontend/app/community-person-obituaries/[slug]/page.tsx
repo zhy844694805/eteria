@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, MessageCircleHeart, Share2, User, Loader2, Download, Volume2, Play, Pause, Mic } from "lucide-react"
+import { Heart, Flame, MessageCircle, MessageCircleHeart, Share2, User, Loader2, Download, Volume2, Play, Pause, Mic, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
@@ -90,6 +90,7 @@ interface VoiceModel {
 
 export default function PersonMemorialPage() {
   const params = useParams()
+  const router = useRouter()
   const { user } = useAuth()
   const [message, setMessage] = useState("")
   const [memorial, setMemorial] = useState<Memorial | null>(null)
@@ -107,6 +108,10 @@ export default function PersonMemorialPage() {
   const [synthesizedAudio, setSynthesizedAudio] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showVoiceSynthesis, setShowVoiceSynthesis] = useState(false)
+  
+  // 数字生命相关状态
+  const [digitalLife, setDigitalLife] = useState<any>(null)
+  const [showDigitalLife, setShowDigitalLife] = useState(false)
 
   // 检查今日是否可以点蜡烛
   const checkCandleStatus = async (memorialId: string) => {
@@ -154,6 +159,22 @@ export default function PersonMemorialPage() {
       }
     } catch (error) {
       console.error('获取语音模型失败:', error)
+    }
+  }
+
+  // 获取纪念页面的数字生命
+  const fetchDigitalLife = async (memorialId: string) => {
+    try {
+      const response = await fetch(`/api/memorials/${memorialId}/digital-life`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.digitalLife && data.digitalLife.status === 'READY' && data.digitalLife.allowPublicChat) {
+          setDigitalLife(data.digitalLife)
+          setShowDigitalLife(true)
+        }
+      }
+    } catch (error) {
+      console.error('获取数字生命失败:', error)
     }
   }
 
@@ -236,6 +257,13 @@ export default function PersonMemorialPage() {
     document.body.removeChild(link)
   }
 
+  // 跳转到数字生命聊天页面
+  const handleDigitalLifeChat = () => {
+    if (digitalLife && digitalLife.id) {
+      router.push(`/digital-life/chat/${digitalLife.id}`)
+    }
+  }
+
   useEffect(() => {
     const abortController = new AbortController()
     
@@ -271,6 +299,7 @@ export default function PersonMemorialPage() {
           setMemorial(data.memorial)
           await checkCandleStatus(data.memorial.id)
           await fetchVoiceModels(data.memorial.id)
+          await fetchDigitalLife(data.memorial.id)
         }
       } catch (error: any) {
         if (error.name !== 'AbortError' && !abortController.signal.aborted) {
@@ -487,7 +516,7 @@ export default function PersonMemorialPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation currentPage="community" />
+      <ResponsiveNavigation currentPage="community" />
 
       {/* 极简头部 */}
       <main className="max-w-4xl mx-auto px-6 py-24 pt-32">
@@ -727,6 +756,47 @@ export default function PersonMemorialPage() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            </section>
+          )}
+
+          {/* 数字生命跳转区域 */}
+          {showDigitalLife && digitalLife && (
+            <section>
+              <div className="text-center mb-12">
+                <h2 className="text-2xl font-light text-gray-900">数字生命</h2>
+                <p className="text-sm text-gray-500 mt-2">与 {memorial.subjectName} 的AI化身进行对话</p>
+              </div>
+              
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-purple-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <MessageCircle className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <h3 className="text-xl font-light text-gray-900 mb-3">
+                    与 {memorial.subjectName} 对话
+                  </h3>
+                  
+                  <p className="text-sm text-gray-600 font-light mb-8 max-w-md mx-auto leading-relaxed">
+                    基于珍贵记忆重现的数字生命，每一次对话都是爱的延续。点击下方按钮进入专属的对话空间。
+                  </p>
+                  
+                  <button
+                    onClick={handleDigitalLifeChat}
+                    className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-full font-light text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    开始对话
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                  
+                  <div className="mt-6 pt-6 border-t border-purple-200">
+                    <p className="text-xs text-gray-500 font-light">
+                      基于真实记忆与语言风格重现 • 支持语音合成 • 情感纽带永不断线
+                    </p>
+                  </div>
+                </div>
               </div>
             </section>
           )}

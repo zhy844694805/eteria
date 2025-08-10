@@ -1,13 +1,13 @@
 "use client"
 
 import { FileText, Users, Shield, AlertTriangle, Scale, Mail } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentPage="terms" />
+      <ResponsiveNavigation currentPage="terms" />
 
       <main className="pt-32">
         {/* Hero区域 */}

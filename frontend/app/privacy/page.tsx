@@ -1,13 +1,13 @@
 "use client"
 
 import { Shield, Eye, Lock, Database, Users, Mail } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentPage="privacy" />
+      <ResponsiveNavigation currentPage="privacy" />
 
       <main className="pt-32">
         {/* Hero区域 */}

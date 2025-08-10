@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Navigation } from '@/components/navigation'
+import { ResponsiveNavigation } from '@/components/responsive-navigation'
 import { Footer } from '@/components/footer'
 import { Mail, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -146,7 +146,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
-      <Navigation currentPage="home" />
+      <ResponsiveNavigation currentPage="home" />
 
       <section className="px-4 py-16">
         <div className="max-w-md mx-auto">

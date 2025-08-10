@@ -1,14 +1,14 @@
 "use client"
 
 import { Heart, Users, Flame, Shield, Globe, Clock } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import Image from "next/image"
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentPage="about" />
+      <ResponsiveNavigation currentPage="about" />
 
       {/* Hero区域 */}
       <main className="pt-32">

@@ -35,21 +35,23 @@ npm run check-admin         # Check admin user status
 
 ## Project Overview
 
-**永念 | EternalMemory** is a bilingual (Chinese) memorial website built with Next.js 15 that supports creating memorial pages for both pets and humans. The application implements a dual memorial system architecture with completely separate user flows and branding.
+**永念 | EternalMemory** is a bilingual (Chinese) memorial website built with Next.js 15 that supports creating memorial pages for both pets and humans. The application implements a triple memorial system architecture with completely separate user flows, branding, and advanced AI-powered digital life features.
 
 ## Architecture Overview
 
-### Dual Memorial System
+### Triple Memorial System
 
-The application has two parallel memorial systems with intelligent routing:
+The application has three parallel memorial systems with intelligent routing:
 
 - **Pet Memorial System**: Routes starting with `/pet-memorial`, `/create-obituary`, `/community-pet-obituaries`
 - **Human Memorial System**: Routes starting with `/human-memorial`, `/create-person-obituary`, `/community-person-obituaries`
+- **Digital Life System**: Routes starting with `/digital-life`, `/digital-life-home` - AI-powered conversational avatars
 - **Main Homepage**: `/` acts as a landing page to choose between systems
 
 The navigation component (`/components/navigation.tsx`) detects which system the user is in via pathname analysis and shows context-appropriate menus with different color schemes:
 - **Teal/Turquoise**: Pet memorial system
 - **Purple**: Human memorial system
+- **Gray/Black**: Digital life system
 
 ### Multi-Step Form Pattern
 
@@ -86,11 +88,27 @@ const isPetMemorialSystem = pathname.startsWith('/pet-memorial') ||
 const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
                               pathname.startsWith('/create-person-obituary') || 
                               pathname.startsWith('/community-person-obituaries')
+
+const isDigitalLifeSystem = pathname.startsWith('/digital-life')
+
+// Simplified rendering logic (no complex nested conditions)
+{isMainHomepage ? (
+  /* Main page menu: 宠物纪念, 逝者纪念, 数字生命 */
+) : isPetMemorialSystem ? (
+  /* Pet system menu */
+) : isHumanMemorialSystem ? (
+  /* Human system menu */
+) : isDigitalLifeSystem ? (
+  /* Digital life menu */
+) : (
+  /* Default menu */
+)}
 ```
 
 **Form Components:**
 - Pet forms: `/components/create-obituary/*`
 - Human forms: `/components/create-person-obituary/*`
+- Digital life forms: `/components/digital-life/digital-life-form.tsx`
 - Shared UI: `/components/ui/*` (shadcn/ui components)
 
 ### Key Differences Between Systems
@@ -102,6 +120,12 @@ const isHumanMemorialSystem = pathname.startsWith('/human-memorial') ||
 **Human Memorial Fields:**  
 - `personName`, `relationship`, `age`, `occupation`, `location`
 - Relationship options: parent, spouse, child, sibling, relative, friend, colleague, other
+
+**Digital Life Fields:**
+- `selectedMemorial` (links to existing human memorial)
+- `uploadedAudios` (audio samples for voice training)
+- `chatRecords` (conversation data for personality modeling)
+- `allowPublicUse` (privacy settings for public access)
 
 ### Development Configuration
 
@@ -137,10 +161,12 @@ Custom Tailwind configuration with:
 
 1. **Form State Management**: Always use the centralized `formData` pattern with `updateFormData` helper
 2. **Navigation Context**: Use pathname detection to determine which memorial system the user is in
-3. **Color Schemes**: Maintain teal for pet system, purple for human system
+3. **Color Schemes**: Maintain teal for pet system, purple for human system, gray/black for digital life
 4. **Chinese Content**: User-facing content should be in Chinese, code should use English variable names
 5. **Component Imports**: Use absolute imports with `@/` prefix for components and utilities
-6. **Type Safety**: All form data should be properly typed, especially the different field structures between pet and human memorials
+6. **Type Safety**: All form data should be properly typed, especially the different field structures between pet/human memorials and digital life
+7. **Navigation Logic**: Always use simplified ternary operators instead of complex nested conditions to avoid SSR hydration issues
+8. **Authentication Flow**: Digital life features require authenticated users with database-backed accounts
 
 ### Database Integration
 
@@ -206,6 +232,9 @@ The application supports multiple authentication methods with database-backed us
 - `/api/upload/image/*` - File upload handling (multipart/form-data)
 - `/api/messages/*` - Memorial messages/comments
 - `/api/candles/*` - Virtual candle lighting
+- `/api/voice-models/*` - Voice model management and training
+- `/api/voice-synthesis/*` - AI voice synthesis functionality
+- `/api/digital-lives/*` - Digital life creation and management
 - `/api/debug/*` - Development debugging endpoints
 
 **Important API Patterns:**
@@ -232,6 +261,8 @@ The application supports multiple authentication methods with database-backed us
 - User roles (USER, MODERATOR, ADMIN, SUPER_ADMIN) with role-based access control
 - Memorials support both pet and human types with flexible fields
 - Rich relationship modeling (messages, candles, likes, images, tags)
+- Voice model integration (VoiceModel, VoiceSynthesis) for AI-powered voice cloning
+- Digital life system (DigitalLife, DigitalLifeConversation) for AI conversations
 - Image management with file metadata (filename, size, mimeType, isMain flag)
 - Soft deletion and status management (DRAFT/PUBLISHED/ARCHIVED)
 - Admin audit logging and content review system
@@ -258,6 +289,52 @@ The application supports multiple authentication methods with database-backed us
 3. Image metadata stored via `/api/images` → database records
 4. Memorial creation associates image IDs with memorial
 5. Display uses relative URLs from database records
+
+**ImageManager Component:**
+- Advanced drag-and-drop image management component (`/components/image-manager.tsx`)
+- Batch upload, deletion, and main image selection functionality
+- Integrated with memorial editing workflow via callback functions
+- Uses `/api/images/batch-upload`, `/api/images/reorder`, `/api/images/[id]/set-main` endpoints
+
+### Digital Life System
+
+**Architecture Overview:**
+The Digital Life system creates AI-powered conversational avatars based on deceased individuals' voice samples and conversation patterns:
+
+**Digital Life Creation Flow:**
+1. **Memorial Selection**: User selects existing human memorial as basis
+2. **Privacy Settings**: Configure public access permissions
+3. **Audio Training**: Upload voice samples (recordings, audio files)
+4. **Chat Data**: Import conversation records or manually input typical phrases
+5. **Model Creation**: System processes data and creates conversational AI
+
+**Key Components:**
+- **DigitalLifeForm** (`/components/digital-life/digital-life-form.tsx`): Multi-step creation wizard
+- **Digital Life Homepage** (`/app/digital-life-home/page.tsx`): Management dashboard
+- **Chat Interface** (`/app/digital-life/chat/[modelId]/page.tsx`): Conversation UI
+
+**Database Schema:**
+- `DigitalLife` model: Core digital life entity with training data and status
+- `DigitalLifeConversation` model: Chat history and context preservation
+- `VoiceModel` model: Voice synthesis training and metadata
+- `VoiceSynthesis` model: Generated audio records
+
+**Features:**
+- Audio sample upload and validation (MP3, WAV, M4A, max 50MB)
+- Real-time recording capability with browser MediaRecorder API
+- Chat record import from text files or manual input
+- Privacy controls for public/private access
+- Status tracking (CREATING, READY, FAILED, INACTIVE)
+- Conversation context preservation across sessions
+
+### Search System
+
+**Full-Text Search Implementation:**
+- **API Endpoint**: `/api/search` with comprehensive content searching
+- **Search Scope**: Memorial titles, subject names, stories, memories, personality traits, breeds, occupations
+- **Features**: Type filtering (PET/HUMAN/ALL), relevance scoring, pagination support
+- **Integration**: Both community pages use search API instead of local filtering
+- **UI**: Real-time search with loading states in community pages
 
 ### Admin System
 
@@ -297,6 +374,8 @@ NEXTAUTH_URL="http://localhost:3001"
 - Image upload requires proper file validation and error handling
 - Google OAuth requires valid client credentials and redirect URI configuration
 - Next.js 15 dynamic routes require `await params` in page components
+- **Navigation SSR Issues**: Complex conditional rendering in navigation can cause hydration mismatches - always use simplified ternary operators
+- **Digital Life Dependencies**: Digital life creation requires existing human memorials - validate memorial existence and ownership
 
 ### Current System Status
 
@@ -309,6 +388,11 @@ NEXTAUTH_URL="http://localhost:3001"
 - Admin dashboard with user management and content moderation
 - Role-based access control (USER, MODERATOR, ADMIN, SUPER_ADMIN)
 - Image upload and management with file validation
+- Full-text search functionality across memorial content
+- ImageManager component with drag-and-drop functionality
+- **Digital Life System**: Complete AI-powered conversation creation workflow
+- **Voice Integration**: Audio sample processing and voice model training infrastructure
+- **Navigation Fixes**: Simplified conditional rendering preventing SSR hydration issues
 - Chinese localization throughout application
 - Edit memorial functionality with authentication checks
 

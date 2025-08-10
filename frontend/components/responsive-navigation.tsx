@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Heart, User, LogOut, Settings, Menu, X, Home, Plus, Users } from "lucide-react"
+import { Heart, User, LogOut, Settings, Menu, X, Home, Plus, Users, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface NavigationProps {
-  currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate"
+  currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate" | "digital-life"
 }
 
 export function ResponsiveNavigation({ currentPage }: NavigationProps) {
@@ -26,6 +26,9 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
   const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
                                 pathname.startsWith('/create-person-obituary') || 
                                 pathname.startsWith('/community-person-obituaries')
+  
+  // 检查是否在数字生命系统中  
+  const isDigitalLifeSystem = pathname.startsWith('/digital-life')
   
   // 检查是否在任何纪念系统中
   const isInMemorialSystem = isPetMemorialSystem || isHumanMemorialSystem
@@ -53,7 +56,8 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
   // 获取主页链接
   const getHomeLink = () => {
     if (isPetMemorialSystem) return "/pet-memorial"
-    if (isHumanMemorialSystem) return "/human-memorial"
+    if (isHumanMemorialSystem) return "/human-memorial"  
+    if (isDigitalLifeSystem) return "/digital-life-home"
     return "/"
   }
 
@@ -64,6 +68,7 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
         { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
         { href: "/create-obituary", label: "创建纪念", icon: Plus },
         { href: "/community-pet-obituaries", label: "纪念社区", icon: Users },
+        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
       ]
     }
     
@@ -72,10 +77,32 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
         { href: "/human-memorial", label: "逝者纪念", icon: Heart },
         { href: "/create-person-obituary", label: "创建纪念", icon: Plus },
         { href: "/community-person-obituaries", label: "纪念社区", icon: Users },
+        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
       ]
     }
     
-    return []
+    if (isDigitalLifeSystem) {
+      return [
+        { href: "/digital-life-home", label: "数字生命", icon: Heart },
+        { href: "/digital-life", label: "创建数字生命", icon: Plus },
+      ]
+    }
+    
+    // 主页显示所有主要系统链接
+    if (isMainHomepage) {
+      return [
+        { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
+        { href: "/human-memorial", label: "逝者纪念", icon: Heart },
+        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
+      ]
+    }
+    
+    // 其他页面（如设置页、登录页等）显示完整导航
+    return [
+      { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
+      { href: "/human-memorial", label: "逝者纪念", icon: Heart },
+      { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
+    ]
   }
 
   const navItems = getNavItems()
@@ -96,15 +123,26 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
           {/* 导航项目 */}
           {navItems.length > 0 && (
             <div className="flex items-center space-x-6 text-sm">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-slate-600 hover:text-slate-900 transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isDigitalLife = (item as any).isDigitalLife
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "transition-colors relative",
+                      isDigitalLife 
+                        ? "text-purple-600 hover:text-purple-800 font-medium" 
+                        : "text-slate-600 hover:text-slate-900"
+                    )}
+                  >
+                    {item.label}
+                    {isDigitalLife && (
+                      <span className="absolute -top-1 -right-2 w-2 h-2 bg-purple-500 rounded-full"></span>
+                    )}
+                  </Link>
+                )
+              })}
               
               {/* 用户状态管理 */}
               <div className="w-px h-4 bg-slate-300"></div>
@@ -121,15 +159,15 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
                     <span>{user.name}</span>
                   </div>
                   <Link href="/settings">
-                    <button className="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <button className="w-10 h-10 sm:w-8 sm:h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors touch-manipulation">
                       <Settings className="w-4 h-4 text-slate-600" />
                     </button>
                   </Link>
                   <button 
                     onClick={logout}
-                    className="text-slate-500 hover:text-slate-700 transition-colors text-xs"
+                    className="text-slate-500 hover:text-slate-700 transition-colors text-xs min-w-[44px] min-h-[44px] sm:min-w-[auto] sm:min-h-[auto] flex items-center justify-center touch-manipulation"
                   >
-                    <LogOut className="w-3 h-3" />
+                    <LogOut className="w-4 h-4 sm:w-3 sm:h-3" />
                   </button>
                 </div>
               ) : (
@@ -180,23 +218,37 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
           <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-lg">
             <div className="px-4 py-4 space-y-4">
               {/* 导航项目 */}
-              {navItems.map((item) => {
+              {navItems.map((item, index) => {
                 const Icon = item.icon
+                const isDigitalLife = (item as any).isDigitalLife
+                const isLastItem = index === navItems.length - 1
+                
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors",
-                      pathname === item.href 
-                        ? "bg-slate-100 text-slate-900" 
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  <div key={item.href}>
+                    {/* 数字生命前的分隔线 */}
+                    {isDigitalLife && (
+                      <div className="border-t border-slate-200 my-2"></div>
                     )}
-                    onClick={closeMobileMenu}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors",
+                        pathname === item.href 
+                          ? "bg-slate-100 text-slate-900" 
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                        isDigitalLife && "bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 hover:from-purple-100 hover:to-blue-100"
+                      )}
+                      onClick={closeMobileMenu}
+                    >
+                      <Icon className={cn("w-5 h-5", isDigitalLife && "text-purple-600")} />
+                      <span className="font-medium">{item.label}</span>
+                      {isDigitalLife && (
+                        <span className="ml-auto text-xs px-2 py-1 bg-purple-100 text-purple-600 rounded-full">
+                          NEW
+                        </span>
+                      )}
+                    </Link>
+                  </div>
                 )
               })}
               

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Mail, Phone, MapPin, Clock, Send, Heart } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,7 +40,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentPage="contact" />
+      <ResponsiveNavigation currentPage="contact" />
 
       <main className="pt-32">
         {/* Hero区域 */}

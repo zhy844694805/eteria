@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Heart, Flame, User, Share2, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
@@ -284,7 +284,7 @@ export default function PetMemorialPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
-        <Navigation currentPage="community" />
+        <ResponsiveNavigation currentPage="community" />
         <MemorialDetailSkeleton />
         <Footer />
       </div>
@@ -294,7 +294,7 @@ export default function PetMemorialPage() {
   if (error || !memorial) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
-        <Navigation currentPage="community" />
+        <ResponsiveNavigation currentPage="community" />
         <div className="pt-32">
           <ErrorState 
             title={error ? "加载失败" : "纪念页不存在"}

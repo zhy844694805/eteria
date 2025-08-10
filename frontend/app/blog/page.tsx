@@ -1,7 +1,7 @@
 "use client"
 
 import { Heart, Calendar, User, ArrowRight } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import Link from "next/link"
 
@@ -74,7 +74,7 @@ const categories = ["全部", "悲伤指导", "纪念指南", "家庭支持", "�
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentPage="blog" />
+      <ResponsiveNavigation currentPage="blog" />
 
       <main className="pt-32">
         {/* Hero区域 */}

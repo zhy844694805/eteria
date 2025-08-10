@@ -2,7 +2,7 @@
 
 import { Star, Heart, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Navigation } from "@/components/navigation"
+import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
 import { MemorialSelection } from "@/components/memorial-selection"
 import Link from "next/link"
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-stone-50">
       {/* Header - 极简浮动导航 */}
-      <Navigation currentPage="home" />
+      <ResponsiveNavigation currentPage="home" />
 
       {/* Hero Section - 极简大气 */}
       <main className="pt-32">
