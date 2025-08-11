@@ -622,233 +622,330 @@ export default function PetMemorialPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
       <ResponsiveNavigation currentPage="community" />
 
-      {/* 极简头部 */}
-      <main className="max-w-4xl mx-auto px-6 py-24 pt-32">
-        <div className="text-center mb-24">
-          <div className="mx-auto mb-8">
-            <OptimizedAvatar
-              src={getMainImage()}
-              alt={memorial.subjectName}
-              size={96}
-              fallbackText={memorial.subjectName.substring(0, 2)}
-            />
-          </div>
-          <h1 className="text-6xl font-extralight text-gray-900 mb-6">{memorial.subjectName}</h1>
-          <div className="w-16 h-px bg-teal-400 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-600 font-light">
-            {formatDate(memorial.birthDate)} - {formatDate(memorial.deathDate)}
-          </p>
-          <p className="text-sm text-gray-500 font-light mt-2">
-            {translateBreed(memorial.breed)} • {memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'} • 陪伴了我们{getDisplayAge()}
-          </p>
-        </div>
+      {/* Hero Card */}
+      <div className="pt-24 pb-8">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            {/* Header Section */}
+            <div className="px-8 py-16">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-12">
+                  {/* Pet Photo */}
+                  <div className="flex-shrink-0">
+                    <OptimizedAvatar
+                      src={getMainImage()}
+                      alt={memorial.subjectName}
+                      size={128}
+                      fallbackText={memorial.subjectName.substring(0, 2)}
+                      className="w-32 h-32 rounded-xl object-cover shadow-sm"
+                    />
+                  </div>
+                  
+                  {/* Pet Info */}
+                  <div className="flex-1 text-center lg:text-left">
+                    <h1 className="text-4xl lg:text-5xl font-extralight text-slate-900 mb-6">{memorial.subjectName}</h1>
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-12 space-y-3 lg:space-y-0 mb-8">
+                      <p className="text-lg text-slate-600 font-light">
+                        {translateBreed(memorial.breed)} · {memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'}
+                      </p>
+                      <p className="text-lg text-slate-600 font-light">
+                        {translateColor(memorial.color)} · 陪伴了我们{getDisplayAge()}
+                      </p>
+                    </div>
+                    <p className="text-xl text-slate-700 mb-3 font-light">{formatDate(memorial.birthDate)} - {formatDate(memorial.deathDate)}</p>
+                    <p className="text-slate-400 font-light italic">"最温柔的守护者，最忠诚的朋友"</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        {/* 内容区 */}
-        <div className="space-y-24">
-          {/* 故事 */}
-          {memorial.story && (
-            <section>
-              <div className="max-w-2xl mx-auto text-center">
-                <h2 className="text-2xl font-light text-gray-900 mb-12">缅怀</h2>
-                <div className="prose prose-xl text-gray-700 leading-relaxed space-y-8">
-                  {memorial.story.split('\n\n').map((paragraph, index) => (
-                    <p key={index}>
-                      {paragraph}
-                    </p>
-                  ))}
-                  {memorial.memories && (
-                    <p className="text-gray-600">
-                      {memorial.memories}
+            {/* Quick Stats */}
+            <div className="px-8 py-8 bg-slate-50 border-t border-slate-100">
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-extralight text-slate-900 mb-1">{memorial.candleCount}</div>
+                    <div className="text-sm text-slate-500 font-light">点亮思念</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-extralight text-slate-900 mb-1">{memorial.messageCount}</div>
+                    <div className="text-sm text-slate-500 font-light">爱的寄语</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-extralight text-slate-900 mb-1">{memorial.viewCount}</div>
+                    <div className="text-sm text-slate-500 font-light">温暖访问</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-extralight text-slate-900 mb-1">{memorial.images.length}</div>
+                    <div className="text-sm text-slate-500 font-light">珍贵照片</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-6xl mx-auto px-6">
+
+        {/* Content Cards Grid */}
+        <div className="pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Story Card */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-10">
+                <div className="mb-8">
+                  <h2 className="text-2xl font-light text-slate-900">{memorial.subjectName}的故事</h2>
+                </div>
+                
+                <div className="prose prose-slate max-w-none">
+                  {memorial.story && (
+                    <div className="space-y-6">
+                      {memorial.story.split('\n\n').map((paragraph, index) => (
+                        <p key={index} className="text-slate-700 leading-relaxed font-light">
+                          {paragraph}
+                        </p>
+                      ))}
+                      {memorial.memories && (
+                        <p className="text-slate-600 leading-relaxed font-light">
+                          {memorial.memories}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {!memorial.story && (
+                    <p className="text-slate-700 leading-relaxed font-light">
+                      这里会显示宠物的生活故事...
                     </p>
                   )}
                 </div>
               </div>
-            </section>
-          )}
+            </div>
 
-          {/* 照片 */}
-          {memorial.images.length > 0 && (
-            <section>
-              <div className="text-center mb-12">
-                <h2 className="text-2xl font-light text-gray-900">时光</h2>
+            {/* Info Cards Column */}
+            <div className="space-y-8">
+              {/* Personality Card */}
+              {memorial.personalityTraits && memorial.personalityTraits.trim() && (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                  <div className="mb-6">
+                    <h3 className="text-lg font-light text-slate-900">性格特点</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {translatePersonalityTraits(memorial.personalityTraits).split('、').map((trait, index) => (
+                      <div key={index} className="text-slate-700 font-light">{trait}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Favorite Things Card */}
+              {memorial.favoriteThings && memorial.favoriteThings.trim() && (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                  <div className="mb-6">
+                    <h3 className="text-lg font-light text-slate-900">最爱的事情</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {translateFavoriteActivities(memorial.favoriteThings).split('、').map((thing, index) => (
+                      <span key={index} className="px-4 py-2 bg-slate-50 text-slate-700 text-sm rounded-full font-light">
+                        {thing}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Basic Info Card */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                <div className="mb-6">
+                  <h3 className="text-lg font-light text-slate-900">基本信息</h3>
+                </div>
+                <div className="space-y-4 text-sm">
+                  {memorial.birthDate && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-light">出生日期</span>
+                      <span className="text-slate-900 font-light">{formatDate(memorial.birthDate)}</span>
+                    </div>
+                  )}
+                  {memorial.deathDate && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-light">离别日期</span>
+                      <span className="text-slate-900 font-light">{formatDate(memorial.deathDate)}</span>
+                    </div>
+                  )}
+                  {memorial.breed && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-light">品种</span>
+                      <span className="text-slate-900 font-light">{translateBreed(memorial.breed)}</span>
+                    </div>
+                  )}
+                  {memorial.gender && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-light">性别</span>
+                      <span className="text-slate-900 font-light">{memorial.gender === 'male' ? '男孩' : '女孩'}</span>
+                    </div>
+                  )}
+                  {memorial.color && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-light">毛色</span>
+                      <span className="text-slate-900 font-light">{translateColor(memorial.color)}</span>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Photo Gallery Card */}
+        {memorial.images.length > 0 && (
+          <div className="pb-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-10">
+              <div className="mb-10">
+                <h2 className="text-2xl font-light text-slate-900">珍贵时光</h2>
+              </div>
+              
               <MemorialImageGrid
                 images={memorial.images}
                 memorialName={memorial.subjectName}
-                maxImages={6}
+                maxImages={8}
               />
-            </section>
-          )}
-
-          {/* 统计 */}
-          <section>
-            <div className="text-center">
-              <div className="flex justify-center space-x-16">
-                <div>
-                  <div className="text-4xl font-light text-gray-900">{memorial.candleCount}</div>
-                  <div className="text-sm text-gray-500 mt-2">思念</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-light text-gray-900">{memorial.messageCount}</div>
-                  <div className="text-sm text-gray-500 mt-2">寄语</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-light text-gray-900">{memorial.viewCount}</div>
-                  <div className="text-sm text-gray-500 mt-2">访问</div>
-                </div>
-              </div>
             </div>
-          </section>
+          </div>
+        )}
 
-          {/* 详细信息 */}
-          <section>
-            <div className="text-center mb-12">
-              <h2 className="text-2xl font-light text-gray-900">信息</h2>
-            </div>
-            <div className="max-w-md mx-auto space-y-6">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">出生日期</span>
-                <span className="text-gray-900 font-light">{formatDate(memorial.birthDate)}</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">离别日期</span>
-                <span className="text-gray-900 font-light">{formatDate(memorial.deathDate)}</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-500 font-light">毛色</span>
-                <span className="text-gray-900 font-light">{translateColor(memorial.color)}</span>
-              </div>
-              {memorial.personalityTraits && (
-                <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-500 font-light">性格</span>
-                  <span className="text-gray-900 font-light">{translatePersonalityTraits(memorial.personalityTraits)}</span>
-                </div>
-              )}
-              {memorial.favoriteThings && (
-                <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-500 font-light">最爱</span>
-                  <span className="text-gray-900 font-light">{translateFavoriteActivities(memorial.favoriteThings)}</span>
-                </div>
-              )}
-            </div>
-          </section>
 
-          {/* 操作 */}
-          <section>
-            <div className="text-center space-y-6">
-              <button 
-                onClick={handleLightCandle}
-                disabled={!canLightCandle}
-                className={`px-12 py-4 rounded-full font-light text-lg transition-colors ${
-                  canLightCandle 
-                    ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {canLightCandle ? '点亮思念' : '今日已点亮'}
-              </button>
-              <div className="flex justify-center gap-6">
+        {/* Interactive Card */}
+        <div className="pb-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-slate-900 rounded-2xl shadow-sm text-white p-12">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-light mb-6">为{memorial.subjectName}点亮思念</h3>
+                <p className="text-slate-300 font-light">您的每一份思念都是对{memorial.subjectName}最好的纪念</p>
+              </div>
+              
+              <div className="max-w-lg mx-auto space-y-8">
                 <button 
-                  onClick={() => {
-                    const messageSection = document.getElementById('message-section');
-                    messageSection?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="text-gray-600 hover:text-gray-900 transition-colors font-light"
+                  onClick={handleLightCandle}
+                  disabled={!canLightCandle}
+                  className={`w-full py-4 px-8 rounded-lg font-light transition-colors ${
+                    canLightCandle 
+                      ? 'bg-white text-slate-900 hover:bg-slate-50' 
+                      : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                  }`}
                 >
-                  写下寄语
+                  {canLightCandle ? '点亮思念之光' : '今日已点亮思念'}
                 </button>
+                
+                <div className="space-y-6">
+                  <Textarea
+                    placeholder={`分享您与${memorial.subjectName}的美好回忆，或留下温暖的寄语...`}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full h-32 p-4 bg-slate-800 border border-slate-700 rounded-lg resize-none focus:outline-none focus:border-slate-600 text-white placeholder-slate-400 font-light"
+                    rows={4}
+                  />
+                  <button 
+                    onClick={handleSendMessage}
+                    disabled={!message.trim()}
+                    className="w-full bg-slate-700 text-white border border-slate-600 py-3 px-8 rounded-lg font-light hover:bg-slate-600 transition-colors disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed"
+                  >
+                    寄出爱的留言
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex justify-center gap-6 mt-8 pt-8 border-t border-slate-700">
                 <button 
                   onClick={() => setShowShareModal(true)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors font-light flex items-center gap-1"
+                  className="text-slate-300 hover:text-white transition-colors font-light flex items-center gap-1"
                 >
                   <Share2 className="w-4 h-4" />
                   分享纪念
                 </button>
                 <button 
                   onClick={() => setShowExportModal(true)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors font-light flex items-center gap-1"
+                  className="text-slate-300 hover:text-white transition-colors font-light flex items-center gap-1"
                 >
                   <Download className="w-4 h-4" />
                   导出数据
                 </button>
               </div>
             </div>
-          </section>
+          </div>
+        </div>
 
-          {/* 爱的寄语 */}
-          <section id="message-section">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl font-light text-gray-900">寄语</h2>
-              <p className="text-sm text-gray-500 mt-2">{memorial.messageCount}份思念</p>
-            </div>
-            
-            {/* 留言输入框 */}
-            <div className="max-w-2xl mx-auto mb-16">
-              <Textarea
-                placeholder={user ? `以 ${user.name} 的身份分享一段回忆或留下爱的寄语...` : "分享一段回忆或留下爱的寄语...（将以匿名访客身份发表）"}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="mb-4 border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none resize-none"
-                rows={4}
-              />
-              <div className="text-center">
-                <button 
-                  onClick={handleSendMessage}
-                  disabled={!message.trim()}
-                  className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-2 disabled:bg-gray-300 transition-colors font-light"
-                >
-                  寄出思念
-                </button>
+        {/* Messages Card */}
+        <div className="pb-8" id="message-section">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-10">
+              <div className="mb-10">
+                <h2 className="text-2xl font-light text-slate-900 mb-2">爱的寄语</h2>
+                <p className="text-sm text-slate-500 font-light">{memorial.messageCount} 条温暖的回忆</p>
+              </div>
+              
+              <div className="space-y-8">
+                {memorial.messages.map((msg) => (
+                  <div key={msg.id} className="pl-6 py-4 border-l border-slate-200">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-slate-700 text-sm font-light">
+                          {(msg.user?.name || msg.authorName).substring(0, 1).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <h4 className="font-light text-slate-900">{msg.user?.name || msg.authorName}</h4>
+                          <span className="text-xs text-slate-400 font-light">{formatDate(msg.createdAt)}</span>
+                        </div>
+                        <p className="text-slate-700 text-sm leading-relaxed font-light">
+                          {msg.content}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {memorial.messages.length === 0 && (
+                  <div className="text-center text-slate-500 py-16">
+                    <p className="font-light text-lg mb-2">还没有人为 {memorial.subjectName} 留下思念</p>
+                    <p className="text-sm">成为第一个分享美好回忆的人吧</p>
+                  </div>
+                )}
+                
+                {memorial.messages.length > 3 && (
+                  <div className="text-center pt-8">
+                    <button className="text-slate-500 hover:text-slate-900 text-sm font-light transition-colors">
+                      查看更多留言 ({memorial.messageCount - 3} 条) →
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-            
-            {/* 留言列表 */}
-            <div className="max-w-2xl mx-auto space-y-8">
-              {memorial.messages.map((msg) => (
-                <div key={msg.id} className="text-center border-b border-gray-100 pb-8">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-gray-600 font-light">
-                      {(msg.user?.name || msg.authorName).substring(0, 1).toUpperCase()}
-                    </span>
-                  </div>
-                  <h4 className="font-light text-gray-900 mb-2">{msg.user?.name || msg.authorName}</h4>
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {msg.content}
-                  </p>
-                  <time className="text-sm text-gray-500 font-light">{formatDate(msg.createdAt)}</time>
-                </div>
-              ))}
-              {memorial.messages.length === 0 && (
-                <div className="text-center text-gray-500 py-16">
-                  <p className="font-light text-lg mb-2">还没有人为 {memorial.subjectName} 留下思念</p>
-                  <p className="text-sm">成为第一个分享美好回忆的人吧</p>
-                </div>
-              )}
-            </div>
-          </section>
+          </div>
+        </div>
 
-          {/* 创建者信息 */}
-          <section>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-gray-600 font-medium">
-                  {memorial.author.name.substring(0, 2).toUpperCase()}
+        {/* Creator Card */}
+        <div className="pb-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
+              <div className="w-20 h-20 bg-slate-100 rounded-full mx-auto mb-8 flex items-center justify-center">
+                <span className="text-slate-700 text-xl font-light">
+                  {memorial.author.name.substring(0, 1).toUpperCase()}
                 </span>
               </div>
-              <h4 className="font-light text-gray-900 mb-2">{memorial.author.name}</h4>
-              <p className="text-sm text-gray-500 font-light">
+              <h4 className="text-2xl font-extralight text-slate-900 mb-3">{memorial.author.name}</h4>
+              <p className="text-slate-500 mb-8 font-light">
                 {memorial.creatorRelation ? `${memorial.subjectName}的${memorial.creatorRelation}` : `${memorial.subjectName}的守护者`}
               </p>
-              <div className="mt-6 max-w-md mx-auto">
-                <p className="text-sm text-gray-600 font-light italic">
-                  "感谢您为{memorial.subjectName}创建了这个美好的纪念"
-                </p>
-              </div>
+              <div className="w-12 h-px bg-slate-200 mx-auto mb-8"></div>
+              <p className="text-sm text-slate-600 leading-relaxed italic max-w-md mx-auto font-light">
+                "感谢每一个人为{memorial.subjectName}留下的美好回忆和温暖寄语。{memorial.subjectName}生前最大的快乐就是给大家带来快乐，能够让它的故事继续传递爱与温暖，我想它一定很开心。"
+              </p>
             </div>
-          </section>
+          </div>
         </div>
       </main>
 

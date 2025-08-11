@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪念时光线 - 小白的永念页面</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-40">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-medium text-sm">永</span>
+                </div>
+                <span class="text-lg font-medium">永念</span>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <a href="#" class="text-slate-600 hover:text-slate-900">宠物纪念</a>
+                <a href="#" class="text-slate-600 hover:text-slate-900">社区</a>
+                <button class="bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-slate-800">分享</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="pt-24 pb-16 bg-gradient-to-b from-white to-slate-50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <!-- Pet Avatar -->
+            <div class="relative inline-block mb-8">
+                <img src="/api/placeholder/150/150" alt="小白" 
+                     class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center border-4 border-white">
+                    <span class="text-white text-sm">🐕</span>
+                </div>
+            </div>
+            
+            <!-- Pet Name & Basic Info -->
+            <h1 class="text-5xl font-light text-slate-900 mb-4">小白</h1>
+            <div class="w-20 h-px bg-teal-400 mx-auto mb-6"></div>
+            <p class="text-xl text-slate-600 mb-2">金毛寻回犬 · 女孩</p>
+            <p class="text-lg text-slate-500">2018年3月15日 - 2024年1月8日</p>
+            <p class="text-base text-slate-400 mt-2">陪伴了我们5年10个月</p>
+        </div>
+    </div>
+
+    <!-- Timeline Content -->
+    <div class="max-w-5xl mx-auto px-6 pb-20">
+        <!-- Life Timeline -->
+        <div class="relative">
+            <!-- Timeline Line -->
+            <div class="absolute left-1/2 transform -translate-x-0.5 w-px bg-slate-200 h-full"></div>
+            
+            <!-- Timeline Events -->
+            <div class="space-y-16">
+                
+                <!-- Birth Event -->
+                <div class="relative flex items-start">
+                    <div class="flex-1 pr-8 text-right">
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 inline-block max-w-lg">
+                            <div class="flex items-center justify-end space-x-2 mb-3">
+                                <span class="text-sm text-teal-600 font-medium">新生命诞生</span>
+                                <div class="w-2 h-2 bg-teal-500 rounded-full"></div>
+                            </div>
+                            <h3 class="text-lg font-medium text-slate-900 mb-2">小白来到这个世界</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                一个阳光明媚的春日，小白睁开了眼睛。毛茸茸的金黄色毛发，黑珠般的眼睛，从那一刻起就注定要成为我们家最珍贵的成员。
+                            </p>
+                            <time class="text-xs text-slate-400 mt-3 block">2018年3月15日</time>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Node -->
+                    <div class="relative z-10">
+                        <div class="w-4 h-4 bg-teal-500 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    
+                    <!-- Photo -->
+                    <div class="flex-1 pl-8">
+                        <img src="/api/placeholder/300/200" alt="小白幼崽时期" 
+                             class="rounded-xl shadow-sm border border-slate-100 max-w-xs">
+                    </div>
+                </div>
+
+                <!-- First Home Event -->
+                <div class="relative flex items-start flex-row-reverse">
+                    <div class="flex-1 pl-8 text-left">
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 inline-block max-w-lg">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-blue-600 font-medium">温暖的家</span>
+                            </div>
+                            <h3 class="text-lg font-medium text-slate-900 mb-2">第一次回家</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                小白第一次踏进我们家的门，小心翼翼地探索着每一个角落。那双好奇的眼神和摇摆的小尾巴，瞬间俘获了全家人的心。
+                            </p>
+                            <time class="text-xs text-slate-400 mt-3 block">2018年5月20日</time>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Node -->
+                    <div class="relative z-10">
+                        <div class="w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    
+                    <!-- Photo -->
+                    <div class="flex-1 pr-8 flex justify-end">
+                        <img src="/api/placeholder/300/200" alt="小白第一次回家" 
+                             class="rounded-xl shadow-sm border border-slate-100 max-w-xs">
+                    </div>
+                </div>
+
+                <!-- Happy Memories Event -->
+                <div class="relative flex items-start">
+                    <div class="flex-1 pr-8 text-right">
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 inline-block max-w-lg">
+                            <div class="flex items-center justify-end space-x-2 mb-3">
+                                <span class="text-sm text-yellow-600 font-medium">快乐时光</span>
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            </div>
+                            <h3 class="text-lg font-medium text-slate-900 mb-2">最爱的游戏时间</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                每天傍晚，小白最期待的就是在公园里追逐飞盘。那种专注的神情，飞跃的身姿，总是引来路人的称赞。她最喜欢捡球游戏，永远不会感到厌倦。
+                            </p>
+                            <div class="flex justify-end space-x-1 mt-3">
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">捡球游戏</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">散步</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">游泳</span>
+                            </div>
+                            <time class="text-xs text-slate-400 mt-3 block">2019年 - 2023年</time>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Node -->
+                    <div class="relative z-10">
+                        <div class="w-4 h-4 bg-yellow-500 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    
+                    <!-- Photo Grid -->
+                    <div class="flex-1 pl-8">
+                        <div class="grid grid-cols-2 gap-2 max-w-xs">
+                            <img src="/api/placeholder/150/150" alt="小白玩飞盘" 
+                                 class="rounded-lg shadow-sm border border-slate-100">
+                            <img src="/api/placeholder/150/150" alt="小白游泳" 
+                                 class="rounded-lg shadow-sm border border-slate-100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personality Event -->
+                <div class="relative flex items-start flex-row-reverse">
+                    <div class="flex-1 pl-8 text-left">
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 inline-block max-w-lg">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <span class="text-sm text-purple-600 font-medium">性格特点</span>
+                            </div>
+                            <h3 class="text-lg font-medium text-slate-900 mb-2">最温柔的守护者</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-3">
+                                小白有着金毛犬特有的温和性格，总是对每个人都充满善意。她聪明、忠诚，是家里最好的倾听者，也是孩子们最信任的伙伴。
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">温柔安静</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">忠诚可靠</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">友好亲人</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">精力充沛</span>
+                            </div>
+                            <time class="text-xs text-slate-400 mt-3 block">生命中的每一天</time>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Node -->
+                    <div class="relative z-10">
+                        <div class="w-4 h-4 bg-purple-500 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    
+                    <!-- Photo -->
+                    <div class="flex-1 pr-8 flex justify-end">
+                        <img src="/api/placeholder/300/200" alt="小白的温柔时刻" 
+                             class="rounded-xl shadow-sm border border-slate-100 max-w-xs">
+                    </div>
+                </div>
+
+                <!-- Farewell Event -->
+                <div class="relative flex items-start">
+                    <div class="flex-1 pr-8 text-right">
+                        <div class="bg-slate-50 rounded-xl p-6 shadow-sm border border-slate-200 inline-block max-w-lg">
+                            <div class="flex items-center justify-end space-x-2 mb-3">
+                                <span class="text-sm text-slate-600 font-medium">永别</span>
+                                <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
+                            </div>
+                            <h3 class="text-lg font-medium text-slate-900 mb-2">安详地离开</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                在一个宁静的冬日清晨，小白在睡梦中安详地离开了我们。她的脸上带着平静的微笑，仿佛在告诉我们：不要为她难过，她过得很快乐。
+                            </p>
+                            <time class="text-xs text-slate-400 mt-3 block">2024年1月8日</time>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline Node -->
+                    <div class="relative z-10">
+                        <div class="w-4 h-4 bg-slate-400 rounded-full border-4 border-white shadow-sm"></div>
+                    </div>
+                    
+                    <!-- Memorial Photo -->
+                    <div class="flex-1 pl-8">
+                        <div class="relative">
+                            <img src="/api/placeholder/300/200" alt="小白的最后一张照片" 
+                                 class="rounded-xl shadow-sm border border-slate-100 max-w-xs opacity-75">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Memorial Stats -->
+    <div class="bg-white border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl font-light text-slate-900 mb-2">爱的见证</h2>
+                <p class="text-slate-500">小白的记忆被温暖地保存着</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="space-y-2">
+                    <div class="text-3xl font-light text-slate-900">247</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">点亮的思念</div>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-light text-slate-900">89</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">爱的寄语</div>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-light text-slate-900">1,234</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide">温暖访问</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Section -->
+    <div class="bg-slate-50 py-16">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+            <h3 class="text-xl font-light text-slate-900 mb-8">为小白点亮一盏思念之灯</h3>
+            
+            <div class="space-y-6">
+                <button class="w-full bg-slate-900 text-white py-4 px-8 rounded-full font-light hover:bg-slate-800 transition-colors">
+                    点亮思念 ✨
+                </button>
+                
+                <div class="space-y-4">
+                    <textarea 
+                        placeholder="分享您与小白的美好回忆，或留下温暖的寄语..."
+                        class="w-full h-32 p-4 border border-slate-200 rounded-xl resize-none focus:outline-none focus:border-slate-400"
+                    ></textarea>
+                    <button class="w-full bg-white text-slate-900 border border-slate-200 py-3 px-8 rounded-full font-light hover:bg-slate-50 transition-colors">
+                        寄出思念
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Creator Info -->
+    <div class="bg-white py-12 border-t border-slate-200">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+            <div class="w-16 h-16 bg-slate-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span class="text-slate-600 text-lg font-medium">张</span>
+            </div>
+            <h4 class="text-lg font-light text-slate-900 mb-2">张小明</h4>
+            <p class="text-sm text-slate-500">小白的守护者</p>
+        </div>
+    </div>
+
+</body>
+</html>
