@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth-db'
+// import { verifyToken } from '@/lib/auth-db' // verifyToken不存在
 
 export async function GET(
   request: NextRequest,
@@ -23,13 +23,14 @@ export async function GET(
     
     console.log('Debug: 查询结果:', digitalLife)
     
-    // 获取用户信息
-    const user = await verifyToken(request).catch((error) => {
-      console.log('Debug: Token验证失败:', error.message)
-      return null
-    })
+    // 获取用户信息（verifyToken函数不存在，跳过）
+    // const user = await verifyToken(request).catch((error) => {
+    //   console.log('Debug: Token验证失败:', error.message)
+    //   return null
+    // })
+    const user = null
     
-    console.log('Debug: 用户信息:', user?.id, user?.name)
+    console.log('Debug: 用户信息跳过验证')
     
     return NextResponse.json({
       success: true,

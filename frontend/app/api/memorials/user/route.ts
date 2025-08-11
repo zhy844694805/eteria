@@ -52,14 +52,14 @@ export async function GET(request: NextRequest) {
         age: true,
         createdAt: true,
         images: {
-          where: {
-            isMain: true
-          },
           select: {
             url: true,
-            thumbnailUrl: true
+            thumbnailUrl: true,
+            isMain: true
           },
-          take: 1
+          orderBy: {
+            isMain: 'desc'
+          }
         }
       },
       orderBy: {

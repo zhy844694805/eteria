@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
-import { Heart, Flame, MessageCircle, MessageCircleHeart, Share2, User, Loader2, Download, Volume2, Play, Pause, Mic, ArrowRight } from "lucide-react"
+import { Heart, Flame, MessageCircle, MessageCircleHeart, Share2, User, Loader2, Download, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ResponsiveNavigation } from "@/components/responsive-navigation"
@@ -14,7 +14,6 @@ import { ShareModal } from "@/components/ui/share-modal"
 import { ExportModal } from "@/components/ui/export-modal"
 import { OptimizedAvatar, MemorialImageGrid } from "@/components/ui/optimized-image"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Memorial {
   id: string
@@ -76,17 +75,6 @@ interface Memorial {
   }>
 }
 
-interface VoiceModel {
-  id: string
-  name: string
-  description?: string
-  status: 'TRAINING' | 'READY' | 'FAILED' | 'INACTIVE'
-  quality?: number
-  usageCount: number
-  creator: {
-    name: string
-  }
-}
 
 export default function PersonMemorialPage() {
   const params = useParams()
@@ -100,14 +88,6 @@ export default function PersonMemorialPage() {
   const [showShareModal, setShowShareModal] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
   
-  // 语音合成相关状态
-  const [voiceModels, setVoiceModels] = useState<VoiceModel[]>([])
-  const [selectedVoiceModel, setSelectedVoiceModel] = useState<string>('')
-  const [synthesisText, setSynthesisText] = useState('')
-  const [isSynthesizing, setIsSynthesizing] = useState(false)
-  const [synthesizedAudio, setSynthesizedAudio] = useState<string | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [showVoiceSynthesis, setShowVoiceSynthesis] = useState(false)
   
   // 数字生命相关状态
   const [digitalLife, setDigitalLife] = useState<any>(null)
@@ -142,25 +122,6 @@ export default function PersonMemorialPage() {
     }
   }
 
-  // 获取纪念页面的语音模型
-  const fetchVoiceModels = async (memorialId: string) => {
-    try {
-      const response = await fetch(`/api/voice-models?memorialId=${memorialId}&publicOnly=true`)
-      if (response.ok) {
-        const data = await response.json()
-        setVoiceModels(data.voiceModels)
-        
-        // 如果有可用的语音模型，显示语音合成功能
-        if (data.voiceModels.length > 0) {
-          setShowVoiceSynthesis(true)
-          // 默认选择第一个模型
-          setSelectedVoiceModel(data.voiceModels[0].id)
-        }
-      }
-    } catch (error) {
-      console.error('获取语音模型失败:', error)
-    }
-  }
 
   // 获取纪念页面的数字生命
   const fetchDigitalLife = async (memorialId: string) => {
@@ -178,84 +139,8 @@ export default function PersonMemorialPage() {
     }
   }
 
-  // 执行语音合成
-  const handleVoiceSynthesis = async () => {
-    if (!synthesisText.trim()) {
-      toast.error('请输入要合成的文字')
-      return
-    }
-    
-    if (!selectedVoiceModel) {
-      toast.error('请选择语音模型')
-      return
-    }
-    
-    setIsSynthesizing(true)
-    
-    try {
-      const response = await fetch('/api/voice-synthesis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: synthesisText.trim(),
-          voiceModelId: selectedVoiceModel
-        })
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || '语音合成失败')
-      }
-      
-      const result = await response.json()
-      
-      if (result.success && result.audioUrl) {
-        setSynthesizedAudio(result.audioUrl)
-        toast.success('语音合成成功！')
-      } else {
-        throw new Error('语音合成返回了无效的结果')
-      }
-      
-    } catch (error: any) {
-      console.error('语音合成失败:', error)
-      toast.error(error.message || '语音合成失败，请稍后重试')
-    } finally {
-      setIsSynthesizing(false)
-    }
-  }
 
-  // 播放/暂停合成的音频
-  const toggleAudio = () => {
-    if (!synthesizedAudio) return
-    
-    const audio = new Audio(synthesizedAudio)
-    
-    if (isPlaying) {
-      audio.pause()
-      setIsPlaying(false)
-    } else {
-      audio.play()
-      setIsPlaying(true)
-      
-      audio.onended = () => {
-        setIsPlaying(false)
-      }
-    }
-  }
 
-  // 下载合成的音频
-  const downloadAudio = () => {
-    if (!synthesizedAudio) return
-    
-    const link = document.createElement('a')
-    link.href = synthesizedAudio
-    link.download = `${memorial?.subjectName}_语音合成_${Date.now()}.wav`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
 
   // 跳转到数字生命聊天页面
   const handleDigitalLifeChat = () => {
@@ -298,7 +183,6 @@ export default function PersonMemorialPage() {
         if (!abortController.signal.aborted) {
           setMemorial(data.memorial)
           await checkCandleStatus(data.memorial.id)
-          await fetchVoiceModels(data.memorial.id)
           await fetchDigitalLife(data.memorial.id)
         }
       } catch (error: any) {
@@ -629,136 +513,6 @@ export default function PersonMemorialPage() {
             </div>
           </section>
 
-          {/* 语音合成功能 */}
-          {showVoiceSynthesis && voiceModels.length > 0 && (
-            <section>
-              <div className="text-center mb-12">
-                <h2 className="text-2xl font-light text-gray-900">用TA的声音说话</h2>
-                <p className="text-sm text-gray-500 mt-2">使用AI重现的声音表达想说的话</p>
-              </div>
-              
-              <div className="max-w-2xl mx-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Volume2 className="w-5 h-5 text-purple-600" />
-                      语音合成
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* 语音模型选择 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        选择语音模型
-                      </label>
-                      <Select value={selectedVoiceModel} onValueChange={setSelectedVoiceModel}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="选择语音模型" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {voiceModels.map((model) => (
-                            <SelectItem key={model.id} value={model.id}>
-                              <div className="flex items-center justify-between w-full">
-                                <span>{model.name}</span>
-                                <div className="flex items-center gap-2 text-xs text-gray-500">
-                                  {model.quality && (
-                                    <span>质量: {Math.round(model.quality * 100)}%</span>
-                                  )}
-                                  <span>by {model.creator.name}</span>
-                                </div>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* 文本输入 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        输入要合成的文字
-                      </label>
-                      <Textarea
-                        value={synthesisText}
-                        onChange={(e) => setSynthesisText(e.target.value)}
-                        placeholder={`用${memorial.subjectName}的声音说一句话...`}
-                        className="min-h-24 resize-none"
-                        maxLength={200}
-                      />
-                      <div className="text-xs text-gray-500 mt-1 text-right">
-                        {synthesisText.length}/200
-                      </div>
-                    </div>
-
-                    {/* 合成按钮 */}
-                    <div className="text-center">
-                      <Button
-                        onClick={handleVoiceSynthesis}
-                        disabled={isSynthesizing || !synthesisText.trim() || !selectedVoiceModel}
-                        className="bg-purple-600 hover:bg-purple-700"
-                      >
-                        {isSynthesizing ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            合成中...
-                          </>
-                        ) : (
-                          <>
-                            <Mic className="w-4 h-4 mr-2" />
-                            生成语音
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    {/* 合成结果 */}
-                    {synthesizedAudio && (
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={toggleAudio}
-                            >
-                              {isPlaying ? (
-                                <>
-                                  <Pause className="w-4 h-4 mr-1" />
-                                  暂停
-                                </>
-                              ) : (
-                                <>
-                                  <Play className="w-4 h-4 mr-1" />
-                                  播放
-                                </>
-                              )}
-                            </Button>
-                            <span className="text-sm text-gray-600">
-                              "{synthesisText}"
-                            </span>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={downloadAudio}
-                          >
-                            <Download className="w-4 h-4 mr-1" />
-                            下载
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="text-xs text-gray-500 space-y-1">
-                      <p>• 此功能使用AI技术重现逝者声音，仅供纪念使用</p>
-                      <p>• 语音模型由纪念页创建者提供并授权公开使用</p>
-                      <p>• 请合理使用，表达对逝者的敬意和怀念</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
-          )}
 
           {/* 数字生命跳转区域 */}
           {showDigitalLife && digitalLife && (
@@ -793,7 +547,7 @@ export default function PersonMemorialPage() {
                   
                   <div className="mt-6 pt-6 border-t border-purple-200">
                     <p className="text-xs text-gray-500 font-light">
-                      基于真实记忆与语言风格重现 • 支持语音合成 • 情感纽带永不断线
+                      基于真实记忆与语言风格重现 • 智能AI对话 • 情感纽带永不断线
                     </p>
                   </div>
                 </div>

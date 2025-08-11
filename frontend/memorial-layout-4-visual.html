@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪念页面方案4 - 视觉故事布局</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .section-spacing { margin: 4rem 0; }
+        @media (max-width: 768px) {
+            .parallax { background-attachment: scroll; }
+        }
+        .image-overlay {
+            background: linear-gradient(45deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- 导航条 -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-gray-200 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100" alt="小花" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="font-medium text-gray-800">小花</h1>
+                        <p class="text-sm text-gray-500">2018.03 - 2024.01</p>
+                    </div>
+                </div>
+                
+                <!-- 快速导航 -->
+                <div class="hidden md:flex items-center gap-6 text-sm">
+                    <a href="#story" class="text-gray-600 hover:text-gray-900 transition-colors">她的故事</a>
+                    <a href="#memories" class="text-gray-600 hover:text-gray-900 transition-colors">美好回忆</a>
+                    <a href="#gallery" class="text-gray-600 hover:text-gray-900 transition-colors">照片集</a>
+                    <a href="#messages" class="text-gray-600 hover:text-gray-900 transition-colors">留言</a>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-all">
+                        <i class="fas fa-candle-holder"></i> 点蜡烛
+                    </button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-all">
+                        <i class="fas fa-heart"></i> 关爱
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主视觉区域 -->
+    <section class="relative h-screen parallax" style="background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920')">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60"></div>
+        <div class="absolute inset-0 flex items-end">
+            <div class="max-w-6xl mx-auto px-6 pb-20 text-white">
+                <div class="max-w-3xl">
+                    <h1 class="text-6xl md:text-8xl font-thin mb-6 leading-none">小花</h1>
+                    <p class="text-2xl md:text-3xl font-light mb-8 text-white/90">
+                        我们心中永远的小天使，用她的一生教会了我们什么是无条件的爱
+                    </p>
+                    <div class="flex flex-wrap gap-4 text-lg">
+                        <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">🐾 金毛寻回犬</span>
+                        <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">💝 6年陪伴</span>
+                        <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">🏠 北京·朝阳</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 故事开始 -->
+    <section id="story" class="section-spacing">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-8 leading-tight">
+                        这是小花的故事
+                    </h2>
+                    <div class="space-y-6 text-lg text-gray-700 leading-relaxed">
+                        <p>
+                            2018年的春天，一个毛茸茸的金色小球来到了我们家。那时候的小花只有两个月大，眼睛黑亮黑亮的，总是好奇地看着这个新世界。
+                        </p>
+                        <p>
+                            从那一刻起，她就成为了我们家庭中最重要的成员。她用她的纯真和快乐，填满了我们生活中的每一个角落。
+                        </p>
+                        <p>
+                            在接下来的6年里，小花陪伴我们度过了无数个春夏秋冬，见证了我们的喜怒哀乐，用她独有的方式给予我们最温暖的陪伴。
+                        </p>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=600" alt="小时候的小花" class="w-full h-96 object-cover">
+                        <div class="absolute inset-0 image-overlay"></div>
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-100">
+                        <p class="text-sm text-gray-600">2018年3月</p>
+                        <p class="font-medium text-gray-800">初来乍到</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 大图片故事1 -->
+    <section class="relative parallax h-screen" style="background-image: url('https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=1920')">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-6xl mx-auto px-6 text-white">
+                <div class="max-w-3xl">
+                    <span class="text-lg text-white/80 mb-4 block">Chapter 01 · 快乐成长</span>
+                    <h2 class="text-5xl md:text-6xl font-thin mb-8 leading-tight">
+                        运动健将的诞生
+                    </h2>
+                    <p class="text-xl md:text-2xl font-light mb-8 text-white/90 leading-relaxed">
+                        小花很快就展现出了她的运动天赋。无论是在公园里奔跑，还是在湖边游泳，她总是充满活力，成为了其他狗狗羡慕的对象。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
+                            <div class="text-2xl font-light mb-1">5km</div>
+                            <div class="text-sm text-white/80">每日运动距离</div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
+                            <div class="text-2xl font-light mb-1">15+</div>
+                            <div class="text-sm text-white/80">狗狗朋友</div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
+                            <div class="text-2xl font-light mb-1">∞</div>
+                            <div class="text-sm text-white/80">快乐时光</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能展示 -->
+    <section class="section-spacing bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-6">她是个聪明的学生</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    小花学会了很多技能，她总是能准确理解我们的指令，用她的聪明才智给我们带来惊喜
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 技能卡片 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-hand-paper text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-2 text-center">基础指令</h3>
+                    <p class="text-gray-600 text-center text-sm mb-4">坐下、握手、趴下、等待</p>
+                    <div class="bg-blue-50 rounded-lg p-3 text-center">
+                        <span class="text-blue-700 font-medium">100% 掌握</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-dumbbell text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-2 text-center">运动技能</h3>
+                    <p class="text-gray-600 text-center text-sm mb-4">游泳、跳跃、接飞盘、跨栏</p>
+                    <div class="bg-green-50 rounded-lg p-3 text-center">
+                        <span class="text-green-700 font-medium">运动达人</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-home text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-2 text-center">生活帮手</h3>
+                    <p class="text-gray-600 text-center text-sm mb-4">拿拖鞋、开门、取报纸</p>
+                    <div class="bg-purple-50 rounded-lg p-3 text-center">
+                        <span class="text-purple-700 font-medium">贴心助手</span>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-2 text-center">情感陪伴</h3>
+                    <p class="text-gray-600 text-center text-sm mb-4">安慰、陪伴、察言观色</p>
+                    <div class="bg-pink-50 rounded-lg p-3 text-center">
+                        <span class="text-pink-700 font-medium">治愈天使</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 大图片故事2 -->
+    <section class="relative parallax h-screen" style="background-image: url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920')">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="absolute inset-0 flex items-center justify-end">
+            <div class="max-w-6xl mx-auto px-6 text-white">
+                <div class="max-w-3xl text-right">
+                    <span class="text-lg text-white/80 mb-4 block">Chapter 02 · 贴心伙伴</span>
+                    <h2 class="text-5xl md:text-6xl font-thin mb-8 leading-tight">
+                        最懂我们的心
+                    </h2>
+                    <p class="text-xl md:text-2xl font-light mb-8 text-white/90 leading-relaxed">
+                        小花有着令人惊讶的情感智慧。她能感受到我们的情绪变化，总是在我们需要的时候出现在身边，用她的温暖给予我们力量。
+                    </p>
+                    <blockquote class="text-lg italic text-white/80 border-l-4 border-white/50 pl-4">
+                        "她不仅仅是我们的宠物，更是我们家庭中最温暖的那道光。"
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 回忆网格 -->
+    <section id="memories" class="section-spacing">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-6">珍贵的回忆时光</h2>
+                <p class="text-xl text-gray-600">每一个瞬间都值得被永远记住</p>
+            </div>
+            
+            <!-- 回忆网格布局 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 大图块 -->
+                <div class="lg:col-span-2 lg:row-span-2 relative group cursor-pointer">
+                    <div class="aspect-square lg:aspect-[4/3] relative overflow-hidden rounded-3xl shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=800" alt="快乐时光" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute bottom-6 left-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <h3 class="text-2xl font-light mb-2">公园里的快乐时光</h3>
+                            <p class="text-white/80">每个周末我们都会带她去公园玩耍</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 小图块 -->
+                <div class="relative group cursor-pointer">
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400" alt="散步" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <div class="text-white">
+                                <h4 class="font-medium">晨间散步</h4>
+                                <p class="text-sm text-white/80">每天的例行公事</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative group cursor-pointer">
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400" alt="睡觉" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <div class="text-white">
+                                <h4 class="font-medium">安静时光</h4>
+                                <p class="text-sm text-white/80">最爱在阳台晒太阳</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative group cursor-pointer">
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400" alt="微笑" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <div class="text-white">
+                                <h4 class="font-medium">甜美微笑</h4>
+                                <p class="text-sm text-white/80">她的标志性表情</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative group cursor-pointer">
+                    <div class="aspect-square overflow-hidden rounded-2xl shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400" alt="游泳" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <div class="text-white">
+                                <h4 class="font-medium">游泳健将</h4>
+                                <p class="text-sm text-white/80">水中的快乐时光</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 展示更多按钮 -->
+                <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-lg flex items-center justify-center group cursor-pointer hover:from-gray-200 hover:to-gray-300 transition-all">
+                    <div class="text-center text-gray-600 group-hover:text-gray-800">
+                        <i class="fas fa-images text-3xl mb-3"></i>
+                        <p class="font-medium">查看更多</p>
+                        <p class="text-sm">125+ 张照片</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 大图片故事3 -->
+    <section class="relative parallax h-screen" style="background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920')">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-6xl mx-auto px-6 text-white text-center">
+                <span class="text-lg text-white/80 mb-4 block">Chapter 03 · 永恒告别</span>
+                <h2 class="text-5xl md:text-6xl font-thin mb-8 leading-tight">
+                    天使归家
+                </h2>
+                <p class="text-xl md:text-2xl font-light mb-12 text-white/90 leading-relaxed max-w-4xl mx-auto">
+                    2024年1月15日，小花在我们的陪伴下安详地离开了。她没有痛苦，就像睡着了一样。她用她的一生教会了我们什么是爱，什么是忠诚，什么是陪伴。
+                </p>
+                <div class="flex justify-center">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-8 max-w-2xl">
+                        <p class="text-lg italic mb-4">
+                            "小花，谢谢你给我们带来的所有快乐时光。你永远是我们心中最美好的天使。"
+                        </p>
+                        <p class="text-white/80">— 永远爱你的家人</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 纪念互动区 -->
+    <section class="section-spacing bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-6">永恒的思念</h2>
+                <p class="text-xl text-gray-600">让我们一起为小花点亮温暖的烛光</p>
+            </div>
+            
+            <!-- 互动统计大卡片 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <div class="bg-white rounded-3xl p-8 text-center shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
+                    <div class="w-20 h-20 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-candle-holder text-white text-2xl"></i>
+                    </div>
+                    <div class="text-4xl font-light text-gray-800 mb-2">1,234</div>
+                    <div class="text-gray-600 font-medium">点亮蜡烛</div>
+                    <p class="text-sm text-gray-500 mt-2">温暖的光芒</p>
+                </div>
+                
+                <div class="bg-white rounded-3xl p-8 text-center shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
+                    <div class="w-20 h-20 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <div class="text-4xl font-light text-gray-800 mb-2">856</div>
+                    <div class="text-gray-600 font-medium">关爱支持</div>
+                    <p class="text-sm text-gray-500 mt-2">来自朋友们的爱</p>
+                </div>
+                
+                <div class="bg-white rounded-3xl p-8 text-center shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-comment text-white text-2xl"></i>
+                    </div>
+                    <div class="text-4xl font-light text-gray-800 mb-2">342</div>
+                    <div class="text-gray-600 font-medium">思念留言</div>
+                    <p class="text-sm text-gray-500 mt-2">真挚的话语</p>
+                </div>
+                
+                <div class="bg-white rounded-3xl p-8 text-center shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
+                    <div class="w-20 h-20 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-eye text-white text-2xl"></i>
+                    </div>
+                    <div class="text-4xl font-light text-gray-800 mb-2">5,678</div>
+                    <div class="text-gray-600 font-medium">访问次数</div>
+                    <p class="text-sm text-gray-500 mt-2">关注与陪伴</p>
+                </div>
+            </div>
+            
+            <!-- 大型互动按钮 -->
+            <div class="flex flex-col md:flex-row gap-6 justify-center">
+                <button class="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 hover:from-amber-500 hover:via-orange-600 hover:to-red-600 text-white px-12 py-6 rounded-3xl text-xl font-light shadow-2xl hover:shadow-3xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-4">
+                    <i class="fas fa-candle-holder text-2xl"></i>
+                    为小花点亮蜡烛
+                </button>
+                <button class="bg-gradient-to-r from-pink-400 via-red-500 to-rose-600 hover:from-pink-500 hover:via-red-600 hover:to-rose-700 text-white px-12 py-6 rounded-3xl text-xl font-light shadow-2xl hover:shadow-3xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-4">
+                    <i class="fas fa-heart text-2xl"></i>
+                    送出我的关爱
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 留言区域 -->
+    <section id="messages" class="section-spacing">
+        <div class="max-w-4xl mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-6">留下您的思念</h2>
+                <p class="text-xl text-gray-600">分享您对小花的美好回忆和祝福</p>
+            </div>
+            
+            <!-- 留言输入区 -->
+            <div class="bg-white rounded-3xl p-8 shadow-2xl border border-gray-100 mb-12">
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
+                    <textarea class="w-full h-40 resize-none bg-transparent border-none focus:outline-none placeholder-gray-500 text-lg leading-relaxed" placeholder="写下您对小花的思念、回忆或祝福..."></textarea>
+                </div>
+                <div class="flex justify-between items-center mt-6 pt-6 border-t border-gray-100">
+                    <div class="flex gap-6">
+                        <button class="text-gray-400 hover:text-gray-600 flex items-center gap-2 transition-colors">
+                            <i class="fas fa-camera"></i> 上传照片
+                        </button>
+                        <button class="text-gray-400 hover:text-gray-600 flex items-center gap-2 transition-colors">
+                            <i class="fas fa-smile"></i> 添加表情
+                        </button>
+                        <button class="text-gray-400 hover:text-gray-600 flex items-center gap-2 transition-colors">
+                            <i class="fas fa-map-marker-alt"></i> 标记地点
+                        </button>
+                    </div>
+                    <button class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-2xl hover:shadow-lg transition-all text-lg">
+                        发送留言
+                    </button>
+                </div>
+            </div>
+
+            <!-- 精选留言 -->
+            <div class="space-y-8">
+                <!-- 特别留言 -->
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 border-l-8 border-amber-400 shadow-lg">
+                    <div class="flex items-start gap-6">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" alt="头像" class="w-16 h-16 rounded-full object-cover shadow-md">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <h4 class="text-xl font-medium text-gray-800">王医生</h4>
+                                <span class="bg-amber-500 text-white text-sm px-3 py-1 rounded-full">精选留言</span>
+                                <span class="text-gray-500">3天前</span>
+                            </div>
+                            <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                                作为一名兽医，我见过太多的离别。但读完小花的故事，我深深被感动了。她不仅仅是一只宠物，更是你们家庭中最温暖的成员。她用她的一生诠释了什么是忠诚和爱。相信她在天堂也会很快乐，继续守护着你们。愿她安息，也愿你们能从美好的回忆中获得力量。
+                            </p>
+                            <div class="flex items-center gap-6 text-gray-500">
+                                <button class="hover:text-red-500 flex items-center gap-2 transition-colors">
+                                    <i class="fas fa-heart text-red-400"></i> 45
+                                </button>
+                                <button class="hover:text-blue-500 transition-colors">回复</button>
+                                <button class="hover:text-blue-500 transition-colors">分享</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 普通留言网格 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                                <span class="text-white font-medium">李</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="font-medium text-gray-800">李小姐</span>
+                                    <span class="text-sm text-gray-500">8小时前</span>
+                                </div>
+                                <p class="text-gray-700 leading-relaxed mb-3">
+                                    小花的照片真的很美，能看出她生活得很快乐。我也有一只金毛，看到小花就想起了我家的宝贝。愿所有的小天使都能在天堂快乐生活！
+                                </p>
+                                <button class="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors">
+                                    <i class="far fa-heart"></i> 18
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-full flex items-center justify-center shadow-md">
+                                <span class="text-white font-medium">张</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="font-medium text-gray-800">张先生</span>
+                                    <span class="text-sm text-gray-500">1天前</span>
+                                </div>
+                                <p class="text-gray-700 leading-relaxed mb-3">
+                                    看完小花的故事，深深被感动。她真的是个天使，给你们带来了这么多快乐。这些美好的回忆会永远陪伴你们的。
+                                </p>
+                                <button class="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors">
+                                    <i class="far fa-heart"></i> 24
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 查看更多按钮 -->
+                <div class="text-center">
+                    <button class="bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 px-8 py-4 rounded-2xl transition-all transform hover:-translate-y-1 shadow-lg">
+                        查看全部 342 条留言
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gradient-to-r from-gray-900 to-black text-white py-16">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="mb-8">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120" alt="小花" class="w-20 h-20 rounded-full mx-auto mb-6 border-4 border-white/20 shadow-xl">
+                <h3 class="text-2xl font-light mb-3">小花 (2018 - 2024)</h3>
+                <p class="text-white/70 text-lg">永远的小天使，我们心中的宝贝</p>
+            </div>
+            <div class="border-t border-white/20 pt-8">
+                <p class="text-white/50">
+                    这个纪念页面由爱她的家人创建 · 让爱与思念永不消逝
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 浮动按钮 -->
+    <div class="fixed right-6 bottom-6 space-y-4">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        <button class="w-14 h-14 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center">
+            <i class="fas fa-candle-holder"></i>
+        </button>
+    </div>
+</body>
+</html>

@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { ResponsiveNavigation } from '@/components/responsive-navigation'
 import { Footer } from '@/components/footer'
-import { Sparkles, MessageCircle, Target, Shield, Moon, Lightbulb } from 'lucide-react'
+import { Sparkles, MessageCircle, Target, Shield, Moon, Lightbulb, Wand2, Palette, Volume2, Settings, Trash2, Edit3 } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface DigitalLife {
   id: string
@@ -81,6 +82,33 @@ export default function DigitalLifeHomePage() {
     }
   }
 
+  // 删除数字生命
+  const deleteDigitalLife = async (digitalLife: DigitalLife) => {
+    if (!confirm(`确定要删除数字生命"${digitalLife.name}"吗？此操作不可撤销，将同时删除所有相关的音频样本、聊天记录和对话历史。`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/digital-lives/${digitalLife.id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || '删除失败')
+      }
+
+      toast.success(`数字生命"${digitalLife.name}"已删除`)
+      // 重新获取数据
+      fetchDigitalLives()
+      
+    } catch (error: any) {
+      console.error('删除数字生命失败:', error)
+      toast.error(error.message || '删除失败，请稍后重试')
+    }
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-white flex flex-col justify-center items-center text-center px-5">
@@ -120,7 +148,7 @@ export default function DigitalLifeHomePage() {
           </p>
           
           {/* 特色说明 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mb-12 sm:mb-16 text-center px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mb-12 sm:mb-16 text-center px-4">
             <div className="px-4 sm:px-6 py-6 sm:py-8 bg-gray-50/50 rounded-lg border border-gray-100/50">
               <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3 sm:mb-4 text-gray-500">
                 <MessageCircle className="w-full h-full" />
@@ -139,6 +167,15 @@ export default function DigitalLifeHomePage() {
                 深度学习逝者的性格特征，呈现独一无二的表达方式
               </p>
             </div>
+            <div className="px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-100/50">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3 sm:mb-4 text-purple-500">
+                <Wand2 className="w-full h-full" />
+              </div>
+              <h3 className="text-base sm:text-lg font-light text-gray-800 mb-2 sm:mb-3">图片生成</h3>
+              <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed">
+                AI生成逝者在天堂等温馨场景中的缅怀图片
+              </p>
+            </div>
             <div className="px-4 sm:px-6 py-6 sm:py-8 bg-gray-50/50 rounded-lg border border-gray-100/50">
               <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-3 sm:mb-4 text-gray-500">
                 <Shield className="w-full h-full" />
@@ -150,12 +187,23 @@ export default function DigitalLifeHomePage() {
             </div>
           </div>
           
-          <Link 
-            href="/digital-life"
-            className="bg-gray-900 text-white px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base font-light tracking-wide sm:tracking-widest hover:bg-gray-700 transition-all duration-500 hover:tracking-wide inline-block border-0"
-          >
-            开始创建
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+            <Link 
+              href="/digital-life"
+              className="bg-gray-900 text-white px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base font-light tracking-wide sm:tracking-widest hover:bg-gray-700 transition-all duration-500 hover:tracking-wide inline-block border-0"
+            >
+              创建数字生命
+            </Link>
+            
+            <Link 
+              href="/digital-life/image-generation"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base font-light tracking-wide sm:tracking-widest hover:from-purple-700 hover:to-pink-700 transition-all duration-500 hover:tracking-wide inline-block border-0 hover:shadow-lg"
+            >
+              <Wand2 className="w-4 h-4 inline mr-2" />
+              生成缅怀图片
+            </Link>
+            
+          </div>
           
           <p className="text-xs sm:text-sm text-gray-400 mt-6 sm:mt-8 font-light">
             通常需要 3-5 分钟完成创建 · 完全免费
@@ -233,7 +281,7 @@ export default function DigitalLifeHomePage() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
                         <span className={`text-xs px-3 py-2 rounded-full ${
                           digitalLife.status === 'READY' 
                             ? 'bg-green-50 text-green-700' 
@@ -243,14 +291,44 @@ export default function DigitalLifeHomePage() {
                         }`}>
                           {getStatusText(digitalLife.status)}
                         </span>
+                        
                         {digitalLife.status === 'READY' && (
-                          <button 
-                            onClick={() => router.push(`/digital-life/chat/${digitalLife.id}`)}
-                            className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg"
-                          >
-                            开始对话
-                          </button>
+                          <>
+                            <button 
+                              onClick={() => router.push(`/digital-life/chat/${digitalLife.id}`)}
+                              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg flex items-center gap-1"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                              对话
+                            </button>
+                            <button 
+                              onClick={() => router.push(`/digital-life/image-generation?digitalLifeId=${digitalLife.id}`)}
+                              className="text-sm text-purple-600 hover:text-purple-800 transition-colors duration-200 bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg flex items-center gap-1"
+                            >
+                              <Palette className="w-3 h-3" />
+                              图片
+                            </button>
+                          </>
                         )}
+                        
+                        {/* 管理按钮 */}
+                        <button 
+                          onClick={() => router.push(`/digital-life/edit/${digitalLife.id}`)}
+                          className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg flex items-center gap-1"
+                          title="编辑音频和聊天记录"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          编辑
+                        </button>
+                        
+                        <button 
+                          onClick={() => deleteDigitalLife(digitalLife)}
+                          className="text-sm text-red-600 hover:text-red-800 transition-colors duration-200 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg flex items-center gap-1"
+                          title="删除数字生命"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          删除
+                        </button>
                       </div>
                     </div>
                   ))}

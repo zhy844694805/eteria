@@ -232,8 +232,6 @@ The application supports multiple authentication methods with database-backed us
 - `/api/upload/image/*` - File upload handling (multipart/form-data)
 - `/api/messages/*` - Memorial messages/comments
 - `/api/candles/*` - Virtual candle lighting
-- `/api/voice-models/*` - Voice model management and training
-- `/api/voice-synthesis/*` - AI voice synthesis functionality
 - `/api/digital-lives/*` - Digital life creation and management
 - `/api/debug/*` - Development debugging endpoints
 
@@ -261,7 +259,6 @@ The application supports multiple authentication methods with database-backed us
 - User roles (USER, MODERATOR, ADMIN, SUPER_ADMIN) with role-based access control
 - Memorials support both pet and human types with flexible fields
 - Rich relationship modeling (messages, candles, likes, images, tags)
-- Voice model integration (VoiceModel, VoiceSynthesis) for AI-powered voice cloning
 - Digital life system (DigitalLife, DigitalLifeConversation) for AI conversations
 - Image management with file metadata (filename, size, mimeType, isMain flag)
 - Soft deletion and status management (DRAFT/PUBLISHED/ARCHIVED)
@@ -316,8 +313,6 @@ The Digital Life system creates AI-powered conversational avatars based on decea
 **Database Schema:**
 - `DigitalLife` model: Core digital life entity with training data and status
 - `DigitalLifeConversation` model: Chat history and context preservation
-- `VoiceModel` model: Voice synthesis training and metadata
-- `VoiceSynthesis` model: Generated audio records
 
 **Features:**
 - Audio sample upload and validation (MP3, WAV, M4A, max 50MB)

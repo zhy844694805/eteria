@@ -128,11 +128,11 @@ export function DigitalLifeForm() {
       {
         id: 'allowPublicUse',
         type: 'options',
-        question: '是否允许其他用户使用这个语音模型？',
-        subtitle: '在纪念页面中，其他访客可以使用此声音',
+        question: '是否允许其他用户与这个数字生命对话？',
+        subtitle: '在纪念页面中，其他访客可以与数字生命对话',
         options: [
-          { value: 'true', label: '允许', icon: Users, description: '其他用户可以在纪念页面中使用此声音' },
-          { value: 'false', label: '仅限自己', icon: Lock, description: '只有您可以使用此语音模型' }
+          { value: 'true', label: '允许', icon: Users, description: '其他用户可以在纪念页面中与数字生命对话' },
+          { value: 'false', label: '仅限自己', icon: Lock, description: '只有您可以与此数字生命对话' }
         ],
         required: true
       },

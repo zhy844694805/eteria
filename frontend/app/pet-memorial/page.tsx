@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from "next/image"
-import { Heart, Users, Flame, Star } from "lucide-react"
+import { Heart, Users, Flame, Star, Sparkles, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ResponsiveNavigation } from "@/components/responsive-navigation"
 import { Footer } from "@/components/footer"
@@ -247,6 +247,87 @@ export default function HomePage() {
             <div className="space-y-2">
               <div className="text-4xl font-light text-slate-900">2,456,213</div>
               <div className="text-sm text-slate-500 uppercase tracking-wide">爱的留言</div>
+            </div>
+          </div>
+        </section>
+
+        {/* 宠物数字生命特色功能 */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <div className="bg-gradient-to-br from-teal-50 via-white to-cyan-50 rounded-3xl border border-teal-100 p-8 md:p-12">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center space-x-3 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-light text-slate-900">宠物数字生命</h2>
+              </div>
+              <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                为您心爱的小天使创造永恒的数字纪念<br />
+                用AI技术生成小天使在天堂的温馨画面
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Wand2 className="w-4 h-4 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-slate-900">AI天堂图片生成</h3>
+                      <p className="text-sm text-slate-600">根据小天使的照片，生成在彩虹桥天堂快乐生活的温馨画面</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Heart className="w-4 h-4 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-slate-900">专为宠物设计</h3>
+                      <p className="text-sm text-slate-600">多种天堂场景选择，展现小天使自由奔跑、快乐玩耍的美好瞬间</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-4 h-4 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-slate-900">永恒的纪念</h3>
+                      <p className="text-sm text-slate-600">生成的天堂照片可保存分享，成为永久的美好回忆和安慰</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6">
+                  <Link href="/pet-digital-life">
+                    <button className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-8 py-4 rounded-2xl text-base font-medium hover:from-teal-600 hover:to-cyan-600 transition-all duration-200 flex items-center space-x-3 shadow-lg hover:shadow-xl">
+                      <Wand2 className="w-5 h-5" />
+                      <span>进入宠物数字生命</span>
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="bg-gradient-to-br from-teal-100 to-cyan-100 rounded-2xl p-8 text-center">
+                  <div className="w-24 h-24 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Heart className="w-12 h-12 text-white" />
+                  </div>
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">为小天使生成天堂照片</h3>
+                  <p className="text-sm text-slate-600 mb-6">
+                    选择彩虹桥、花海乐园、云朵游乐场等温馨场景，
+                    让AI为您的小天使创造在天堂中快乐生活的画面
+                  </p>
+                  <div className="flex items-center justify-center space-x-4 text-xs text-slate-500">
+                    <span>✨ AI生成</span>
+                    <span>🌈 天堂场景</span>
+                    <span>💝 永久保存</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

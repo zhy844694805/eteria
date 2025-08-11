@@ -20,7 +20,8 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
   // 检查是否在宠物纪念系统中
   const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
                               pathname.startsWith('/create-obituary') || 
-                              pathname.startsWith('/community-pet-obituaries')
+                              pathname.startsWith('/community-pet-obituaries') ||
+                              pathname.startsWith('/pet-digital-life')
   
   // 检查是否在逝者纪念系统中
   const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
@@ -55,6 +56,7 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
 
   // 获取主页链接
   const getHomeLink = () => {
+    if (pathname.startsWith('/pet-digital-life')) return "/pet-digital-life"
     if (isPetMemorialSystem) return "/pet-memorial"
     if (isHumanMemorialSystem) return "/human-memorial"  
     if (isDigitalLifeSystem) return "/digital-life-home"
@@ -63,12 +65,20 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
 
   // 获取导航项目
   const getNavItems = () => {
+    if (pathname.startsWith('/pet-digital-life')) {
+      return [
+        { href: "/pet-digital-life", label: "宠物数字生命", icon: Heart },
+        { href: "/pet-digital-life/image-generation", label: "图片生成", icon: Plus },
+        { href: "/pet-memorial", label: "纪念首页", icon: Users },
+      ]
+    }
+    
     if (isPetMemorialSystem) {
       return [
         { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
         { href: "/create-obituary", label: "创建纪念", icon: Plus },
         { href: "/community-pet-obituaries", label: "纪念社区", icon: Users },
-        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
+        { href: "/pet-digital-life", label: "数字生命", icon: Sparkles, isDigitalLife: true },
       ]
     }
     
