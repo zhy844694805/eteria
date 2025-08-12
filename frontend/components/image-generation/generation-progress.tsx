@@ -186,7 +186,7 @@ export function GenerationProgress({
             <div className="w-24 h-24 mx-auto relative rounded-lg overflow-hidden border">
               <Image
                 src={task.sourceImageUrl}
-                alt="Source"
+                alt="原图"
                 fill
                 className="object-cover"
               />

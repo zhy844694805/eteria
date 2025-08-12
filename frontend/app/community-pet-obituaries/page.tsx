@@ -19,16 +19,31 @@ interface Memorial {
   subjectType?: string
   breed?: string
   color?: string
+  age?: string
   images: Array<{
     id: string
     url: string
     isMain: boolean
+    thumbnailUrl?: string | null
+    width?: number | null
+    height?: number | null
   }>
-  _count: {
+  // 支持新旧两种数据格式
+  candleCount?: number
+  messageCount?: number
+  likeCount?: number
+  viewCount?: number
+  _count?: {
     messages: number
     candles: number
     likes: number
   }
+  author?: {
+    id: string
+    name: string
+  }
+  createdAt: string
+  updatedAt: string
 }
 
 export default function CommunityPetObituariesPage() {
@@ -210,6 +225,7 @@ export default function CommunityPetObituariesPage() {
       // 仓鼠品种
       'syrian': '叙利亚仓鼠',
       'dwarf-hamster': '侏儒仓鼠',
+      'dwarf': '侏儒仓鼠',
       'chinese': '中国仓鼠',
       'roborovski': '罗伯罗夫斯基仓鼠',
       'other-hamster': '其他仓鼠',

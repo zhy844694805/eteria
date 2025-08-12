@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import { CircleDot, Circle } from 'lucide-react'
+import { CircleDot, Circle, Dog, Cat, Bird, Rabbit, Mouse, Footprints } from 'lucide-react'
 
 interface ImmersiveFormProps {
   initialData?: any
@@ -77,13 +77,13 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
         type: 'options',
         question: `很好听的名字！${answers.petName}是什么动物呢？`,
         options: [
-          { value: 'dog', label: '狗狗', emoji: '🐕' },
-          { value: 'cat', label: '猫咪', emoji: '🐱' },
-          { value: 'bird', label: '鸟儿', emoji: '🦜' },
-          { value: 'rabbit', label: '兔子', emoji: '🐰' },
-          { value: 'hamster', label: '仓鼠', emoji: '🐹' },
-          { value: 'guinea-pig', label: '豚鼠', emoji: '🐭' },
-          { value: 'other', label: '其他', emoji: '🐾' }
+          { value: 'dog', label: '狗狗', icon: Dog },
+          { value: 'cat', label: '猫咪', icon: Cat },
+          { value: 'bird', label: '鸟儿', icon: Bird },
+          { value: 'rabbit', label: '兔子', icon: Rabbit },
+          { value: 'hamster', label: '仓鼠', icon: Mouse },
+          { value: 'guinea-pig', label: '豚鼠', icon: Mouse },
+          { value: 'other', label: '其他', icon: Footprints }
         ],
         required: true
       },

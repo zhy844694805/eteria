@@ -161,7 +161,7 @@ export function GeneratedImageViewer({
             <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
               <Image
                 src={task.sourceImageUrl}
-                alt="Source image"
+                alt="原始图片"
                 fill
                 className="object-cover"
                 onLoad={() => setImageLoading(false)}

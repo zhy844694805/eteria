@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import { Users, Heart, Baby, UserPlus, Users2, Handshake, Briefcase, User } from 'lucide-react'
+import { 
+  Users, Heart, Baby, UserPlus, Users2, Handshake, Briefcase, User,
+  Bot, Edit3, HeartHandshake, Dumbbell, Smile, Brain, Sun, 
+  Wheat, Sparkles, Target, Star, GraduationCap, HandHeart, 
+  Building, Trophy, Palette, BookOpen, Music, Camera,
+  Scissors, PartyPopper, Flower, Plane, Drama, ChefHat
+} from 'lucide-react'
 
 interface ImmersiveFormProps {
   initialData?: any
@@ -135,13 +141,13 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           { 
             value: 'ai-generated', 
             label: 'AI智能生成', 
-            emoji: '🤖',
+            icon: Bot,
             description: '根据您提供的信息，AI将为您创作温馨感人的纪念文案'
           },
           { 
             value: 'self-written', 
             label: '自己编写', 
-            emoji: '✍️',
+            icon: Edit3,
             description: '您可以亲自撰写纪念文案，表达最真挚的情感'
           }
         ],
@@ -158,16 +164,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `请描述${answers.personName}的性格特点`,
           subtitle: '选择最符合的性格特征，可多选',
           options: [
-            { value: '慈祥温和', label: '慈祥温和', emoji: '🤗' },
-            { value: '坚韧不拔', label: '坚韧不拔', emoji: '💪' },
-            { value: '幽默风趣', label: '幽默风趣', emoji: '😄' },
-            { value: '温柔体贴', label: '温柔体贴', emoji: '💕' },
-            { value: '睿智博学', label: '睿智博学', emoji: '🧠' },
-            { value: '乐观向上', label: '乐观向上', emoji: '☀️' },
-            { value: '勤劳朴实', label: '勤劳朴实', emoji: '🌾' },
-            { value: '善良正直', label: '善良正直', emoji: '✨' },
-            { value: '严谨认真', label: '严谨认真', emoji: '🎯' },
-            { value: '热情开朗', label: '热情开朗', emoji: '🌟' }
+            { value: '慈祥温和', label: '慈祥温和', icon: HeartHandshake },
+            { value: '坚韧不拔', label: '坚韧不拔', icon: Dumbbell },
+            { value: '幽默风趣', label: '幽默风趣', icon: Smile },
+            { value: '温柔体贴', label: '温柔体贴', icon: Heart },
+            { value: '睿智博学', label: '睿智博学', icon: Brain },
+            { value: '乐观向上', label: '乐观向上', icon: Sun },
+            { value: '勤劳朴实', label: '勤劳朴实', icon: Wheat },
+            { value: '善良正直', label: '善良正直', icon: Sparkles },
+            { value: '严谨认真', label: '严谨认真', icon: Target },
+            { value: '热情开朗', label: '热情开朗', icon: Star }
           ],
           required: false
         },
@@ -177,16 +183,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `${answers.personName}有哪些值得骄傲的成就？`,
           subtitle: '选择TA在人生中的重要成就，可多选',
           options: [
-            { value: '家庭美满', label: '家庭美满', emoji: '👨‍👩‍👧‍👦' },
-            { value: '事业有成', label: '事业有成', emoji: '💼' },
-            { value: '教育子女', label: '教育子女', emoji: '👨‍🎓' },
-            { value: '帮助他人', label: '帮助他人', emoji: '🤝' },
-            { value: '社区贡献', label: '社区贡献', emoji: '🏘️' },
-            { value: '专业成就', label: '专业成就', emoji: '🏆' },
-            { value: '艺术创作', label: '艺术创作', emoji: '🎨' },
-            { value: '学术研究', label: '学术研究', emoji: '📚' },
-            { value: '慈善公益', label: '慈善公益', emoji: '❤️' },
-            { value: '技艺传承', label: '技艺传承', emoji: '🛠️' }
+            { value: '家庭美满', label: '家庭美满', icon: Users },
+            { value: '事业有成', label: '事业有成', icon: Briefcase },
+            { value: '教育子女', label: '教育子女', icon: GraduationCap },
+            { value: '帮助他人', label: '帮助他人', icon: HandHeart },
+            { value: '社区贡献', label: '社区贡献', icon: Building },
+            { value: '专业成就', label: '专业成就', icon: Trophy },
+            { value: '艺术创作', label: '艺术创作', icon: Palette },
+            { value: '学术研究', label: '学术研究', icon: BookOpen },
+            { value: '慈善公益', label: '慈善公益', icon: Heart },
+            { value: '技艺传承', label: '技艺传承', icon: Handshake }
           ],
           required: false
         },
@@ -196,16 +202,16 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
           question: `${answers.personName}平时喜欢做什么？`,
           subtitle: '选择TA的兴趣爱好，可多选',
           options: [
-            { value: '阅读写作', label: '阅读写作', emoji: '📚' },
-            { value: '音乐艺术', label: '音乐艺术', emoji: '🎵' },
-            { value: '运动健身', label: '运动健身', emoji: '💪' },
-            { value: '园艺种植', label: '园艺种植', emoji: '🌱' },
-            { value: '烹饪美食', label: '烹饪美食', emoji: '👨‍🍳' },
-            { value: '旅行探索', label: '旅行探索', emoji: '✈️' },
-            { value: '摄影记录', label: '摄影记录', emoji: '📷' },
-            { value: '手工制作', label: '手工制作', emoji: '🎨' },
-            { value: '棋牌游戏', label: '棋牌游戏', emoji: '♠️' },
-            { value: '社交聚会', label: '社交聚会', emoji: '🎉' }
+            { value: '阅读写作', label: '阅读写作', icon: BookOpen },
+            { value: '音乐艺术', label: '音乐艺术', icon: Music },
+            { value: '运动健身', label: '运动健身', icon: Dumbbell },
+            { value: '园艺种植', label: '园艺种植', icon: Flower },
+            { value: '烹饪美食', label: '烹饪美食', icon: ChefHat },
+            { value: '旅行探索', label: '旅行探索', icon: Plane },
+            { value: '摄影记录', label: '摄影记录', icon: Camera },
+            { value: '手工制作', label: '手工制作', icon: Scissors },
+            { value: '棋牌游戏', label: '棋牌游戏', icon: Target },
+            { value: '社交聚会', label: '社交聚会', icon: PartyPopper }
           ],
           required: false
         },
@@ -737,8 +743,10 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                     <div className="w-8 h-8 mx-auto mb-2 text-gray-600">
                       {React.createElement((option as any).icon, { className: "w-full h-full" })}
                     </div>
-                  ) : ('emoji' in option && option.emoji && (
-                    <div className="text-2xl mb-2 text-center">{option.emoji}</div>
+                  ) : ('icon' in option && option.icon && (
+                    <div className="mb-2 text-center">
+                      <option.icon className="w-8 h-8 mx-auto" />
+                    </div>
                   ))}
                   <div className={`${'description' in option ? 'font-medium mb-2' : ''}`}>
                     {option.label}
@@ -773,8 +781,10 @@ export function ImmersiveForm({ initialData }: ImmersiveFormProps) {
                         <div className="w-6 h-6 mx-auto mb-1 text-gray-600">
                           {React.createElement((option as any).icon, { className: "w-full h-full" })}
                         </div>
-                      ) : ('emoji' in option && option.emoji && (
-                        <div className="text-xl mb-1">{option.emoji}</div>
+                      ) : ('icon' in option && option.icon && (
+                        <div className="mb-1 flex justify-center">
+                          <option.icon className="w-6 h-6" />
+                        </div>
                       ))}
                       <div>{option.label}</div>
                     </button>

@@ -13,14 +13,17 @@ interface Memorial {
   slug: string
   subjectName: string
   relationship?: string
-  age?: number
+  age?: string
   occupation?: string
   images: Array<{
     id: string
     url: string
     isMain: boolean
   }>
-  _count: {
+  // 支持两种数据结构：新的直接字段和旧的_count对象
+  candleCount?: number
+  messageCount?: number
+  _count?: {
     messages: number
     candles: number
   }
@@ -203,11 +206,11 @@ export default function HomePage() {
                       <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-1">
                           <Flame className="w-4 h-4" />
-                          <span>{memorial._count.candles}</span>
+                          <span>{memorial.candleCount || memorial._count?.candles || 0}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Heart className="w-4 h-4" />
-                          <span>{memorial._count.messages}</span>
+                          <span>{memorial.messageCount || memorial._count?.messages || 0}</span>
                         </div>
                       </div>
                     </div>

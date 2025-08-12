@@ -3,7 +3,11 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageSquare, Edit } from "lucide-react"
+import { 
+  MessageSquare, Edit, Gamepad2, Heart, Target, Smile, Shield, Flower2, 
+  Zap, Moon, Laugh, Users, Eye, Sword, Search, Brain, HeartHandshake, 
+  User, Circle, Home, Car, Users2, Hand, Dog, Mountain, Bed, Squirrel 
+} from "lucide-react"
 
 interface TellTheirStoryStepProps {
   formData: any
@@ -16,34 +20,34 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
   const [showAIGenerated, setShowAIGenerated] = useState(false)
 
   const personalityTraits = [
-    { emoji: "🎾", label: "Playful" },
-    { emoji: "心", label: "Loyal" },
-    { emoji: "专注", label: "Independent" },
-    { emoji: "🤗", label: "Cuddly" },
-    { emoji: "保护", label: "Protective" },
-    { emoji: "温柔", label: "Gentle" },
-    { emoji: "⚡", label: "Energetic" },
-    { emoji: "😌", label: "Calm" },
-    { emoji: "😈", label: "Mischievous" },
-    { emoji: "😊", label: "Friendly" },
-    { emoji: "🤫", label: "Reserved" },
-    { emoji: "🦸", label: "Brave" },
-    { emoji: "🔍", label: "Curious" },
-    { emoji: "智慧", label: "Intelligent" },
-    { emoji: "💕", label: "Affectionate" },
+    { icon: Gamepad2, label: "顽皮" },
+    { icon: Heart, label: "忠诚" },
+    { icon: Target, label: "独立" },
+    { icon: Smile, label: "可爱" },
+    { icon: Shield, label: "保护" },
+    { icon: Flower2, label: "温柔" },
+    { icon: Zap, label: "活力" },
+    { icon: Moon, label: "平静" },
+    { icon: Laugh, label: "调皮" },
+    { icon: Users, label: "友善" },
+    { icon: Eye, label: "内向" },
+    { icon: Sword, label: "勇敢" },
+    { icon: Search, label: "好奇" },
+    { icon: Brain, label: "聪明" },
+    { icon: HeartHandshake, label: "亲切" },
   ]
 
   const activities = [
-    { emoji: "🚶", label: "Going for walks" },
-    { emoji: "🎾", label: "Playing fetch" },
-    { emoji: "🏊", label: "Swimming" },
-    { emoji: "🚗", label: "Car rides" },
-    { emoji: "社交", label: "Making new friends" },
-    { emoji: "🤗", label: "Belly rubs" },
-    { emoji: "🐕", label: "Playing with other pets" },
-    { emoji: "🥾", label: "Hiking" },
-    { emoji: "😴", label: "Cuddling" },
-    { emoji: "追逐", label: "Chasing squirrels" },
+    { icon: User, label: "散步" },
+    { icon: Circle, label: "捡球游戏" },
+    { icon: Circle, label: "游泳" },
+    { icon: Car, label: "坐车兜风" },
+    { icon: Users2, label: "交朋友" },
+    { icon: Hand, label: "肚皮按摩" },
+    { icon: Dog, label: "和其他宠物玩耍" },
+    { icon: Mountain, label: "徒步" },
+    { icon: Bed, label: "拥抱" },
+    { icon: Squirrel, label: "追松鼠" },
   ]
 
   const handleWritingMethodSelect = (method: string) => {
@@ -189,7 +193,9 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl mb-1">{trait.emoji}</div>
+                    <div className="mb-1 flex justify-center">
+                      <trait.icon className="w-6 h-6" />
+                    </div>
                     <div className="text-xs font-medium">{trait.label}</div>
                   </button>
                 ))}
@@ -213,7 +219,9 @@ Though our time with I was far too short, just 5 precious days, the joy and laug
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl mb-1">{activity.emoji}</div>
+                    <div className="mb-1 flex justify-center">
+                      <activity.icon className="w-6 h-6" />
+                    </div>
                     <div className="text-xs font-medium">{activity.label}</div>
                   </button>
                 ))}

@@ -4,9 +4,29 @@ interface CacheItem<T = any> {
   expiry: number
 }
 
+interface CacheStats {
+  hits: number
+  misses: number
+  sets: number
+  deletes: number
+  size: number
+}
+
 class MemoryCache {
   private cache = new Map<string, CacheItem>()
   private maxSize = 1000 // 最大缓存条目数
+  private stats: CacheStats = {
+    hits: 0,
+    misses: 0,
+    sets: 0,
+    deletes: 0,
+    size: 0
+  }
+  
+  constructor() {
+    // 定期清理过期缓存（每5分钟）
+    setInterval(() => this.cleanExpired(), 5 * 60 * 1000)
+  }
   
   set<T>(key: string, data: T, ttlSeconds: number = 300): void {
     // 如果缓存已满，删除最旧的条目
@@ -19,21 +39,28 @@ class MemoryCache {
     
     const expiry = Date.now() + (ttlSeconds * 1000)
     this.cache.set(key, { data, expiry })
+    this.stats.sets++
+    this.stats.size = this.cache.size
   }
   
   get<T>(key: string): T | null {
     const item = this.cache.get(key)
     
     if (!item) {
+      this.stats.misses++
       return null
     }
     
     // 检查是否过期
     if (Date.now() > item.expiry) {
       this.cache.delete(key)
+      this.stats.misses++
+      this.stats.deletes++
+      this.stats.size = this.cache.size
       return null
     }
     
+    this.stats.hits++
     return item.data as T
   }
   
@@ -47,6 +74,8 @@ class MemoryCache {
     // 检查是否过期
     if (Date.now() > item.expiry) {
       this.cache.delete(key)
+      this.stats.deletes++
+      this.stats.size = this.cache.size
       return false
     }
     
@@ -54,17 +83,63 @@ class MemoryCache {
   }
   
   delete(key: string): boolean {
-    return this.cache.delete(key)
+    const deleted = this.cache.delete(key)
+    if (deleted) {
+      this.stats.deletes++
+      this.stats.size = this.cache.size
+    }
+    return deleted
+  }
+  
+  // 模糊删除 - 删除匹配模式的所有key
+  deletePattern(pattern: string): number {
+    const regex = new RegExp(pattern.replace('*', '.*'))
+    let count = 0
+    
+    for (const key of this.cache.keys()) {
+      if (regex.test(key)) {
+        this.cache.delete(key)
+        count++
+      }
+    }
+    
+    this.stats.deletes += count
+    this.stats.size = this.cache.size
+    return count
   }
   
   clear(): void {
+    const size = this.cache.size
     this.cache.clear()
+    this.stats.deletes += size
+    this.stats.size = 0
+  }
+  
+  // 清理过期缓存
+  private cleanExpired(): void {
+    const now = Date.now()
+    let cleaned = 0
+    
+    for (const [key, item] of this.cache.entries()) {
+      if (now > item.expiry) {
+        this.cache.delete(key)
+        cleaned++
+      }
+    }
+
+    if (cleaned > 0) {
+      this.stats.deletes += cleaned
+      this.stats.size = this.cache.size
+      console.log(`[Cache] Cleaned ${cleaned} expired entries`)
+    }
   }
   
   // 获取缓存统计信息
-  stats() {
+  getStats() {
+    const total = this.stats.hits + this.stats.misses
     return {
-      size: this.cache.size,
+      ...this.stats,
+      hitRate: total > 0 ? (this.stats.hits / total * 100).toFixed(2) + '%' : '0%',
       maxSize: this.maxSize,
       keys: Array.from(this.cache.keys())
     }
@@ -87,7 +162,15 @@ export const CACHE_CONFIG = {
   // 统计数据缓存时间（30秒）
   STATS: 30,
   // QR码缓存时间（1天）
-  QR_CODE: 86400
+  QR_CODE: 86400,
+  // 搜索结果缓存时间（2分钟）
+  SEARCH_RESULTS: 120,
+  // 数字生命缓存时间（15分钟）
+  DIGITAL_LIFE: 900,
+  // 社区列表缓存时间（3分钟）
+  COMMUNITY_LIST: 180,
+  // 交互检查缓存时间（1小时）
+  INTERACTION_CHECK: 3600
 } as const
 
 // 缓存工具函数
@@ -112,6 +195,11 @@ export const cache = {
     return memoryCache.delete(key)
   },
   
+  // 模糊删除
+  deletePattern: (pattern: string): number => {
+    return memoryCache.deletePattern(pattern)
+  },
+  
   // 清空所有缓存
   clear: (): void => {
     memoryCache.clear()
@@ -119,7 +207,7 @@ export const cache = {
   
   // 获取缓存统计
   stats: () => {
-    return memoryCache.stats()
+    return memoryCache.getStats()
   }
 }
 
@@ -127,12 +215,25 @@ export const cache = {
 export const cacheKeys = {
   memorial: (id: string) => `memorial:${id}`,
   memorialBySlug: (slug: string) => `memorial:slug:${slug}`,
-  memorialList: (page: number, type?: string) => `memorials:${page}:${type || 'all'}`,
+  memorialList: (page: number, type?: string, userId?: string) => 
+    `memorials:${page}:${type || 'all'}:${userId || 'all'}`,
   userMemorials: (userId: string) => `user:${userId}:memorials`,
   qrCode: (memorialId: string) => `qr:${memorialId}`,
   shareStats: (memorialId: string) => `share:${memorialId}`,
   imageInfo: (imageId: string) => `image:${imageId}`,
-  userInfo: (userId: string) => `user:${userId}`
+  userInfo: (userId: string) => `user:${userId}`,
+  search: (query: string, type?: string, page = 1) => 
+    `search:${encodeURIComponent(query)}:${type || 'all'}:${page}`,
+  digitalLife: (id: string) => `digital_life:${id}`,
+  digitalLifeList: (userId: string) => `digital_lives:${userId}`,
+  community: (type: string, page = 1, limit = 10) => 
+    `community:${type}:${page}:${limit}`,
+  candleCheck: (memorialId: string, userId?: string, ip?: string) => 
+    `candle_check:${memorialId}:${userId || 'anon'}:${ip?.slice(-6) || 'no_ip'}`,
+  likeCheck: (memorialId: string, userId: string) => 
+    `like_check:${memorialId}:${userId}`,
+  adminStats: () => 'admin:stats',
+  userStats: (userId: string) => `user:${userId}:stats`
 }
 
 // 带缓存的异步函数包装器
@@ -171,24 +272,34 @@ export const invalidateCache = {
     if (slug) {
       cache.delete(cacheKeys.memorialBySlug(slug))
     }
-    // 失效相关的列表缓存（简单粗暴的方法）
-    const stats = cache.stats()
-    stats.keys.forEach(key => {
-      if (key.startsWith('memorials:')) {
-        cache.delete(key)
-      }
-    })
+    // 使用模糊删除功能
+    cache.deletePattern('memorials:*')
+    cache.deletePattern('community:*')
+    cache.deletePattern('search:*')
   },
   
   // 失效用户相关缓存
   user: (userId: string) => {
     cache.delete(cacheKeys.userInfo(userId))
     cache.delete(cacheKeys.userMemorials(userId))
+    cache.deletePattern(`user:${userId}:*`)
   },
   
   // 失效分享统计缓存
   shareStats: (memorialId: string) => {
     cache.delete(cacheKeys.shareStats(memorialId))
+  },
+  
+  // 失效数字生命相关缓存
+  digitalLife: (digitalLifeId: string, userId: string) => {
+    cache.deletePattern(`digital_life:*`)
+    cache.deletePattern(`user:${userId}:digital*`)
+  },
+  
+  // 失效社区相关缓存
+  community: () => {
+    cache.deletePattern('community:*')
+    cache.deletePattern('memorials:*')
   }
 }
 

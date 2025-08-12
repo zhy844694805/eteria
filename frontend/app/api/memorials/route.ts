@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { cache, CACHE_CONFIG, cacheKeys, invalidateCache } from '@/lib/cache'
+import { normalizeMemorialList } from '@/lib/data-compatibility'
 
 const createMemorialSchema = z.object({
   type: z.enum(['PET', 'HUMAN']),
@@ -255,12 +257,18 @@ export async function POST(request: NextRequest) {
         }
       })
       
+      // 失效相关缓存
+      invalidateCache.memorial(memorial.id, memorial.slug)
+      
       return NextResponse.json({
         success: true,
         memorial: memorialWithImages
       })
     }
 
+    // 失效相关缓存
+    invalidateCache.memorial(memorial.id, memorial.slug)
+    
     return NextResponse.json({
       success: true,
       memorial
@@ -323,49 +331,107 @@ export async function GET(request: NextRequest) {
       where.authorId = queryData.userId
     }
 
-    // 获取纪念页列表
+    // 尝试从缓存获取
+    const cacheKey = cacheKeys.memorialList(page, queryData.type, queryData.userId)
+    const cached = cache.get<any>(cacheKey)
+    if (cached) {
+      return NextResponse.json({
+        ...cached,
+        cached: true
+      })
+    }
+
+    // 优化的数据库查询
     const [memorials, total] = await Promise.all([
       prisma.memorial.findMany({
-        where,
+        where: {
+          ...where,
+          status: 'PUBLISHED', // 只显示已发布的
+          isPublic: true // 只显示公开的
+        },
         skip,
         take: limit,
-        orderBy: {
-          createdAt: 'desc'
-        },
-        include: {
+        orderBy: [
+          { featured: 'desc' }, // 精选内容优先
+          { createdAt: 'desc' }
+        ],
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          type: true,
+          subjectName: true,
+          subjectType: true,
+          birthDate: true,
+          deathDate: true,
+          age: true,
+          breed: true,
+          relationship: true,
+          viewCount: true,
+          candleCount: true,
+          messageCount: true,
+          likeCount: true,
+          featured: true,
+          createdAt: true,
+          updatedAt: true,
           author: {
             select: {
               id: true,
               name: true,
-              email: true,
             }
           },
           images: {
-            take: 1, // 只获取第一张图片作为封面
-            orderBy: {
-              isMain: 'desc'
-            }
+            take: 1,
+            where: { isMain: true },
+            select: {
+              id: true,
+              url: true,
+              thumbnailUrl: true,
+              width: true,
+              height: true,
+              isMain: true
+            },
+            orderBy: [
+              { isMain: 'desc' },
+              { order: 'asc' }
+            ]
           },
           _count: {
             select: {
               messages: true,
               candles: true,
-              likes: true,
+              likes: true
             }
           }
         }
       }),
-      prisma.memorial.count({ where })
+      prisma.memorial.count({ 
+        where: {
+          ...where,
+          status: 'PUBLISHED',
+          isPublic: true
+        }
+      })
     ])
 
-    return NextResponse.json({
+    const response = {
       success: true,
-      memorials,
+      memorials: normalizeMemorialList(memorials),
       pagination: {
         page,
         limit,
         total,
         totalPages: Math.ceil(total / limit)
+      }
+    }
+
+    // 缓存结果
+    cache.set(cacheKey, response, CACHE_CONFIG.MEMORIAL_LIST)
+
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': `public, max-age=${CACHE_CONFIG.MEMORIAL_LIST}, s-maxage=${CACHE_CONFIG.MEMORIAL_LIST}`,
+        'ETag': `"${Date.now()}"`,
       }
     })
 

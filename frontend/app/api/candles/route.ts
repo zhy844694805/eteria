@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
           createdAt: 'desc'
         },
         include: {
-          lighter: {
+          user: {
             select: {
               id: true,
               name: true,
@@ -187,7 +187,7 @@ export async function GET(request: NextRequest) {
           memorial: {
             select: {
               id: true,
-              name: true,
+              subjectName: true,
               type: true,
             }
           }

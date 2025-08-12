@@ -236,12 +236,18 @@ export default function PetMemorialPage() {
       }
 
       // 如果用户已登录，使用用户ID；否则使用匿名访客名称
+      console.log('当前用户状态:', user)
       if (user) {
         requestBody.userId = user.id
+        console.log('使用登录用户:', user.id)
       } else {
         requestBody.authorName = '匿名访客'
+        console.log('使用匿名访客')
       }
+      
+      console.log('发送的请求体:', requestBody)
 
+      console.log('准备发送请求到 /api/messages')
       const response = await fetch(`/api/messages`, {
         method: 'POST',
         headers: {
@@ -250,17 +256,25 @@ export default function PetMemorialPage() {
         },
         body: JSON.stringify(requestBody)
       })
+      console.log('收到响应:', response)
 
       if (!response.ok) {
-        throw new Error('发送留言失败')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('留言发送失败，状态码:', response.status, '错误信息:', errorData)
+        throw new Error(errorData.error || `发送留言失败 (${response.status})`)
       }
 
       setMessage('')
       window.location.reload()
       toast.success('留言已发送')
-    } catch (error) {
+    } catch (error: any) {
       console.error('发送留言失败:', error)
-      toast.error('发送留言失败')
+      console.error('错误详情:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
+      toast.error(error.message || '发送留言失败')
     }
   }
 
@@ -652,7 +666,7 @@ export default function PetMemorialPage() {
                         {translateBreed(memorial.breed)} · {memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'}
                       </p>
                       <p className="text-lg text-slate-600 font-light">
-                        {translateColor(memorial.color)} · 陪伴了我们{getDisplayAge()}
+                        陪伴了我们{getDisplayAge()}的美好时光
                       </p>
                     </div>
                     <p className="text-xl text-slate-700 mb-3 font-light">{formatDate(memorial.birthDate)} - {formatDate(memorial.deathDate)}</p>
@@ -704,13 +718,13 @@ export default function PetMemorialPage() {
                 <div className="prose prose-slate max-w-none">
                   {memorial.story && (
                     <div className="space-y-6">
-                      {memorial.story.split('\n\n').map((paragraph, index) => (
-                        <p key={index} className="text-slate-700 leading-relaxed font-light">
-                          {paragraph}
+                      {memorial.story.split(/\n\s*\n/).filter(p => p.trim()).map((paragraph, index) => (
+                        <p key={index} className="text-slate-700 leading-relaxed font-light whitespace-pre-line">
+                          {paragraph.trim()}
                         </p>
                       ))}
                       {memorial.memories && (
-                        <p className="text-slate-600 leading-relaxed font-light">
+                        <p className="text-slate-600 leading-relaxed font-light whitespace-pre-line">
                           {memorial.memories}
                         </p>
                       )}

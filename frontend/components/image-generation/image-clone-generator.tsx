@@ -443,7 +443,7 @@ export function ImageCloneGenerator({
                         <div className="relative w-32 h-32 mx-auto">
                           <Image
                             src={formData.sourceImageUrl}
-                            alt="Source"
+                            alt="原图"
                             fill
                             className="object-cover rounded-lg"
                           />
@@ -489,7 +489,7 @@ export function ImageCloneGenerator({
                   <div className="mt-2 w-32 h-32 relative">
                     <Image
                       src={formData.sourceImageUrl}
-                      alt="Source preview"
+                      alt="原图预览"
                       fill
                       className="object-cover rounded-lg border"
                     />

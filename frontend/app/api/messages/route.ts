@@ -9,8 +9,12 @@ const createMessageSchema = z.object({
   authorEmail: z.string().email('邮箱格式不正确').optional(),
   content: z.string().min(1, '留言内容不能为空').max(1000, '留言过长'),
   userId: z.string().optional(),
-}).refine(data => data.userId || data.authorName, {
+}).refine(data => {
+  // 必须提供userId或authorName中的一个
+  return data.userId || data.authorName
+}, {
   message: '必须提供用户ID或作者姓名',
+  path: ['userId'] // 指定错误路径
 })
 
 const querySchema = z.object({
@@ -26,7 +30,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // 验证输入数据
+    console.log('收到留言请求:', body)
     const validatedData = createMessageSchema.parse(body)
+    console.log('验证通过的数据:', validatedData)
 
     // 验证纪念页是否存在，并获取创建者信息
     const memorial = await prisma.memorial.findUnique({

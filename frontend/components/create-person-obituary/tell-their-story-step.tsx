@@ -3,7 +3,12 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageSquare, Edit } from "lucide-react"
+import { 
+  MessageSquare, Edit, Heart, Smile, Brain, HeartHandshake, Shield, 
+  Moon, Zap, Dumbbell, Laugh, Search, Target, Palette, Star,
+  Book, Paintbrush, Music, User, ChefHat, Flower, Plane, 
+  Drama, Dumbbell as Sports, Scissors
+} from "lucide-react"
 
 interface TellTheirStoryStepProps {
   formData: any
@@ -16,34 +21,34 @@ export function TellTheirStoryStep({ formData, updateFormData, onNext, onBack }:
   const [showAIGenerated, setShowAIGenerated] = useState(false)
 
   const personalityTraits = [
-    { emoji: "心", label: "慈爱" },
-    { emoji: "😊", label: "温和" },
-    { emoji: "智慧", label: "智慧" },
-    { emoji: "🤗", label: "关怀" },
-    { emoji: "🦸", label: "勇敢" },
-    { emoji: "😌", label: "平静" },
-    { emoji: "⚡", label: "活力" },
-    { emoji: "💪", label: "坚强" },
-    { emoji: "🤣", label: "幽默" },
-    { emoji: "🔍", label: "细心" },
-    { emoji: "专注", label: "专注" },
-    { emoji: "保护", label: "保护" },
-    { emoji: "💕", label: "深情" },
-    { emoji: "创意", label: "创意" },
-    { emoji: "🌟", label: "闪耀" },
+    { icon: Heart, label: "慈爱" },
+    { icon: Smile, label: "温和" },
+    { icon: Brain, label: "智慧" },
+    { icon: HeartHandshake, label: "关怀" },
+    { icon: Shield, label: "勇敢" },
+    { icon: Moon, label: "平静" },
+    { icon: Zap, label: "活力" },
+    { icon: Dumbbell, label: "坚强" },
+    { icon: Laugh, label: "幽默" },
+    { icon: Search, label: "细心" },
+    { icon: Target, label: "专注" },
+    { icon: Shield, label: "保护" },
+    { icon: Heart, label: "深情" },
+    { icon: Palette, label: "创意" },
+    { icon: Star, label: "闪耀" },
   ]
 
   const hobbies = [
-    { emoji: "📚", label: "阅读" },
-    { emoji: "创意", label: "绘画" },
-    { emoji: "🎵", label: "音乐" },
-    { emoji: "🚶", label: "散步" },
-    { emoji: "🍳", label: "烹饪" },
-    { emoji: "🌱", label: "园艺" },
-    { emoji: "旅行", label: "旅行" },
-    { emoji: "戏剧", label: "戏剧" },
-    { emoji: "运动", label: "运动" },
-    { emoji: "🧶", label: "手工" },
+    { icon: Book, label: "阅读" },
+    { icon: Paintbrush, label: "绘画" },
+    { icon: Music, label: "音乐" },
+    { icon: User, label: "散步" },
+    { icon: ChefHat, label: "烹饪" },
+    { icon: Flower, label: "园艺" },
+    { icon: Plane, label: "旅行" },
+    { icon: Drama, label: "戏剧" },
+    { icon: Sports, label: "运动" },
+    { icon: Scissors, label: "手工" },
   ]
 
   const handleWritingMethodSelect = (method: string) => {
@@ -191,7 +196,9 @@ ${formData.personName}的一生是爱与奉献的一生，他们的精神将在�
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl mb-1">{trait.emoji}</div>
+                    <div className="mb-1 flex justify-center">
+                      <trait.icon className="w-6 h-6" />
+                    </div>
                     <div className="text-xs font-medium">{trait.label}</div>
                   </button>
                 ))}
@@ -215,7 +222,9 @@ ${formData.personName}的一生是爱与奉献的一生，他们的精神将在�
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl mb-1">{hobby.emoji}</div>
+                    <div className="mb-1 flex justify-center">
+                      <hobby.icon className="w-6 h-6" />
+                    </div>
                     <div className="text-xs font-medium">{hobby.label}</div>
                   </button>
                 ))}

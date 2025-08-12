@@ -17,7 +17,7 @@ interface Memorial {
   type: string
   birthDate: string | null
   deathDate: string | null
-  age?: number
+  age?: string  // API返回的是字符串格式
   relationship?: string
   occupation?: string
   location?: string
@@ -25,8 +25,16 @@ interface Memorial {
     id: string
     url: string
     isMain: boolean
+    thumbnailUrl?: string | null
+    width?: number | null
+    height?: number | null
   }>
-  _count: {
+  // 支持新旧两种数据格式
+  candleCount?: number
+  messageCount?: number
+  likeCount?: number
+  viewCount?: number
+  _count?: {
     messages: number
     candles: number
     likes: number
@@ -34,8 +42,10 @@ interface Memorial {
   author: {
     id: string
     name: string
-    email: string
+    email?: string
   }
+  createdAt: string
+  updatedAt: string
 }
 
 export default function CommunityPersonObituariesPage() {

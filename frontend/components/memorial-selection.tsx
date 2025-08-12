@@ -43,7 +43,7 @@ export function MemorialSelection() {
               <Heart className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-2xl font-light text-gray-900 mb-2">爱宠纪念</h3>
-            <p className="text-gray-600 text-sm">PET MEMORIAL</p>
+            <p className="text-gray-600 text-sm">宠物纪念</p>
           </div>
 
           {/* 简化描述 */}
@@ -91,7 +91,7 @@ export function MemorialSelection() {
               <Users className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-2xl font-light text-gray-900 mb-2">逝者纪念</h3>
-            <p className="text-gray-600 text-sm">HUMAN MEMORIAL</p>
+            <p className="text-gray-600 text-sm">逝者纪念</p>
           </div>
 
           {/* 简化描述 */}
