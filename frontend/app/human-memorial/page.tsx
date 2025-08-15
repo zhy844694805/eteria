@@ -78,32 +78,120 @@ export default function HomePage() {
 
       {/* Hero Section - 极简大气 */}
       <main className="pt-32">
-        <section className="max-w-5xl mx-auto text-center px-6 pb-20">
+        <section className="max-w-4xl mx-auto text-center px-6 pb-20">
           <div className="space-y-8">
-            <h1 className="text-5xl font-light text-slate-900 leading-tight">
-              人员纪念
-              <span className="block text-2xl font-normal text-slate-500 mt-2">为逝去的亲人创建永恒纪念</span>
+            <h1 className="text-6xl font-light text-slate-900 leading-tight">
+              永念
+              <span className="block text-3xl font-normal text-slate-500 mt-2">让爱永恒存在</span>
             </h1>
             
-            <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light">
-              为逝去的亲人朋友创建美丽、持久的纪念页面<br />
-              记录珍贵回忆，分享温暖故事，让他们的精神永远陪伴
+            <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-light">
+              为您心爱的人创建美丽、持久的纪念页面<br />
+              分享回忆，与他人连接，让他们的精神永远活着
             </p>
-            
-            {/* 行动按钮 */}
-            <div className="flex items-center justify-center space-x-4 pt-8">
-              <Link href="/create-person-obituary">
-                <button className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-base hover:bg-slate-800 transition-colors flex items-center space-x-2">
-                  <Heart className="w-5 h-5" />
-                  <span>开始创建</span>
-                </button>
-              </Link>
-              <Link href="/community-person-obituaries">
-                <button className="border border-slate-300 text-slate-700 px-10 py-4 rounded-2xl text-base hover:border-slate-400 transition-colors flex items-center space-x-2">
-                  <Users className="w-5 h-5" />
-                  <span>浏览社区</span>
-                </button>
-              </Link>
+          </div>
+        </section>
+
+        {/* Memorial Type Selection */}
+        <section className="max-w-4xl mx-auto px-6 pb-20">
+          <h2 className="text-2xl font-light text-gray-900 text-center mb-12">选择服务</h2>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* 逝者纪念系统 */}
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all">
+              {/* 卡片头部 */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-light text-gray-900 mb-2">逝者纪念</h3>
+                <p className="text-gray-600 text-sm">逝者纪念</p>
+              </div>
+
+              {/* 简化描述 */}
+              <p className="text-gray-600 text-sm leading-relaxed text-center mb-6">
+                为逝去的亲人朋友创建永恒的纪念空间，分享他们的生平故事与珍贵记忆
+              </p>
+
+              {/* 功能亮点 - 极简版 */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">生平档案</div>
+                  <div className="text-xs text-gray-500 mt-1">职业、成就、关系</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">珍贵回忆</div>
+                  <div className="text-xs text-gray-500 mt-1">照片、信件、录音</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">追思留言</div>
+                  <div className="text-xs text-gray-500 mt-1">亲友共同缅怀</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">传承精神</div>
+                  <div className="text-xs text-gray-500 mt-1">家族历史记录</div>
+                </div>
+              </div>
+
+              {/* 行动按钮 */}
+              <div className="text-center space-y-4">
+                <Link href="/create-person-obituary">
+                  <button className="w-full bg-slate-900 text-white px-6 py-3 rounded-xl text-sm hover:bg-slate-800 transition-colors">
+                    创建纪念页面
+                  </button>
+                </Link>
+                <Link href="/community-person-obituaries">
+                  <button className="w-full border border-slate-300 text-slate-700 px-6 py-3 rounded-xl text-sm hover:border-slate-400 transition-colors">
+                    浏览纪念社区
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* 数字生命系统 */}
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all">
+              {/* 卡片头部 */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-light text-gray-900 mb-2">数字生命</h3>
+                <p className="text-gray-600 text-sm">AI对话系统</p>
+              </div>
+
+              {/* 简化描述 */}
+              <p className="text-gray-600 text-sm leading-relaxed text-center mb-6">
+                基于逝者的声音样本和对话记录，创建AI驱动的数字生命，让您能够与他们继续对话交流
+              </p>
+
+              {/* 功能亮点 - 极简版 */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">声音克隆</div>
+                  <div className="text-xs text-gray-500 mt-1">还原真实语音</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">智能对话</div>
+                  <div className="text-xs text-gray-500 mt-1">模拟性格特征</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">记忆传承</div>
+                  <div className="text-xs text-gray-500 mt-1">保存珍贵对话</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-sm text-gray-700">情感陪伴</div>
+                  <div className="text-xs text-gray-500 mt-1">心理慰藉支持</div>
+                </div>
+              </div>
+
+              {/* 行动按钮 */}
+              <div className="text-center">
+                <Link href="/digital-life-home">
+                  <button className="w-full bg-slate-900 text-white px-6 py-3 rounded-xl text-sm hover:bg-slate-800 transition-colors">
+                    创建数字生命
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -113,26 +201,26 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center space-y-4">
               <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Star className="w-6 h-6 text-slate-600" />
+              </div>
+              <h3 className="text-lg font-medium text-slate-900">简单快速</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">三步完成创建，无需复杂操作</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
                 <Heart className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900">精心制作</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">为每一位逝者创建独特而美丽的纪念页面</p>
+              <h3 className="text-lg font-medium text-slate-900">永久免费</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">永远免费使用，无任何隐藏费用</p>
             </div>
             
             <div className="text-center space-y-4">
               <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
                 <Users className="w-6 h-6 text-slate-600" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900">共同缅怀</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">与亲人朋友一起分享珍贵回忆</p>
-            </div>
-            
-            <div className="text-center space-y-4">
-              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto">
-                <Flame className="w-6 h-6 text-slate-600" />
-              </div>
-              <h3 className="text-lg font-medium text-slate-900">永恒纪念</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">点亮蜡烛，让爱永远传递</p>
+              <h3 className="text-lg font-medium text-slate-900">共同纪念</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">与家人朋友一起分享美好回忆</p>
             </div>
           </div>
         </section>
@@ -142,7 +230,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-12">
             <div className="space-y-2">
               <div className="text-4xl font-light text-slate-900">203,847</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide">人员纪念</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">纪念页面</div>
             </div>
             <div className="space-y-2">
               <div className="text-4xl font-light text-slate-900">1,283,921</div>
@@ -150,7 +238,7 @@ export default function HomePage() {
             </div>
             <div className="space-y-2">
               <div className="text-4xl font-light text-slate-900">2,456,213</div>
-              <div className="text-sm text-slate-500 uppercase tracking-wide">爱的留言</div>
+              <div className="text-sm text-slate-500 uppercase tracking-wide">爱的信息</div>
             </div>
           </div>
         </section>

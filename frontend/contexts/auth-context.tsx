@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (savedData && savedStep && savedType) {
         // 有保存的表单数据，跳转回对应的创建页面
-        const redirectPath = savedType === 'pet' ? '/create-obituary' : '/create-person-obituary'
+        const redirectPath = '/create-person-obituary'
         router.push(redirectPath)
       } else {
         // 没有保存的表单数据，根据用户偏好重定向
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (savedData && savedStep && savedType) {
         // 有保存的表单数据，跳转回对应的创建页面
-        const redirectPath = savedType === 'pet' ? '/create-obituary' : '/create-person-obituary'
+        const redirectPath = '/create-person-obituary'
         router.push(redirectPath)
       } else {
         // 没有保存的表单数据，新用户重定向到选择页面

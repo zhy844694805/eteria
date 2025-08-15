@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 const updateMemorialSchema = z.object({
   subjectName: z.string().min(1, '姓名不能为空').max(100, '姓名过长').optional(),
-  subjectType: z.string().nullable().optional(),
   birthDate: z.string().nullable().optional(),
   deathDate: z.string().nullable().optional(),
   age: z.string().nullable().optional(),
@@ -13,9 +12,6 @@ const updateMemorialSchema = z.object({
   personalityTraits: z.string().nullable().optional(),
   favoriteThings: z.string().nullable().optional(),
   isPublic: z.boolean().optional(),
-  // Pet-specific fields
-  breed: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
   // Human-specific fields
   relationship: z.string().nullable().optional(),

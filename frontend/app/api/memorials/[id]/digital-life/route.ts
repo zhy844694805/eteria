@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma'
 // GET - 获取纪念馆的数字生命（公开访问）
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memorialId = params.id
+    const { id: memorialId } = await params
 
     // 获取数字生命信息
     const digitalLife = await prisma.digitalLife.findFirst({

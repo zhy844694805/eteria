@@ -9,10 +9,10 @@ const shareActionSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memorialId = params.id
+    const { id: memorialId } = await params
     const body = await request.json()
     const { action, platform } = shareActionSchema.parse(body)
 
@@ -88,10 +88,10 @@ export async function POST(
 // 获取分享统计
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memorialId = params.id
+    const { id: memorialId } = await params
 
     const memorial = await prisma.memorial.findUnique({
       where: { id: memorialId },

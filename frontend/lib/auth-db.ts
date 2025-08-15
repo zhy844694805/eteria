@@ -6,7 +6,7 @@ export interface ApiUser {
   name: string
   email: string
   role?: 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER_ADMIN'
-  preferredSystem: 'PET' | 'HUMAN' | null
+  preferredSystem: 'HUMAN' | null
   createdAt: string
   lastLoginAt: string
 }
@@ -18,8 +18,7 @@ export function transformUser(dbUser: ApiUser): FrontendUser {
     name: dbUser.name,
     email: dbUser.email,
     role: dbUser.role,
-    preferredSystem: dbUser.preferredSystem === 'PET' ? 'pet' : 
-                     dbUser.preferredSystem === 'HUMAN' ? 'human' : undefined,
+    preferredSystem: dbUser.preferredSystem === 'HUMAN' ? 'human' : undefined,
     createdAt: dbUser.createdAt,
     lastLoginAt: dbUser.lastLoginAt
   }
@@ -149,14 +148,14 @@ export class DatabaseAuthService {
   }
 
   // 更新用户偏好系统
-  async updatePreferredSystem(userId: string, system: 'pet' | 'human'): Promise<void> {
+  async updatePreferredSystem(userId: string, system: 'human'): Promise<void> {
     const response = await fetch(`/api/users/${userId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
-        preferredSystem: system === 'pet' ? 'PET' : 'HUMAN' 
+        preferredSystem: 'HUMAN' 
       })
     })
 
@@ -204,8 +203,6 @@ export class DatabaseAuthService {
     if (!user.preferredSystem) return '/'
     
     switch (user.preferredSystem) {
-      case 'pet':
-        return '/pet-memorial'
       case 'human':
         return '/human-memorial'
       default:

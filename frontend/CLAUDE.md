@@ -35,27 +35,25 @@ npm run check-admin         # Check admin user status
 
 ## Project Overview
 
-**永念 | EternalMemory** is a bilingual (Chinese) memorial website built with Next.js 15 that supports creating memorial pages for both pets and humans. The application implements a triple memorial system architecture with completely separate user flows, branding, and advanced AI-powered digital life features.
+**永念 | EternalMemory** is a bilingual (Chinese) memorial website built with Next.js 15 that supports creating memorial pages for people. The application implements a dual memorial system architecture with completely separate user flows, branding, and advanced AI-powered digital life features.
 
 ## Architecture Overview
 
-### Triple Memorial System
+### Dual Memorial System
 
-The application has three parallel memorial systems with intelligent routing:
+The application has two parallel memorial systems with intelligent routing:
 
-- **Pet Memorial System**: Routes starting with `/pet-memorial`, `/create-obituary`, `/community-pet-obituaries`
 - **Human Memorial System**: Routes starting with `/human-memorial`, `/create-person-obituary`, `/community-person-obituaries`
 - **Digital Life System**: Routes starting with `/digital-life`, `/digital-life-home` - AI-powered conversational avatars
 - **Main Homepage**: `/` acts as a landing page to choose between systems
 
 The navigation component (`/components/navigation.tsx`) detects which system the user is in via pathname analysis and shows context-appropriate menus with different color schemes:
-- **Teal/Turquoise**: Pet memorial system
 - **Purple**: Human memorial system
 - **Gray/Black**: Digital life system
 
 ### Multi-Step Form Pattern
 
-Both memorial creation flows use a consistent multi-step form architecture:
+Memorial creation flows use a consistent multi-step form architecture:
 
 1. **Information Step**: Basic details (name, dates, photos)
 2. **Story Step**: Life story and memories
@@ -81,9 +79,9 @@ Form state is managed at the page level with:
 **Navigation System:**
 ```typescript
 // Navigation intelligently detects current system
-const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
-                            pathname.startsWith('/create-obituary') || 
-                            pathname.startsWith('/community-pet-obituaries')
+const isPetMemorialSystem = pathname.startsWith('/human-memorial') || 
+                            pathname.startsWith('/create-person-obituary') || 
+                            pathname.startsWith('/community-person-obituaries')
 
 const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
                               pathname.startsWith('/create-person-obituary') || 
@@ -93,7 +91,7 @@ const isDigitalLifeSystem = pathname.startsWith('/digital-life')
 
 // Simplified rendering logic (no complex nested conditions)
 {isMainHomepage ? (
-  /* Main page menu: 宠物纪念, 逝者纪念, 数字生命 */
+  /* Main page menu: 逝者纪念, 逝者纪念, 数字生命 */
 ) : isPetMemorialSystem ? (
   /* Pet system menu */
 ) : isHumanMemorialSystem ? (
@@ -106,7 +104,7 @@ const isDigitalLifeSystem = pathname.startsWith('/digital-life')
 ```
 
 **Form Components:**
-- Pet forms: `/components/create-obituary/*`
+- Pet forms: `/components/create-person-obituary/*`
 - Human forms: `/components/create-person-obituary/*`
 - Digital life forms: `/components/digital-life/digital-life-form.tsx`
 - Shared UI: `/components/ui/*` (shadcn/ui components)
@@ -144,7 +142,7 @@ The application is primarily in Chinese with:
 ### Dynamic Routes
 
 Community pages use dynamic routing:
-- `/community-pet-obituaries/[slug]` for individual pet memorials
+- `/community-person-obituaries/[slug]` for individual pet memorials
 - `/community-person-obituaries/[slug]` for individual human memorials
 
 Slug generation pattern: `name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 6) + "h2"`

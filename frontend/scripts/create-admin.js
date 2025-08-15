@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' })
 const { PrismaClient } = require('@prisma/client')
 const bcrypt = require('bcrypt')
 
@@ -23,8 +24,7 @@ async function createAdmin() {
         data: {
           role: 'SUPER_ADMIN',
           isActive: true,
-          isBanned: false,
-          emailVerified: true
+          isBanned: false
         }
       })
       console.log('✅ 管理员角色已更新')
@@ -39,8 +39,7 @@ async function createAdmin() {
           passwordHash,
           role: 'SUPER_ADMIN',
           isActive: true,
-          isBanned: false,
-          emailVerified: true
+          isBanned: false
         }
       })
       

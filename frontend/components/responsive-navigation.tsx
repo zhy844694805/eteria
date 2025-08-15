@@ -9,19 +9,13 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface NavigationProps {
-  currentPage?: "home" | "pet-memorial" | "human-memorial" | "create" | "community" | "pricing" | "donate" | "digital-life"
+  currentPage?: "home" | "human-memorial" | "create" | "community" | "pricing" | "donate" | "digital-life" | "about"
 }
 
 export function ResponsiveNavigation({ currentPage }: NavigationProps) {
   const pathname = usePathname()
   const { user, logout, autoDetectAndSetPreferredSystem } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
-  // 检查是否在宠物纪念系统中
-  const isPetMemorialSystem = pathname.startsWith('/pet-memorial') || 
-                              pathname.startsWith('/create-obituary') || 
-                              pathname.startsWith('/community-pet-obituaries') ||
-                              pathname.startsWith('/pet-digital-life')
   
   // 检查是否在逝者纪念系统中
   const isHumanMemorialSystem = pathname.startsWith('/human-memorial') || 
@@ -32,17 +26,17 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
   const isDigitalLifeSystem = pathname.startsWith('/digital-life')
   
   // 检查是否在任何纪念系统中
-  const isInMemorialSystem = isPetMemorialSystem || isHumanMemorialSystem
+  const isInMemorialSystem = isHumanMemorialSystem
   
-  // 检查是否在总首页
-  const isMainHomepage = pathname === '/'
+  // 检查是否在主页（现在就是human-memorial）
+  const isMainHomepage = pathname === '/human-memorial'
 
   // 自动检测用户偏好系统
   useEffect(() => {
-    if (user && (isPetMemorialSystem || isHumanMemorialSystem)) {
+    if (user && isHumanMemorialSystem) {
       autoDetectAndSetPreferredSystem(pathname)
     }
-  }, [user, pathname, isPetMemorialSystem, isHumanMemorialSystem, autoDetectAndSetPreferredSystem])
+  }, [user, pathname, isHumanMemorialSystem, autoDetectAndSetPreferredSystem])
   
   // 关闭移动菜单
   const closeMobileMenu = () => {
@@ -56,61 +50,28 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
 
   // 获取主页链接
   const getHomeLink = () => {
-    if (pathname.startsWith('/pet-digital-life')) return "/pet-digital-life"
-    if (isPetMemorialSystem) return "/pet-memorial"
-    if (isHumanMemorialSystem) return "/human-memorial"  
+    if (pathname.startsWith('/digital-life')) return "/digital-life"
     if (isDigitalLifeSystem) return "/digital-life-home"
-    return "/"
+    // 所有其他情况都跳转到 human-memorial（现在是主页）
+    return "/human-memorial"
   }
 
-  // 获取导航项目
+  // 获取导航项目 - 使用传入的currentPage参数而不是pathname检测
   const getNavItems = () => {
-    if (pathname.startsWith('/pet-digital-life')) {
-      return [
-        { href: "/pet-digital-life", label: "宠物数字生命", icon: Heart },
-        { href: "/pet-digital-life/image-generation", label: "图片生成", icon: Plus },
-        { href: "/pet-memorial", label: "纪念首页", icon: Users },
-      ]
-    }
-    
-    if (isPetMemorialSystem) {
-      return [
-        { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
-        { href: "/create-obituary", label: "创建纪念", icon: Plus },
-        { href: "/community-pet-obituaries", label: "纪念社区", icon: Users },
-        { href: "/pet-digital-life", label: "数字生命", icon: Sparkles, isDigitalLife: true },
-      ]
-    }
-    
-    if (isHumanMemorialSystem) {
-      return [
-        { href: "/human-memorial", label: "逝者纪念", icon: Heart },
-        { href: "/create-person-obituary", label: "创建纪念", icon: Plus },
-        { href: "/community-person-obituaries", label: "纪念社区", icon: Users },
-        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
-      ]
-    }
-    
-    if (isDigitalLifeSystem) {
+    // 使用传入的currentPage参数来决定导航，避免SSR不匹配
+    if (currentPage === "digital-life") {
       return [
         { href: "/digital-life-home", label: "数字生命", icon: Heart },
         { href: "/digital-life", label: "创建数字生命", icon: Plus },
+        { href: "/human-memorial", label: "逝者纪念", icon: Users },
       ]
     }
     
-    // 主页显示所有主要系统链接
-    if (isMainHomepage) {
-      return [
-        { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
-        { href: "/human-memorial", label: "逝者纪念", icon: Heart },
-        { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
-      ]
-    }
-    
-    // 其他页面（如设置页、登录页等）显示完整导航
+    // 默认显示人员纪念系统导航（包括主页）
     return [
-      { href: "/pet-memorial", label: "宠物纪念", icon: Heart },
       { href: "/human-memorial", label: "逝者纪念", icon: Heart },
+      { href: "/create-person-obituary", label: "创建纪念", icon: Plus },
+      { href: "/community-person-obituaries", label: "纪念社区", icon: Users },
       { href: "/digital-life-home", label: "数字生命", icon: Sparkles, isDigitalLife: true },
     ]
   }
@@ -156,12 +117,6 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
               
               {/* 用户状态管理 */}
               <div className="w-px h-4 bg-slate-300"></div>
-              <Link
-                href="/"
-                className="text-slate-600 hover:text-slate-900 transition-colors"
-              >
-                主页
-              </Link>
               {user ? (
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2 text-xs text-slate-600">
@@ -262,15 +217,6 @@ export function ResponsiveNavigation({ currentPage }: NavigationProps) {
                 )
               })}
               
-              {/* 主页链接 */}
-              <Link
-                href="/"
-                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                onClick={closeMobileMenu}
-              >
-                <Home className="w-5 h-5" />
-                <span className="font-medium">主页</span>
-              </Link>
               
               {/* 用户状态 */}
               <div className="border-t border-slate-200 pt-4">

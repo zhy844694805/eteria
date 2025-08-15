@@ -20,7 +20,7 @@ interface ShareModalProps {
   onClose: () => void
   memorialId: string
   memorialName: string
-  memorialType: 'PET' | 'HUMAN'
+  memorialType: 'HUMAN'
   memorialSlug: string
   onShare?: (action: 'share' | 'copyLink' | 'viewQR', platform?: string) => void
 }
@@ -41,7 +41,7 @@ export function ShareModal({
 
   // 构建纪念页URL
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001'
-  const memorialPath = memorialType === 'PET' ? 'community-pet-obituaries' : 'community-person-obituaries'
+  const memorialPath = 'community-person-obituaries'
   const memorialUrl = `${baseUrl}/${memorialPath}/${memorialSlug}`
 
   // 复制链接
@@ -136,7 +136,7 @@ export function ShareModal({
 
   // 分享到不同平台
   const handlePlatformShare = (platform: string) => {
-    const subjectTypeName = memorialType === 'PET' ? '宠物' : '逝者'
+    const subjectTypeName = '逝者'
     const shareText = `${memorialName}的${subjectTypeName}纪念页 - 永念 | EternalMemory`
     const encodedUrl = encodeURIComponent(memorialUrl)
     const encodedText = encodeURIComponent(shareText)
@@ -179,7 +179,7 @@ export function ShareModal({
       try {
         await navigator.share({
           title: `${memorialName}的纪念页`,
-          text: `${memorialName}的${memorialType === 'PET' ? '宠物' : '逝者'}纪念页`,
+          text: `${memorialName}的${'逝者'}纪念页`,
           url: memorialUrl
         })
         onShare?.('share', 'native')
@@ -211,7 +211,7 @@ export function ShareModal({
           <div className="text-center">
             <h3 className="font-medium text-gray-900 mb-1">{memorialName}</h3>
             <p className="text-sm text-gray-500">
-              {memorialType === 'PET' ? '宠物纪念页' : '逝者纪念页'}
+              逝者纪念页
             </p>
           </div>
 

@@ -93,7 +93,7 @@ export const GET = withAdminAuth(async (request: NextRequest, admin) => {
           name: memorial.author.name,
           email: memorial.author.email
         },
-        description: `创建了 "${memorial.subjectName}" 的${memorial.type === 'PET' ? '宠物' : '逝者'}纪念页`,
+        description: `创建了 "${memorial.subjectName}" 的逝者纪念页`,
         createdAt: memorial.createdAt.toISOString()
       })),
       

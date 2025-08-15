@@ -4,10 +4,10 @@ import QRCode from 'qrcode'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memorialId = params.id
+    const { id: memorialId } = await params
 
     // 获取纪念页信息
     const memorial = await prisma.memorial.findUnique({
@@ -37,9 +37,7 @@ export async function GET(
 
     // 构建纪念页URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'
-    const memorialPath = memorial.type === 'PET' 
-      ? 'community-pet-obituaries' 
-      : 'community-person-obituaries'
+    const memorialPath = 'community-person-obituaries'
     const memorialUrl = `${baseUrl}/${memorialPath}/${memorial.slug}`
 
     // 生成二维码

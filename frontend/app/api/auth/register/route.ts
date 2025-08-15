@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import { sendVerificationEmail } from '@/lib/email'
+// import { sendVerificationEmail } from '@/lib/email' // 暂时禁用
 import { z } from 'zod'
-import crypto from 'crypto'
+// import crypto from 'crypto' // 暂时禁用
 
 const registerSchema = z.object({
   name: z.string().min(1, '姓名不能为空').max(50, '姓名过长'),
@@ -33,9 +33,6 @@ export async function POST(request: NextRequest) {
 
     // 加密密码
     const passwordHash = await bcrypt.hash(password, 12)
-    
-    // 生成邮箱验证令牌
-    const emailVerifyToken = crypto.randomBytes(32).toString('hex')
 
     // 创建用户
     const user = await prisma.user.create({
@@ -43,8 +40,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         passwordHash,
-        emailVerifyToken,
-        emailVerified: false, // 默认未验证
+        preferredSystem: 'HUMAN' // 默认人员纪念系统
       },
       select: {
         id: true,
@@ -52,25 +48,17 @@ export async function POST(request: NextRequest) {
         email: true,
         role: true,
         preferredSystem: true,
-        emailVerified: true,
         createdAt: true,
         lastLoginAt: true,
       }
     })
 
-    // 发送验证邮件
-    try {
-      await sendVerificationEmail(email, emailVerifyToken)
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError)
-      // 即使邮件发送失败，用户仍然创建成功
-      // 用户可以稍后重新发送验证邮件
-    }
+    // 邮件验证功能暂时禁用（简化版schema）
 
     return NextResponse.json({
       success: true,
       user,
-      message: '注册成功！请查收邮箱验证邮件以激活账户。'
+      message: '注册成功！'
     })
 
   } catch (error) {

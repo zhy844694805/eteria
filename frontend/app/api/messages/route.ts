@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
             message.authorName || '匿名访客',
             message.content,
             memorial.slug,
-            memorial.type as 'PET' | 'HUMAN'
+            memorial.type as 'HUMAN'
           )
         } catch (emailError) {
           // 邮件发送失败不影响留言创建，仅记录错误

@@ -21,7 +21,7 @@ interface ExportModalProps {
   onClose: () => void
   memorialId: string
   memorialName: string
-  memorialType: 'PET' | 'HUMAN'
+  memorialType: 'HUMAN'
 }
 
 export function ExportModal({
@@ -155,7 +155,7 @@ export function ExportModal({
           <div className="text-center">
             <h3 className="font-medium text-gray-900 mb-1">{memorialName}</h3>
             <p className="text-sm text-gray-500">
-              {memorialType === 'PET' ? '宠物纪念页' : '逝者纪念页'}
+              逝者纪念页
             </p>
           </div>
 

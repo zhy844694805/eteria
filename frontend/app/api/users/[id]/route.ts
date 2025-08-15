@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const updateUserSchema = z.object({
   name: z.string().min(1, '姓名不能为空').max(50, '姓名过长').optional(),
-  preferredSystem: z.enum(['PET', 'HUMAN']).optional(),
+  preferredSystem: z.enum(['HUMAN']).optional(),
 })
 
 // 获取用户信息

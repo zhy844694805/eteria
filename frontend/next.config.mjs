@@ -134,6 +134,17 @@ const nextConfig = {
     CUSTOM_KEY: process.env.NODE_ENV,
   },
   
+  // 重定向配置
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/human-memorial',
+        permanent: true,
+      },
+    ]
+  },
+  
   // 头部优化
   async headers() {
     return [

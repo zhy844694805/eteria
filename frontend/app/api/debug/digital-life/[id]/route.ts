@@ -28,7 +28,7 @@ export async function GET(
     //   console.log('Debug: Token验证失败:', error.message)
     //   return null
     // })
-    const user = null
+    const user: { id: string } | null = null
     
     console.log('Debug: 用户信息跳过验证')
     
@@ -38,8 +38,8 @@ export async function GET(
         digitalLifeId,
         digitalLifeFound: !!digitalLife,
         digitalLifeStatus: digitalLife?.status,
-        userFound: !!user,
-        userId: user?.id,
+        userFound: false,
+        userId: null,
         totalCount: count
       }
     })

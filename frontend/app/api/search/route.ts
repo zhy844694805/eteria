@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const searchSchema = z.object({
   q: z.string().min(1, '搜索关键词不能为空'),
-  type: z.enum(['PET', 'HUMAN', 'ALL']).optional().default('ALL'),
+  type: z.enum(['HUMAN', 'ALL']).optional().default('ALL'),
   limit: z.number().min(1).max(50).optional().default(20),
   offset: z.number().min(0).optional().default(0)
 })
@@ -64,12 +64,6 @@ export async function GET(request: NextRequest) {
         // 搜索爱好
         {
           favoriteThings: {
-            contains: q
-          }
-        },
-        // 搜索品种（宠物）
-        {
-          breed: {
             contains: q
           }
         },
@@ -161,9 +155,6 @@ export async function GET(request: NextRequest) {
         relevanceScore += 2
       }
       
-      if (memorial.breed?.toLowerCase().includes(searchLower)) {
-        relevanceScore += 4
-      }
       
       if (memorial.occupation?.toLowerCase().includes(searchLower)) {
         relevanceScore += 4

@@ -30,6 +30,13 @@ export async function POST(request: NextRequest) {
     }
 
     // 验证密码
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: '账户密码无效，请联系管理员' },
+        { status: 400 }
+      )
+    }
+    
     const isValidPassword = await bcrypt.compare(password, user.passwordHash)
     
     if (!isValidPassword) {
@@ -64,7 +71,8 @@ export async function POST(request: NextRequest) {
     // 创建响应并设置cookie
     const response = NextResponse.json({
       success: true,
-      user: updatedUser
+      user: updatedUser,
+      token: token // Include token for testing purposes
     })
 
     // 设置HTTP-only cookie

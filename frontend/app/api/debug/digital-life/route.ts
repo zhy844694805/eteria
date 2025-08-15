@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       allowPublicChat: body.allowPublicChat || false,
       creatorId: user.id,
       memorialId: body.memorialId,
-      status: 'READY'
+      status: 'READY' as const
     }
     
     console.log('创建数据:', JSON.stringify(createData, null, 2))
@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('调试API错误:', error)
     return NextResponse.json({
-      error: error.message,
-      stack: error.stack,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
       step: 'exception'
     }, { status: 500 })
   }

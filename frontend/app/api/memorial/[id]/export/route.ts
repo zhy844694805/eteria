@@ -11,10 +11,10 @@ const exportSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memorialId = params.id
+    const { id: memorialId } = await params
     const body = await request.json()
     const { format, includeImages, includeMessages, includeCandles } = exportSchema.parse(body)
 
@@ -85,7 +85,6 @@ export async function POST(
         birthDate: memorial.birthDate,
         deathDate: memorial.deathDate,
         age: memorial.age,
-        breed: memorial.breed,
         color: memorial.color,
         gender: memorial.gender,
         relationship: memorial.relationship,
@@ -176,22 +175,6 @@ function generateMemorialHTML(data: any): string {
   const { memorial, images, messages, candles, exportInfo } = data
   
   // 翻译函数
-  const translatePetType = (type?: string) => {
-    const translations: { [key: string]: string } = {
-      'dog': '狗', 'cat': '猫', 'bird': '鸟', 'rabbit': '兔子',
-      'hamster': '仓鼠', 'guinea-pig': '豚鼠', 'other': '其他'
-    }
-    return translations[type || ''] || type || '宠物'
-  }
-
-  const translateBreed = (breed?: string) => {
-    // 简化的品种翻译
-    const translations: { [key: string]: string } = {
-      'labrador': '拉布拉多', 'golden-retriever': '金毛',
-      'persian': '波斯猫', 'british-shorthair': '英短'
-    }
-    return translations[breed || ''] || breed || '未知'
-  }
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '未知'
@@ -371,7 +354,7 @@ function generateMemorialHTML(data: any): string {
   <div class="header avoid-break">
     <h1 class="title">${memorial.subjectName}</h1>
     <p class="subtitle">
-      ${memorial.type === 'PET' ? translatePetType(memorial.subjectType) : '逝者'} · 
+      逝者 · 
       ${formatDate(memorial.birthDate)} - ${formatDate(memorial.deathDate)}
     </p>
   </div>
@@ -383,26 +366,18 @@ function generateMemorialHTML(data: any): string {
         <span class="info-label">姓名</span>
         <span class="info-value">${memorial.subjectName}</span>
       </div>
-      ${memorial.type === 'PET' ? `
-        <div class="info-item">
-          <span class="info-label">类型</span>
-          <span class="info-value">${translatePetType(memorial.subjectType)}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">品种</span>
-          <span class="info-value">${translateBreed(memorial.breed)}</span>
-        </div>
+      ${memorial.gender ? `
         <div class="info-item">
           <span class="info-label">性别</span>
-          <span class="info-value">${memorial.gender === 'male' ? '男孩' : memorial.gender === 'female' ? '女孩' : '未知'}</span>
+          <span class="info-value">${memorial.gender === 'male' ? '男' : memorial.gender === 'female' ? '女' : '未知'}</span>
         </div>
-        ${memorial.color ? `
+      ` : ''}
+      ${memorial.age ? `
         <div class="info-item">
-          <span class="info-label">毛色</span>
-          <span class="info-value">${memorial.color}</span>
+          <span class="info-label">年龄</span>
+          <span class="info-value">${memorial.age}</span>
         </div>
-        ` : ''}
-      ` : `
+      ` : ''}
         ${memorial.relationship ? `
         <div class="info-item">
           <span class="info-label">关系</span>
@@ -421,7 +396,6 @@ function generateMemorialHTML(data: any): string {
           <span class="info-value">${memorial.location}</span>
         </div>
         ` : ''}
-      `}
       <div class="info-item">
         <span class="info-label">年龄</span>
         <span class="info-value">${memorial.age || '未知'}</span>
@@ -510,7 +484,7 @@ function generateMemorialHTML(data: any): string {
     <p>此纪念页由 永念 | EternalMemory 系统生成</p>
     <p>导出时间: ${new Date(exportInfo.exportedAt).toLocaleString('zh-CN')}</p>
     <p>纪念页创建时间: ${formatDate(memorial.createdAt)}</p>
-    <p>原始链接: ${memorial.type === 'PET' ? 'community-pet-obituaries' : 'community-person-obituaries'}/${memorial.slug}</p>
+    <p>原始链接: community-person-obituaries/${memorial.slug}</p>
   </div>
   
   <script>

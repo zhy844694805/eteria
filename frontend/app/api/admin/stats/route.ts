@@ -15,7 +15,6 @@ export const GET = withAdminAuth(async (request: NextRequest, admin) => {
       newUsersThisWeek,
       memorialStats,
       newMemorialsToday,
-      petMemorials,
       humanMemorials,
       publishedMemorials,
       pendingMemorials,
@@ -58,13 +57,6 @@ export const GET = withAdminAuth(async (request: NextRequest, admin) => {
           createdAt: {
             gte: today
           }
-        }
-      }),
-      
-      // 宠物纪念页
-      prisma.memorial.count({
-        where: {
-          type: 'PET'
         }
       }),
       
@@ -154,7 +146,6 @@ export const GET = withAdminAuth(async (request: NextRequest, admin) => {
         total: memorialStats,
         published: publishedMemorials,
         pending: pendingMemorials,
-        pet: petMemorials,
         human: humanMemorials,
         newToday: newMemorialsToday
       },

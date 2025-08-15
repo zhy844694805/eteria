@@ -5,16 +5,12 @@ import { cache, CACHE_CONFIG, cacheKeys, invalidateCache } from '@/lib/cache'
 import { normalizeMemorialList } from '@/lib/data-compatibility'
 
 const createMemorialSchema = z.object({
-  type: z.enum(['PET', 'HUMAN']),
+  type: z.enum(['HUMAN']),
   subjectName: z.string().min(1, '姓名不能为空').max(100, '姓名过长'),
   birthDate: z.string().optional(), 
   deathDate: z.string().optional(),
   story: z.string().optional(),
   authorId: z.string().min(1, '创建者ID不能为空'),
-  // Pet-specific fields  
-  subjectType: z.string().optional(), // 宠物类型
-  breed: z.string().optional(),
-  color: z.string().optional(),
   gender: z.string().optional(),
   personalityTraits: z.array(z.string()).optional(), // 性格特征
   favoriteActivities: z.array(z.string()).optional(), // 喜欢的活动
@@ -34,14 +30,16 @@ const createMemorialSchema = z.object({
   age: z.string().optional(),
   occupation: z.string().optional(),
   location: z.string().optional(),
+  memories: z.string().optional(),
   // Creator information
   creatorName: z.string().min(1, '创建者姓名不能为空').max(50, '创建者姓名过长'),
   creatorEmail: z.string().optional(),
   creatorPhone: z.string().optional(),
+  creatorRelation: z.string().optional(),
 })
 
 const querySchema = z.object({
-  type: z.enum(['PET', 'HUMAN']).optional(),
+  type: z.enum(['HUMAN']).optional(),
   userId: z.string().optional(),
   page: z.string().optional(),
   limit: z.string().optional(),
@@ -105,12 +103,9 @@ export async function POST(request: NextRequest) {
         slug,
         type: validatedData.type,
         subjectName: validatedData.subjectName,
-        subjectType: validatedData.subjectType,
         birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : null,
         deathDate: validatedData.deathDate ? new Date(validatedData.deathDate) : null,
         story: validatedData.story,
-        breed: validatedData.breed, 
-        color: validatedData.color,
         gender: validatedData.gender,
         personalityTraits: validatedData.personalityTraits ? validatedData.personalityTraits.join(', ') : null,
         favoriteThings: validatedData.favoriteActivities ? validatedData.favoriteActivities.join(', ') : null,
@@ -118,9 +113,11 @@ export async function POST(request: NextRequest) {
         age: validatedData.age,
         occupation: validatedData.occupation,
         location: validatedData.location,
+        memories: validatedData.memories,
         creatorName: validatedData.creatorName,
         creatorEmail: validatedData.creatorEmail,
         creatorPhone: validatedData.creatorPhone,
+        creatorRelation: validatedData.creatorRelation,
         authorId: finalAuthorId,
         isPublic: true,
         status: 'PUBLISHED',
@@ -132,49 +129,14 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
-          }
-        },
-        images: true,
-        messages: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-              }
-            }
-          },
-          orderBy: {
-            createdAt: 'desc'
-          }
-        },
-        candles: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-              }
-            }
-          },
-          orderBy: {
-            createdAt: 'desc'
-          }
-        },
-        likes: true,
-        tags: true,
-        _count: {
-          select: {
-            messages: true,
-            candles: true,
-            likes: true,
           }
         }
       }
     })
 
-    // 如果提供了imageData，创建图片记录
+    // 图片功能暂时禁用（简化版schema不包含图片相关表）
+    // TODO: 在完整schema中恢复图片功能
+    /*
     if (validatedData.imageData && validatedData.imageData.length > 0) {
       console.log('创建图片记录:', validatedData.imageData.length, '张图片')
       
@@ -265,6 +227,7 @@ export async function POST(request: NextRequest) {
         memorial: memorialWithImages
       })
     }
+    */
 
     // 失效相关缓存
     invalidateCache.memorial(memorial.id, memorial.slug)
@@ -352,7 +315,6 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         orderBy: [
-          { featured: 'desc' }, // 精选内容优先
           { createdAt: 'desc' }
         ],
         select: {
@@ -361,17 +323,14 @@ export async function GET(request: NextRequest) {
           slug: true,
           type: true,
           subjectName: true,
-          subjectType: true,
           birthDate: true,
           deathDate: true,
           age: true,
-          breed: true,
           relationship: true,
           viewCount: true,
           candleCount: true,
           messageCount: true,
           likeCount: true,
-          featured: true,
           createdAt: true,
           updatedAt: true,
           author: {
@@ -380,29 +339,6 @@ export async function GET(request: NextRequest) {
               name: true,
             }
           },
-          images: {
-            take: 1,
-            where: { isMain: true },
-            select: {
-              id: true,
-              url: true,
-              thumbnailUrl: true,
-              width: true,
-              height: true,
-              isMain: true
-            },
-            orderBy: [
-              { isMain: 'desc' },
-              { order: 'asc' }
-            ]
-          },
-          _count: {
-            select: {
-              messages: true,
-              candles: true,
-              likes: true
-            }
-          }
         }
       }),
       prisma.memorial.count({ 

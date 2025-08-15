@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const imageId = params.id
+    const { id: imageId } = await params
 
     // 查找图片及其所属纪念页
     const image = await prisma.memorialImage.findUnique({

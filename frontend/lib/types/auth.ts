@@ -4,7 +4,7 @@ export interface User {
   name: string
   avatar?: string
   role?: 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER_ADMIN' // 用户角色
-  preferredSystem?: 'pet' | 'human' // 用户偏好的纪念系统
+  preferredSystem?: 'human' // 用户偏好的纪念系统
   provider?: string // 登录提供者: google, email, etc.
   createdAt: string
   lastLoginAt: string
@@ -16,7 +16,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
-  updatePreferredSystem: (system: 'pet' | 'human') => Promise<void>
+  updatePreferredSystem: (system: 'human') => Promise<void>
   updateUserInfo: (updates: Partial<Pick<User, 'name'>>) => Promise<boolean>
   autoDetectAndSetPreferredSystem: (pathname: string) => Promise<void>
 }
